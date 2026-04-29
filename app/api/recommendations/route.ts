@@ -4,7 +4,7 @@ import { getSessionFromRequest } from '@/lib/auth';
 
 // GET /api/recommendations — personalised "for you" feed
 export async function GET(req: NextRequest) {
-  const session = getSessionFromRequest(req);
+  const session = await getSessionFromRequest(req);
   if (!session) {
     // Unauthenticated: just return hot feed
     const rows = await sql`

@@ -3,7 +3,7 @@ import sql from '@/lib/db';
 import { getSessionFromRequest } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
-  const session = getSessionFromRequest(req);
+  const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ user: null }, { status: 401 });
 
   const rows = await sql`

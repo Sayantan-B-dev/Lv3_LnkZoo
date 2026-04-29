@@ -1,8 +1,8 @@
-import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
+import * as jose from 'jose';
 
-const JWT_SECRET = process.env.JWT_SECRET!;
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
 const COOKIE_NAME = 'glinqx_token';
 const MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 
@@ -12,35 +12,40 @@ export interface JWTPayload {
   is_admin: boolean;
 }
 
-export function signToken(payload: JWTPayload): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: MAX_AGE });
+export async function signToken(payload: JWTPayload): Promise<string> {
+  return await new jose.SignJWT({ ...payload })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('30d')
+    .sign(JWT_SECRET);
 }
 
-export function verifyToken(token: string): JWTPayload | null {
+export async function verifyToken(token: string): Promise<JWTPayload | null> {
   try {
-    return jwt.verify(token, JWT_SECRET) as JWTPayload;
-  } catch {
+    const { payload } = await jose.jwtVerify(token, JWT_SECRET);
+    return payload as unknown as JWTPayload;
+  } catch (err) {
     return null;
   }
 }
 
-/** Get auth from server component cookies (App Router) */
-export function getSessionFromCookies(): JWTPayload | null {
-  const token = cookies().get(COOKIE_NAME)?.value;
-  if (!token) return null;
-  return verifyToken(token);
-}
-
-/** Get auth from API request (cookie or Authorization header) */
-export function getSessionFromRequest(req: NextRequest): JWTPayload | null {
+/** Sync verification for Middleware (Next.js Middleware can be async) */
+export async function getSessionFromRequest(req: NextRequest): Promise<JWTPayload | null> {
   const cookieToken = req.cookies.get(COOKIE_NAME)?.value;
-  if (cookieToken) return verifyToken(cookieToken);
+  if (cookieToken) return await verifyToken(cookieToken);
 
   const authHeader = req.headers.get('Authorization');
   if (authHeader?.startsWith('Bearer ')) {
-    return verifyToken(authHeader.slice(7));
+    return await verifyToken(authHeader.slice(7));
   }
   return null;
+}
+
+/** Get auth from server component cookies (App Router) */
+export async function getSessionFromCookies(): Promise<JWTPayload | null> {
+  const token = cookies().get(COOKIE_NAME)?.value;
+  if (!token) return null;
+  return await verifyToken(token);
 }
 
 export function cookieOptions() {

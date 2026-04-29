@@ -5,7 +5,7 @@ import { notificationService } from '@/services/notification.service';
 
 // POST /api/users/[username]/follow — toggle follow
 export async function POST(req: NextRequest, { params }: { params: { username: string } }) {
-  const session = getSessionFromRequest(req);
+  const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const [target] = await sql`SELECT id FROM users WHERE username = ${params.username.toLowerCase()}`;

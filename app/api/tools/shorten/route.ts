@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     const { url } = await req.json();
     if (!url) return NextResponse.json({ error: 'url required' }, { status: 400 });
 
-    const session = getSessionFromRequest(req);
+    const session = await getSessionFromRequest(req);
 
     let shortCode = generateShortCode(6);
     // Ensure uniqueness

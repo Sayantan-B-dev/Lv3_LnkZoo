@@ -31,7 +31,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 
 // ── DELETE /api/links/[id] ──────────────────────────────────
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-  const session = getSessionFromRequest(req);
+  const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const [link] = await sql`SELECT user_id FROM links WHERE id = ${params.id}`;
@@ -47,7 +47,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 
 // ── PATCH /api/links/[id] — flag ────────────────────────────
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const session = getSessionFromRequest(req);
+  const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { action } = await req.json();

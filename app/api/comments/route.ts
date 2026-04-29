@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
 
 // ── POST /api/comments ───────────────────────────────────────
 export async function POST(req: NextRequest) {
-  const session = getSessionFromRequest(req);
+  const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { linkId, parentId, content } = await req.json();

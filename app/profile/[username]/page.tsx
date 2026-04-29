@@ -16,19 +16,28 @@ export default function ProfilePage({ params }: { params: { username: string } }
   const [links, setLinks] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [editData, setEditData] = useState({ bio: '', avatar_url: '', website: '' });
+
   useEffect(() => {
     const fetchProfile = async () => {
+      const cleanUsername = username.replace(/^@/, '');
       setLoading(true);
       try {
         const [profRes, linksRes] = await Promise.all([
-          fetch(`/api/users/${username}`),
-          fetch(`/api/users/${username}/links`)
+          fetch(`/api/users/${cleanUsername}`),
+          fetch(`/api/users/${cleanUsername}/links`)
         ]);
         if (profRes.ok && linksRes.ok) {
           const profData = await profRes.json();
           const linksData = await linksRes.json();
           setProfile(profData.user);
           setLinks(linksData.links);
+          setEditData({
+            bio: profData.user.bio || '',
+            avatar_url: profData.user.avatar_url || '',
+            website: profData.user.website || ''
+          });
         }
       } catch (err) {
         console.error('Failed to fetch profile', err);
@@ -38,6 +47,36 @@ export default function ProfilePage({ params }: { params: { username: string } }
     };
     fetchProfile();
   }, [username]);
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await fetch('/api/users/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editData),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setProfile({ ...profile, ...data.user });
+        setIsEditing(false);
+      }
+    } catch (err) {
+      console.error('Update failed', err);
+    }
+  };
+
+  const handleDeleteLink = async (linkId: string) => {
+    if (!confirm('Are you sure you want to delete this post?')) return;
+    try {
+      const res = await fetch(`/api/links/${linkId}`, { method: 'DELETE' });
+      if (res.ok) {
+        setLinks(links.filter((l: any) => l.id !== linkId));
+      }
+    } catch (err) {
+      console.error('Delete failed', err);
+    }
+  };
 
   const handleFollow = async () => {
     if (!currentUser) return;
@@ -52,7 +91,7 @@ export default function ProfilePage({ params }: { params: { username: string } }
     }
   };
 
-  if (loading) return null; // Or skeleton
+  if (loading) return null;
 
   if (!profile) return (
     <div id="app">
@@ -71,34 +110,58 @@ export default function ProfilePage({ params }: { params: { username: string } }
         <NotificationPanel />
         
         <div id="content">
-          <div className="profile-header">
-            <div className="profile-top">
-              <div className="avatar large">
-                {profile.avatar_url ? <img src={profile.avatar_url} alt={profile.username} /> : profile.username.slice(0, 2)}
-              </div>
-              <div className="profile-info">
-                <h1 className="profile-name">@{profile.username}</h1>
-                <p className="profile-bio">{profile.bio || 'No bio yet.'}</p>
-                <div className="profile-stats">
-                  <span className="stat-item"><b>{profile.karma}</b> karma</span>
-                  <span className="stat-item"><b>{profile.link_count}</b> posts</span>
-                  <span className="stat-item"><b>{profile.follower_count}</b> followers</span>
+          {isEditing ? (
+            <div className="profile-header editing">
+              <h2 className="section-title">Edit Profile</h2>
+              <form onSubmit={handleUpdateProfile} className="edit-form">
+                <div className="input-group-v">
+                  <label>Avatar URL</label>
+                  <input value={editData.avatar_url} onChange={e => setEditData({...editData, avatar_url: e.target.value})} className="auth-input" />
+                </div>
+                <div className="input-group-v">
+                  <label>Bio</label>
+                  <textarea value={editData.bio} onChange={e => setEditData({...editData, bio: e.target.value})} className="auth-input" style={{ minHeight: '80px' }} />
+                </div>
+                <div className="input-group-v">
+                  <label>Website</label>
+                  <input value={editData.website} onChange={e => setEditData({...editData, website: e.target.value})} className="auth-input" />
+                </div>
+                <div style={{ display: 'flex', gap: '12px', marginTop: '10px' }}>
+                  <button type="submit" className="save-btn">Save Changes</button>
+                  <button type="button" onClick={() => setIsEditing(false)} className="cancel-btn">Cancel</button>
+                </div>
+              </form>
+            </div>
+          ) : (
+            <div className="profile-header">
+              <div className="profile-top">
+                <div className="avatar large">
+                  {profile.avatar_url ? <img src={profile.avatar_url} alt={profile.username} /> : profile.username.slice(0, 2)}
+                </div>
+                <div className="profile-info">
+                  <h1 className="profile-name">@{profile.username}</h1>
+                  <p className="profile-bio">{profile.bio || 'No bio yet.'}</p>
+                  <div className="profile-stats">
+                    <span className="stat-item"><b>{profile.karma}</b> karma</span>
+                    <span className="stat-item"><b>{profile.link_count}</b> posts</span>
+                    <span className="stat-item"><b>{profile.follower_count}</b> followers</span>
+                  </div>
+                </div>
+                <div className="profile-actions">
+                  {currentUser?.username === profile.username ? (
+                    <button className="edit-btn" onClick={() => setIsEditing(true)}>Edit Profile</button>
+                  ) : (
+                    <button 
+                      className={`follow-btn ${profile.isFollowing ? 'active' : ''}`}
+                      onClick={handleFollow}
+                    >
+                      {profile.isFollowing ? 'Following' : 'Follow'}
+                    </button>
+                  )}
                 </div>
               </div>
-              <div className="profile-actions">
-                {currentUser?.username === profile.username ? (
-                  <button className="edit-btn">Edit Profile</button>
-                ) : (
-                  <button 
-                    className={`follow-btn ${profile.isFollowing ? 'active' : ''}`}
-                    onClick={handleFollow}
-                  >
-                    {profile.isFollowing ? 'Following' : 'Follow'}
-                  </button>
-                )}
-              </div>
             </div>
-          </div>
+          )}
 
           <div className="profile-content" style={{ marginTop: '40px' }}>
             <h2 className="section-title">Submissions</h2>
@@ -116,9 +179,14 @@ export default function ProfilePage({ params }: { params: { username: string } }
                       <Link href={`/link/${link.id}`} className="card-title" style={{ fontSize: '14px', fontWeight: '500', color: 'var(--text)', marginBottom: '5px', display: 'block' }}>
                         {link.title}
                       </Link>
-                      <div className="card-footer">
-                        <span className="card-stat">▲ {link.upvote_count}</span>
-                        <span className="card-stat">💬 {link.comment_count}</span>
+                      <div className="card-footer" style={{ justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', gap: '16px' }}>
+                          <span className="card-stat">▲ {link.upvote_count}</span>
+                          <span className="card-stat">💬 {link.comment_count}</span>
+                        </div>
+                        {currentUser?.username === profile.username && (
+                          <button onClick={() => handleDeleteLink(link.id)} className="delete-btn">Delete</button>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -138,12 +206,19 @@ export default function ProfilePage({ params }: { params: { username: string } }
           .profile-stats { display: flex; gap: 20px; }
           .stat-item { font-size: 13px; color: var(--text-4); }
           .stat-item b { color: var(--text-2); font-weight: 500; }
-          .edit-btn, .follow-btn { 
+          .edit-btn, .follow-btn, .save-btn, .cancel-btn { 
             padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 500; 
-            transition: all 0.2s; border: 1px solid var(--border); background: var(--bg-2); color: var(--text-2);
+            transition: all 0.2s; border: 1px solid var(--border); background: var(--bg-2); color: var(--text-2); cursor: pointer;
           }
+          .save-btn { background: var(--text); color: var(--bg); border-color: var(--text); }
           .follow-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+          .delete-btn { font-size: 11px; color: #ff5555; background: none; border: none; cursor: pointer; opacity: 0.7; }
+          .delete-btn:hover { opacity: 1; }
           .section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-4); margin-bottom: 20px; }
+          .edit-form { display: flex; flex-direction: column; gap: 16px; max-width: 500px; }
+          .input-group-v { display: flex; flex-direction: column; gap: 8px; }
+          .input-group-v label { font-size: 11px; color: var(--text-4); text-transform: uppercase; }
+          .auth-input { padding: 10px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 13px; outline: none; }
         `}</style>
       </main>
     </div>

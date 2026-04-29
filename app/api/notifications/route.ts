@@ -4,7 +4,7 @@ import { getSessionFromRequest } from '@/lib/auth';
 
 // GET /api/notifications
 export async function GET(req: NextRequest) {
-  const session = getSessionFromRequest(req);
+  const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const rows = await sql`
@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
 
 // PATCH /api/notifications — mark all read
 export async function PATCH(req: NextRequest) {
-  const session = getSessionFromRequest(req);
+  const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   await sql`UPDATE notifications SET is_read = true WHERE user_id = ${session.user_id}`;

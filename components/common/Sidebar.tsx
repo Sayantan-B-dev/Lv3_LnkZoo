@@ -27,16 +27,18 @@ export default function Sidebar() {
     ]},
     { label: 'Account', items: [
       { id: 'profile', label: 'Profile', href: '/profile', icon: <svg fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg> },
-      { id: 'admin', label: 'Admin', href: '/admin', icon: <svg fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>, badge: user?.is_admin ? 3 : null },
       { id: 'login', label: user ? 'Logout' : 'Login', href: user ? '#' : '/login', icon: <svg fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg> },
     ]},
   ];
 
   return (
-    <nav id="sidebar" className={collapsed ? 'collapsed' : ''}>
-      <div className="sidebar-logo">
+    <nav id="sidebar" className={collapsed ? 'collapsed' : ''} style={{ height: '100vh', position: 'sticky', top: 0 }}>
+      <div className="sidebar-logo" style={{ flexDirection: collapsed ? 'column' : 'row', height: collapsed ? 'auto' : 'var(--header-h)', padding: collapsed ? '12px 0' : '0 16px', gap: collapsed ? '12px' : '10px' }}>
         <div className="logo-mark">gx</div>
-        <span className="logo-text">glinqx</span>
+        {!collapsed && <span className="logo-text">glinqx</span>}
+        <button className="collapse-toggle-top" onClick={() => setCollapsed(!collapsed)} title={collapsed ? "Expand" : "Collapse"} style={{ marginLeft: collapsed ? '0' : 'auto' }}>
+          <svg className="collapse-icon" style={{ transform: collapsed ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5"/></svg>
+        </button>
       </div>
 
       <div className="sidebar-nav">
@@ -52,7 +54,6 @@ export default function Sidebar() {
               >
                 <span className="nav-icon">{item.icon}</span>
                 <span className="nav-text">{item.label}</span>
-                {item.badge && <span className="nav-badge">{item.badge}</span>}
               </Link>
             ))}
           </div>
@@ -67,7 +68,7 @@ export default function Sidebar() {
             </div>
             <div className="user-info">
               <div className="user-name">@{user.username}</div>
-              <div className="user-karma">{user.karma.toLocaleString()} karma · 🔥 {user.streak}d</div>
+              <div className="user-karma">{user.karma?.toLocaleString()} karma · 🔥 {user.streak}d</div>
             </div>
           </div>
         ) : (
@@ -79,10 +80,6 @@ export default function Sidebar() {
             </div>
           </div>
         )}
-        <button className="collapse-btn" onClick={() => setCollapsed(!collapsed)}>
-          <svg className="collapse-icon" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5"/></svg>
-          <span className="nav-text" style={{ fontSize: '10px', letterSpacing: '.04em' }}>collapse</span>
-        </button>
       </div>
     </nav>
   );

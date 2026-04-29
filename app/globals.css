@@ -102,7 +102,13 @@ body.hovering #cursor-ring{width:40px;height:40px;opacity:.25}
   opacity:1;
   transition:opacity var(--t);
 }
-#sidebar.collapsed .logo-text{opacity:0;width:0;overflow:hidden}
+#sidebar.collapsed .logo-text{opacity:0;width:0;overflow:hidden;margin:0}
+.collapse-toggle-top{
+  display:flex;align-items:center;justify-content:center;
+  width:24px;height:24px;border-radius:4px;
+  transition:background var(--t);
+}
+.collapse-toggle-top:hover{background:var(--bg-3)}
 .sidebar-nav{flex:1;padding:8px 0;overflow-y:auto;overflow-x:hidden}
 .sidebar-nav::-webkit-scrollbar{width:2px}
 .sidebar-nav::-webkit-scrollbar-thumb{background:var(--border)}
@@ -176,16 +182,6 @@ body.hovering #cursor-ring{width:40px;height:40px;opacity:.25}
 #sidebar.collapsed .user-info{opacity:0;width:0}
 .user-name{font-size:12px;font-weight:500;color:var(--text-2);white-space:nowrap}
 .user-karma{font-size:10px;color:var(--text-4);white-space:nowrap}
-.collapse-btn{
-  width:100%;display:flex;align-items:center;justify-content:center;
-  height:36px;
-  color:var(--text-4);
-  font-size:11px;
-  gap:6px;
-  transition:color var(--t),background var(--t);
-  border-top:1px solid var(--border);
-  cursor: pointer;
-}
 .collapse-btn:hover{color:var(--text);background:var(--bg-2)}
 .collapse-icon{transition:transform .25s}
 #sidebar.collapsed .collapse-icon{transform:rotate(180deg)}
@@ -440,3 +436,18 @@ body.hovering #cursor-ring{width:40px;height:40px;opacity:.25}
   border-radius:3px;
 }
 @keyframes skel{0%{background-position:200%}100%{background-position:-200%}}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+#app {
+  opacity: 0;
+  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}

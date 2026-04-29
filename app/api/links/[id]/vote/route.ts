@@ -5,7 +5,7 @@ import { notificationService } from '@/services/notification.service';
 
 // ── POST /api/links/[id]/vote ────────────────────────────────
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
-  const session = getSessionFromRequest(req);
+  const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { vote } = await req.json(); // 1 or -1

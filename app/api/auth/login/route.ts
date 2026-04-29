@@ -12,7 +12,8 @@ export async function POST(req: NextRequest) {
     }
 
     const rows = await sql`
-      SELECT id, username, password_hash, is_admin, is_banned
+      SELECT id, username, email, password_hash, avatar_url, bio, website, interests,
+             karma, streak, is_admin, is_banned
       FROM users WHERE email = ${email.toLowerCase().trim()}
       LIMIT 1
     `;
@@ -36,7 +37,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
-    const token = signToken({
+    const token = await signToken({
       user_id: user.id,
       username: user.username,
       is_admin: user.is_admin,

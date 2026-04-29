@@ -6,7 +6,7 @@ import { generateShortCode } from '@/lib/shortCode';
 // ── GET /api/links ─────────────────────────────────────────
 // ?tab=following|explore|recommended  &page=1  &limit=20  &tag=xyz  &sort=hot|new|top
 export async function GET(req: NextRequest) {
-  const session = getSessionFromRequest(req);
+  const session = await getSessionFromRequest(req);
   const sp = req.nextUrl.searchParams;
   const tab    = sp.get('tab') ?? 'explore';
   const page   = Math.max(1, parseInt(sp.get('page') ?? '1'));
@@ -112,7 +112,7 @@ export async function GET(req: NextRequest) {
 
 // ── POST /api/links ─────────────────────────────────────────
 export async function POST(req: NextRequest) {
-  const session = getSessionFromRequest(req);
+  const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {

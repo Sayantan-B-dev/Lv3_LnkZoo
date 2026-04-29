@@ -19,7 +19,7 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
   if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
   // Check if current viewer follows this user
-  const session = getSessionFromRequest(req);
+  const session = await getSessionFromRequest(req);
   let isFollowing = false;
   if (session && session.user_id !== user.id) {
     const [f] = await sql`
