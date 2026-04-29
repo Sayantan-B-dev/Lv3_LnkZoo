@@ -18,7 +18,7 @@ export function middleware(req: NextRequest) {
       loginUrl.searchParams.set('from', pathname);
       return NextResponse.redirect(loginUrl);
     }
-    if (isAdmin && !session.isAdmin) {
+    if (isAdmin && !session.is_admin) {
       return NextResponse.redirect(new URL('/', req.url));
     }
   }

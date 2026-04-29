@@ -7,9 +7,9 @@ const COOKIE_NAME = 'glinqx_token';
 const MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 
 export interface JWTPayload {
-  userId: string;
+  user_id: string;
   username: string;
-  isAdmin: boolean;
+  is_admin: boolean;
 }
 
 export function signToken(payload: JWTPayload): string {

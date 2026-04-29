@@ -37,13 +37,22 @@ export async function POST(req: NextRequest) {
     }
 
     const token = signToken({
-      userId: user.id,
+      user_id: user.id,
       username: user.username,
-      isAdmin: user.is_admin,
+      is_admin: user.is_admin,
     });
 
     const res = NextResponse.json({
-      user: { id: user.id, username: user.username, isAdmin: user.is_admin },
+      user: { 
+        id: user.id, 
+        username: user.username,
+        email: user.email,
+        avatar_url: user.avatar_url,
+        bio: user.bio,
+        karma: user.karma || 0,
+        streak: user.streak || 0,
+        is_admin: user.is_admin
+      },
     });
     const opts = cookieOptions();
     res.cookies.set(opts.name, token, opts);

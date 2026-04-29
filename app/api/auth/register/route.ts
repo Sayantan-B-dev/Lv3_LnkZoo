@@ -37,10 +37,18 @@ export async function POST(req: NextRequest) {
       RETURNING id, username, is_admin
     `;
 
-    const token = signToken({ userId: user.id, username: user.username, isAdmin: user.is_admin });
+    const token = signToken({ user_id: user.id, username: user.username, is_admin: user.is_admin });
 
     const res = NextResponse.json(
-      { user: { id: user.id, username: user.username } },
+      { user: { 
+          id: user.id, 
+          username: user.username, 
+          email: email.toLowerCase(),
+          is_admin: user.is_admin,
+          karma: 0,
+          streak: 0
+        } 
+      },
       { status: 201 }
     );
     const opts = cookieOptions();

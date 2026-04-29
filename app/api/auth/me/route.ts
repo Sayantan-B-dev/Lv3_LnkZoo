@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
   const rows = await sql`
     SELECT id, username, email, avatar_url, bio, website, interests,
            karma, streak, is_admin, created_at
-    FROM users WHERE id = ${session.userId} LIMIT 1
+    FROM users WHERE id = ${session.user_id} LIMIT 1
   `;
   if (!rows.length) return NextResponse.json({ user: null }, { status: 404 });
 

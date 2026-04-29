@@ -7,6 +7,7 @@ interface User {
   username: string;
   email: string;
   avatar_url?: string;
+  bio?: string;
   karma: number;
   streak: number;
   is_admin: boolean;
