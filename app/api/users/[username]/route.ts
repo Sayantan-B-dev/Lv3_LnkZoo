@@ -21,9 +21,9 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
   // Check if current viewer follows this user
   const session = getSessionFromRequest(req);
   let isFollowing = false;
-  if (session && session.userId !== user.id) {
+  if (session && session.user_id !== user.id) {
     const [f] = await sql`
-      SELECT 1 FROM follows WHERE follower_id = ${session.userId} AND followee_id = ${user.id}
+      SELECT 1 FROM follows WHERE follower_id = ${session.user_id} AND followee_id = ${user.id}
     `;
     isFollowing = !!f;
   }

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import Sidebar from '@/components/common/Sidebar';
 import Topbar from '@/components/common/Topbar';
 import NotificationPanel from '@/components/common/NotificationPanel';
@@ -55,10 +56,10 @@ export default function Explore() {
                 ))
               ) : (
                 tags.map((tag: any) => (
-                  <div key={tag.id} className="tag-item">
+                  <Link key={tag.id} href={`/?tag=${tag.normalized_name}`} className="tag-item">
                     <span className="tag-name">#{tag.name}</span>
                     <span className="tag-count">{tag.usage_count}</span>
-                  </div>
+                  </Link>
                 ))
               )}
             </div>
@@ -77,7 +78,9 @@ export default function Explore() {
                 topLinks.map((link: any) => (
                   <div key={link.id} className="link-card mini">
                     <div className="card-body">
-                      <div className="card-title" style={{ fontSize: '12px' }}>{link.title}</div>
+                      <Link href={`/link/${link.id}`} className="card-title" style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text)', marginBottom: '4px', display: 'block' }}>
+                        {link.title}
+                      </Link>
                       <div className="card-meta">
                         <span className="card-domain">{new URL(link.original_url).hostname}</span>
                         <span className="card-stat">▲ {link.upvote_count}</span>

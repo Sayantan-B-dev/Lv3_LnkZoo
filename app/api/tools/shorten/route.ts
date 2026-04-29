@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 
     const [row] = await sql`
       INSERT INTO shortened_links (short_code, original_url, user_id)
-      VALUES (${shortCode}, ${url}, ${session?.userId ?? null})
+      VALUES (${shortCode}, ${url}, ${session?.user_id ?? null})
       RETURNING short_code
     `;
 

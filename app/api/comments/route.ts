@@ -32,21 +32,21 @@ export async function POST(req: NextRequest) {
 
   const [comment] = await sql`
     INSERT INTO comments (link_id, user_id, parent_id, content)
-    VALUES (${linkId}, ${session.userId}, ${parentId ?? null}, ${content.trim()})
+    VALUES (${linkId}, ${session.user_id}, ${parentId ?? null}, ${content.trim()})
     RETURNING id, content, created_at
   `;
 
   await sql`UPDATE links SET comment_count = comment_count + 1 WHERE id = ${linkId}`;
-  await sql`UPDATE users SET karma = karma + 1 WHERE id = ${session.userId}`;
+  await sql`UPDATE users SET karma = karma + 1 WHERE id = ${session.user_id}`;
 
   // Notify link author (if different)
   const [link] = await sql`SELECT user_id, title FROM links WHERE id = ${linkId}`;
-  if (link && link.user_id !== session.userId) {
+  if (link && link.user_id !== session.user_id) {
     await notificationService.create({
-      userId: link.user_id,
-      actorId: session.userId,
+      user_id: link.user_id,
+      actor_id: session.user_id,
       type: 'reply',
-      entityId: comment.id,
+      entity_id: comment.id,
       message: `commented on your link "${link.title.slice(0, 60)}"`,
     });
   }
@@ -54,12 +54,12 @@ export async function POST(req: NextRequest) {
   // Notify parent commenter
   if (parentId) {
     const [parent] = await sql`SELECT user_id FROM comments WHERE id = ${parentId}`;
-    if (parent && parent.user_id !== session.userId) {
+    if (parent && parent.user_id !== session.user_id) {
       await notificationService.create({
-        userId: parent.user_id,
-        actorId: session.userId,
+        user_id: parent.user_id,
+        actor_id: session.user_id,
         type: 'reply',
-        entityId: comment.id,
+        entity_id: comment.id,
         message: `replied to your comment`,
       });
     }

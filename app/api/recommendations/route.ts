@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
   }
 
   // Fetch user interests
-  const [user] = await sql`SELECT interests FROM users WHERE id = ${session.userId}`;
+  const [user] = await sql`SELECT interests FROM users WHERE id = ${session.user_id}`;
   const interests: string[] = user?.interests ?? [];
 
   if (interests.length === 0) {

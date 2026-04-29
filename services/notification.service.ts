@@ -1,10 +1,10 @@
 import sql from '@/lib/db';
 
 interface NotifParams {
-  userId: string;
-  actorId: string;
+  user_id: string;
+  actor_id: string;
   type: 'upvote' | 'reply' | 'follow' | 'mention';
-  entityId: string;
+  entity_id: string;
   message: string;
 }
 
@@ -12,7 +12,7 @@ export const notificationService = {
   async create(p: NotifParams) {
     await sql`
       INSERT INTO notifications (user_id, actor_id, type, entity_id, message)
-      VALUES (${p.userId}, ${p.actorId}, ${p.type}, ${p.entityId}, ${p.message})
+      VALUES (${p.user_id}, ${p.actor_id}, ${p.type}, ${p.entity_id}, ${p.message})
     `;
   },
 };

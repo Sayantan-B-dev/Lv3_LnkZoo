@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
            u.username AS actor_username, u.avatar_url AS actor_avatar
     FROM notifications n
     LEFT JOIN users u ON n.actor_id = u.id
-    WHERE n.user_id = ${session.userId}
+    WHERE n.user_id = ${session.user_id}
     ORDER BY n.created_at DESC
     LIMIT 30
   `;
@@ -26,6 +26,6 @@ export async function PATCH(req: NextRequest) {
   const session = getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  await sql`UPDATE notifications SET is_read = true WHERE user_id = ${session.userId}`;
+  await sql`UPDATE notifications SET is_read = true WHERE user_id = ${session.user_id}`;
   return NextResponse.json({ ok: true });
 }

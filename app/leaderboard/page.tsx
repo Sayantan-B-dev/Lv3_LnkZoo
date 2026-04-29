@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import Sidebar from '@/components/common/Sidebar';
 import Topbar from '@/components/common/Topbar';
 import NotificationPanel from '@/components/common/NotificationPanel';
@@ -68,7 +69,9 @@ export default function Leaderboard() {
                     <div className="avatar mini">
                       {user.avatar_url ? <img src={user.avatar_url} alt={user.username} /> : user.username.slice(0, 2)}
                     </div>
-                    <span className="username">@{user.username}</span>
+                    <Link href={`/profile/${user.username}`} className="username" style={{ color: 'var(--text-2)', fontWeight: '500' }}>
+                      @{user.username}
+                    </Link>
                     {user.streak > 0 && <span className="streak">🔥 {user.streak}d</span>}
                   </div>
                   <span className="stats karma">{user.karma.toLocaleString()}</span>

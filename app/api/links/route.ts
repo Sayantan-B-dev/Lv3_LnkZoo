@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
       JOIN follows f ON f.followee_id = l.user_id
       LEFT JOIN link_tags lt ON lt.link_id = l.id
       LEFT JOIN tags t ON t.id = lt.tag_id
-      WHERE f.follower_id = ${session.userId}
+      WHERE f.follower_id = ${session.user_id}
         AND l.is_private = false
       GROUP BY l.id, u.username, u.avatar_url
       ORDER BY l.created_at DESC
@@ -127,7 +127,7 @@ export async function POST(req: NextRequest) {
 
     const [link] = await sql`
       INSERT INTO links (user_id, original_url, short_code, title, description, preview_image, is_private, is_anonymous)
-      VALUES (${session.userId}, ${url}, ${shortCode}, ${title}, ${description ?? null}, ${previewImage ?? null}, ${isPrivate}, ${isAnonymous})
+      VALUES (${session.user_id}, ${url}, ${shortCode}, ${title}, ${description ?? null}, ${previewImage ?? null}, ${isPrivate}, ${isAnonymous})
       RETURNING id, short_code
     `;
 
@@ -160,7 +160,7 @@ export async function POST(req: NextRequest) {
             WHEN last_post_date = CURRENT_DATE THEN streak
             ELSE 1
           END
-      WHERE id = ${session.userId}
+      WHERE id = ${session.user_id}
     `;
 
     return NextResponse.json({ link: { id: link.id, shortCode: link.short_code } }, { status: 201 });

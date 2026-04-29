@@ -37,7 +37,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   const [link] = await sql`SELECT user_id FROM links WHERE id = ${params.id}`;
   if (!link) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
-  if (link.user_id !== session.userId && !session.isAdmin) {
+  if (link.user_id !== session.user_id && !session.is_admin) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 

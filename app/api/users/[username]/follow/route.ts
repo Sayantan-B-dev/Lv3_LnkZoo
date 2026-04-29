@@ -10,24 +10,24 @@ export async function POST(req: NextRequest, { params }: { params: { username: s
 
   const [target] = await sql`SELECT id FROM users WHERE username = ${params.username.toLowerCase()}`;
   if (!target) return NextResponse.json({ error: 'User not found' }, { status: 404 });
-  if (target.id === session.userId) return NextResponse.json({ error: 'Cannot follow yourself' }, { status: 400 });
+  if (target.id === session.user_id) return NextResponse.json({ error: 'Cannot follow yourself' }, { status: 400 });
 
   const [existing] = await sql`
-    SELECT 1 FROM follows WHERE follower_id = ${session.userId} AND followee_id = ${target.id}
+    SELECT 1 FROM follows WHERE follower_id = ${session.user_id} AND followee_id = ${target.id}
   `;
 
   if (existing) {
-    await sql`DELETE FROM follows WHERE follower_id = ${session.userId} AND followee_id = ${target.id}`;
+    await sql`DELETE FROM follows WHERE follower_id = ${session.user_id} AND followee_id = ${target.id}`;
     return NextResponse.json({ following: false });
   }
 
-  await sql`INSERT INTO follows (follower_id, followee_id) VALUES (${session.userId}, ${target.id})`;
+  await sql`INSERT INTO follows (follower_id, followee_id) VALUES (${session.user_id}, ${target.id})`;
 
   await notificationService.create({
-    userId: target.id,
-    actorId: session.userId,
+    user_id: target.id,
+    actor_id: session.user_id,
     type: 'follow',
-    entityId: session.userId,
+    entity_id: session.user_id,
     message: `started following you`,
   });
 
