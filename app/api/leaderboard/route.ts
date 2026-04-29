@@ -1,0 +1,31 @@
+import { NextRequest, NextResponse } from 'next/server';
+import sql from '@/lib/db';
+
+// GET /api/leaderboard?period=week|month|all
+export async function GET(req: NextRequest) {
+  const period = req.nextUrl.searchParams.get('period') ?? 'week';
+
+  let interval: string;
+  if (period === 'month') interval = '30 days';
+  else if (period === 'all') interval = '100 years';
+  else interval = '7 days';
+
+  const rows = await sql`
+    SELECT
+      u.id,
+      u.username,
+      u.avatar_url,
+      u.karma,
+      u.streak,
+      COUNT(DISTINCT l.id) AS link_count
+    FROM users u
+    LEFT JOIN links l ON l.user_id = u.id
+      AND l.created_at >= NOW() - ${interval}::interval
+    WHERE u.is_banned = false
+    GROUP BY u.id
+    ORDER BY u.karma DESC
+    LIMIT 20
+  `;
+
+  return NextResponse.json({ leaderboard: rows, period });
+}
