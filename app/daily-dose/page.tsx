@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import Sidebar from '@/components/common/Sidebar';
 import Topbar from '@/components/common/Topbar';
 import NotificationPanel from '@/components/common/NotificationPanel';
@@ -61,7 +62,9 @@ export default function DailyDose() {
                         <span className="card-domain">{new URL(link.original_url).hostname}</span>
                         <span className="card-poster">@{link.username}</span>
                       </div>
-                      <div className="card-title" style={{ fontSize: '15px' }}>{link.title}</div>
+                      <Link href={`/link/${link.id}`} className="card-title" style={{ fontSize: '15px', fontWeight: '500', color: 'var(--text)', marginBottom: '5px', display: 'block' }}>
+                        {link.title}
+                      </Link>
                       <div className="card-desc">{link.description}</div>
                       <div className="card-footer">
                         <span className="card-stat">▲ {link.upvote_count}</span>

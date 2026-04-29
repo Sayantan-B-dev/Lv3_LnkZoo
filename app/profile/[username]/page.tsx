@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import Sidebar from '@/components/common/Sidebar';
 import Topbar from '@/components/common/Topbar';
 import NotificationPanel from '@/components/common/NotificationPanel';
@@ -112,7 +113,9 @@ export default function ProfilePage({ params }: { params: { username: string } }
                         <span className="card-domain">{new URL(link.original_url).hostname}</span>
                         <span className="card-time">{new Date(link.created_at).toLocaleDateString()}</span>
                       </div>
-                      <div className="card-title">{link.title}</div>
+                      <Link href={`/link/${link.id}`} className="card-title" style={{ fontSize: '14px', fontWeight: '500', color: 'var(--text)', marginBottom: '5px', display: 'block' }}>
+                        {link.title}
+                      </Link>
                       <div className="card-footer">
                         <span className="card-stat">▲ {link.upvote_count}</span>
                         <span className="card-stat">💬 {link.comment_count}</span>
