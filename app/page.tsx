@@ -34,6 +34,39 @@ export default function Home() {
     fetchLinks();
   }, [activeTab]);
 
+  const handleVote = async (e: React.MouseEvent, id: string, vote: number) => {
+    e.stopPropagation();
+    try {
+      const res = await fetch(`/api/links/${id}/vote`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ vote }),
+      });
+      if (res.status === 401) {
+        window.location.href = `/login?from=/`;
+        return;
+      }
+      if (res.ok) {
+        // Refresh local state or re-fetch
+        const updatedLinks: any = links.map((l: any) => {
+          if (l.id === id) {
+            // This is a simple approximation; real implementation should re-fetch or return counts from API
+            return { ...l, upvote_count: vote === 1 ? l.upvote_count + 1 : l.upvote_count };
+          }
+          return l;
+        });
+        // Actually, just re-fetch for accuracy
+        const r = await fetch(`/api/links?tab=${activeTab}`);
+        if (r.ok) {
+          const d = await r.json();
+          setLinks(d.links);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div id="app">
       <CustomCursor />
@@ -86,9 +119,9 @@ export default function Home() {
                     style={{ cursor: 'pointer' }}
                   >
                     <div className="vote-col" onClick={(e) => e.stopPropagation()}>
-                      <button className="vote-btn up">▲</button>
+                      <button className="vote-btn up" onClick={(e) => handleVote(e, link.id, 1)}>▲</button>
                       <span className="vote-count">{link.upvote_count - link.downvote_count}</span>
-                      <button className="vote-btn down">▼</button>
+                      <button className="vote-btn down" onClick={(e) => handleVote(e, link.id, -1)}>▼</button>
                     </div>
                     <div className="card-body">
                       <div className="card-meta">

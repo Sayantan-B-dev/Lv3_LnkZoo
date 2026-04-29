@@ -77,6 +77,25 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
     }
   };
 
+  const handleVote = async (vote: number) => {
+    if (!user) {
+      window.location.href = `/login?from=/link/${id}`;
+      return;
+    }
+    try {
+      const res = await fetch(`/api/links/${id}/vote`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ vote }),
+      });
+      if (res.ok) {
+        fetchData(); // Refresh counts
+      }
+    } catch (err) {
+      console.error('Vote failed', err);
+    }
+  };
+
   const handlePostComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !newComment.trim()) return;
@@ -120,9 +139,9 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
         <div id="content">
           <div className="link-card detail">
              <div className="vote-col">
-                <button className="vote-btn up">▲</button>
+                <button className="vote-btn up" onClick={() => handleVote(1)}>▲</button>
                 <span className="vote-count">{link.upvote_count - link.downvote_count}</span>
-                <button className="vote-btn down">▼</button>
+                <button className="vote-btn down" onClick={() => handleVote(-1)}>▼</button>
               </div>
               <div className="card-body">
                 <div className="card-meta">

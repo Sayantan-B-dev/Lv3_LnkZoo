@@ -21,6 +21,7 @@ export default function RandomPage() {
       }
     } catch (err) {
       console.error('Failed to fetch random link', err);
+      setLink(null);
     } finally {
       setLoading(false);
     }
@@ -39,7 +40,7 @@ export default function RandomPage() {
         <Topbar title="Random Discovery" />
         <NotificationPanel />
         
-        <div id="content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+        <div id="content" className="fade-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
           <div className="random-header" style={{ textAlign: 'center', marginBottom: '32px' }}>
             <h1 style={{ fontSize: '20px', fontWeight: '600' }}>Internet Roulette</h1>
             <p style={{ color: 'var(--text-4)', fontSize: '13px' }}>Discover something you wouldn't have found otherwise.</p>

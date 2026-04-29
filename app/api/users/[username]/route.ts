@@ -9,6 +9,7 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
   const [user] = await sql`
     SELECT id, username, avatar_url, bio, website, interests,
            karma, streak, created_at,
+           (google_id IS NOT NULL) as is_verified,
            (SELECT COUNT(*) FROM links WHERE user_id = users.id AND is_private = false) AS link_count,
            (SELECT COUNT(*) FROM follows WHERE followee_id = users.id) AS follower_count,
            (SELECT COUNT(*) FROM follows WHERE follower_id = users.id) AS following_count

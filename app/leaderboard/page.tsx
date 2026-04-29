@@ -10,6 +10,7 @@ import AnimatedBg from '@/components/common/AnimatedBg';
 
 export default function Leaderboard() {
   const [users, setUsers] = useState([]);
+  const [userRank, setUserRank] = useState<any>(null);
   const [period, setPeriod] = useState('week');
   const [loading, setLoading] = useState(true);
 
@@ -21,6 +22,7 @@ export default function Leaderboard() {
         if (res.ok) {
           const data = await res.json();
           setUsers(data.leaderboard);
+          setUserRank(data.userRank);
         }
       } catch (err) {
         console.error('Failed to fetch leaderboard', err);
@@ -63,7 +65,7 @@ export default function Leaderboard() {
               ))
             ) : (
               users.map((user: any, index: number) => (
-                <div key={user.id} className="leaderboard-row">
+                <div key={user.id} className={`leaderboard-row ${userRank?.id === user.id ? 'is-me' : ''}`}>
                   <span className="rank">{index + 1}</span>
                   <div className="user-cell">
                     <div className="avatar mini">
@@ -78,6 +80,26 @@ export default function Leaderboard() {
                   <span className="stats">{user.link_count}</span>
                 </div>
               ))
+            )}
+            
+            {!loading && userRank && userRank.rank > 20 && (
+              <>
+                <div className="leaderboard-divider">•••</div>
+                <div className="leaderboard-row is-me">
+                  <span className="rank">{userRank.rank}</span>
+                  <div className="user-cell">
+                    <div className="avatar mini">
+                      {userRank.avatar_url ? <img src={userRank.avatar_url} alt={userRank.username} /> : userRank.username.slice(0, 2)}
+                    </div>
+                    <Link href={`/profile/${userRank.username}`} className="username" style={{ color: 'var(--text-2)', fontWeight: '500' }}>
+                      @{userRank.username} (You)
+                    </Link>
+                    {userRank.streak > 0 && <span className="streak">🔥 {userRank.streak}d</span>}
+                  </div>
+                  <span className="stats karma">{userRank.karma.toLocaleString()}</span>
+                  <span className="stats">{userRank.link_count}</span>
+                </div>
+              </>
             )}
           </div>
         </div>
@@ -94,8 +116,10 @@ export default function Leaderboard() {
             padding: 12px 16px; border-bottom: 1px solid var(--border);
             align-items: center; transition: background 0.2s;
           }
+          .leaderboard-row.is-me { background: rgba(255,255,255,0.05); border-left: 2px solid var(--text-4); }
           .leaderboard-row:last-child { border-bottom: none; }
           .leaderboard-row:hover { background: var(--bg-2); }
+          .leaderboard-divider { text-align: center; padding: 8px; color: var(--text-4); font-size: 12px; background: var(--bg-1); }
           .rank { font-size: 12px; color: var(--text-4); font-weight: 500; }
           .user-cell { display: flex; align-items: center; gap: 10px; overflow: hidden; }
           .avatar.mini { width: 24px; height: 24px; font-size: 9px; }
