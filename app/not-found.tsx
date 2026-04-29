@@ -2,35 +2,39 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Sidebar from '@/components/common/Sidebar';
+import Topbar from '@/components/common/Topbar';
 import CustomCursor from '@/components/common/CustomCursor';
 import AnimatedBg from '@/components/common/AnimatedBg';
 
 export default function NotFound() {
   return (
-    <div className="not-found-page">
+    <div id="app">
       <CustomCursor />
       <AnimatedBg />
-      <div className="nf-content">
-        <h1 className="nf-code">404</h1>
-        <h2 className="nf-title">Lost in the grid?</h2>
-        <p className="nf-desc">The link you're looking for doesn't exist or has been moved.</p>
-        <Link href="/" className="nf-btn">Back to safety</Link>
-      </div>
+      <Sidebar />
+      <main id="main">
+        <Topbar title="404 — Not Found" />
+        <div id="content" className="fade-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '70vh', textAlign: 'center' }}>
+          <div className="error-code" style={{ fontSize: '120px', fontWeight: '800', opacity: '0.05', position: 'absolute', zIndex: -1 }}>404</div>
+          <h1 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '12px' }}>Lost in the grid?</h1>
+          <p style={{ color: 'var(--text-4)', fontSize: '14px', marginBottom: '32px', maxWidth: '400px' }}>
+            The link you're looking for doesn't exist or has been moved to another dimension.
+          </p>
+          <Link href="/" className="back-home">
+            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ marginRight: '8px' }}><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
+            Back to safety
+          </Link>
+        </div>
+      </main>
 
       <style jsx>{`
-        .not-found-page { 
-          min-height: 100vh; display: flex; align-items: center; justify-content: center; 
-          background: var(--bg); color: var(--text); padding: 20px; text-align: center;
+        .back-home {
+          display: flex; align-items: center; padding: 12px 24px; 
+          background: var(--text); color: var(--bg); border-radius: 8px;
+          font-size: 14px; font-weight: 600; transition: all 0.2s;
         }
-        .nf-content { z-index: 1; }
-        .nf-code { font-size: 80px; font-weight: 700; color: var(--text-4); margin-bottom: 8px; letter-spacing: -2px; }
-        .nf-title { font-size: 24px; font-weight: 600; margin-bottom: 12px; }
-        .nf-desc { font-size: 14px; color: var(--text-3); margin-bottom: 32px; max-width: 300px; margin-inline: auto; line-height: 1.6; }
-        .nf-btn { 
-          display: inline-block; padding: 10px 24px; background: var(--text); color: var(--bg); 
-          border-radius: 8px; font-weight: 500; font-size: 13px; transition: opacity 0.2s;
-        }
-        .nf-btn:hover { opacity: 0.8; }
+        .back-home:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(255,255,255,0.1); }
       `}</style>
     </div>
   );

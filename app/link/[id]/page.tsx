@@ -139,9 +139,13 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
         <div id="content">
           <div className="link-card detail">
              <div className="vote-col">
-                <button className="vote-btn up" onClick={() => handleVote(1)}>▲</button>
+                <button className="vote-btn up" onClick={() => handleVote(1)}>
+                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"/></svg>
+                </button>
                 <span className="vote-count">{link.upvote_count - link.downvote_count}</span>
-                <button className="vote-btn down" onClick={() => handleVote(-1)}>▼</button>
+                <button className="vote-btn down" onClick={() => handleVote(-1)}>
+                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+                </button>
               </div>
               <div className="card-body">
                 <div className="card-meta">

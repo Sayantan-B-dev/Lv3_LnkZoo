@@ -14,7 +14,7 @@ export default function RandomPage() {
   const fetchRandom = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/links/random');
+      const res = await fetch(`/api/links/random?t=${Date.now()}`, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         setLink(data.link);
@@ -63,7 +63,10 @@ export default function RandomPage() {
                   </div>
                   <div className="card-footer">
                     <a href={link.original_url} target="_blank" rel="noopener" className="visit-btn">Visit Link ↗</a>
-                    <span className="card-stat">▲ {link.upvote_count}</span>
+                    <span className="card-stat">
+                      <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ marginRight: '4px' }}><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"/></svg>
+                      {link.upvote_count}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -72,8 +75,13 @@ export default function RandomPage() {
             )}
           </div>
 
-          <button onClick={fetchRandom} className="roll-btn" disabled={loading}>
-            {loading ? 'Rolling...' : 'Roll Again 🎲'}
+          <button onClick={fetchRandom} className="roll-btn" disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {loading ? 'Rolling...' : (
+              <>
+                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.688.06 1.386.09 2.09.09H16.5a4.5 4.5 0 100-9h-.75c-.704 0-1.402.03-2.09.09M10.34 15.84L15.75 21l-1.05-1.05m-4.36-4.11l1.41-1.41M13.66 8.16l-5.41-5.16 1.05 1.05m4.36 4.11l-1.41 1.41"/></svg>
+                Roll Again
+              </>
+            )}
           </button>
         </div>
 

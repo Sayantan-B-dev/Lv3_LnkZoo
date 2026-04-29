@@ -106,9 +106,11 @@ body.hovering #cursor-ring{width:40px;height:40px;opacity:.25}
 .collapse-toggle-top{
   display:flex;align-items:center;justify-content:center;
   width:24px;height:24px;border-radius:4px;
-  transition:background var(--t);
+  color: var(--text-3);
+  transition: all var(--t);
+  cursor: pointer;
 }
-.collapse-toggle-top:hover{background:var(--bg-3)}
+.collapse-toggle-top:hover{background:var(--bg-3); color: var(--text);}
 .sidebar-nav{flex:1;padding:8px 0;overflow-y:auto;overflow-x:hidden}
 .sidebar-nav::-webkit-scrollbar{width:2px}
 .sidebar-nav::-webkit-scrollbar-thumb{background:var(--border)}

@@ -74,7 +74,12 @@ export default function Leaderboard() {
                     <Link href={`/profile/${user.username}`} className="username" style={{ color: 'var(--text-2)', fontWeight: '500' }}>
                       @{user.username}
                     </Link>
-                    {user.streak > 0 && <span className="streak">🔥 {user.streak}d</span>}
+                    {user.streak > 0 && (
+                      <span className="streak" style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                        <svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24"><path d="M11.5 2C11.5 2 11.5 7 9 9C6.5 11 4 14 4 17C4 20 6 22 9 22C12 22 13 20 13 20C13 20 14 22 18 22C21 22 22 20 22 17C22 14 18 9 18 9C18 9 18 6 15.5 4C13 2 11.5 2 11.5 2Z"/></svg>
+                        {user.streak}d
+                      </span>
+                    )}
                   </div>
                   <span className="stats karma">{user.karma.toLocaleString()}</span>
                   <span className="stats">{user.link_count}</span>
@@ -94,7 +99,12 @@ export default function Leaderboard() {
                     <Link href={`/profile/${userRank.username}`} className="username" style={{ color: 'var(--text-2)', fontWeight: '500' }}>
                       @{userRank.username} (You)
                     </Link>
-                    {userRank.streak > 0 && <span className="streak">🔥 {userRank.streak}d</span>}
+                    {userRank.streak > 0 && (
+                      <span className="streak" style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                        <svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24"><path d="M11.5 2C11.5 2 11.5 7 9 9C6.5 11 4 14 4 17C4 20 6 22 9 22C12 22 13 20 13 20C13 20 14 22 18 22C21 22 22 20 22 17C22 14 18 9 18 9C18 9 18 6 15.5 4C13 2 11.5 2 11.5 2Z"/></svg>
+                        {userRank.streak}d
+                      </span>
+                    )}
                   </div>
                   <span className="stats karma">{userRank.karma.toLocaleString()}</span>
                   <span className="stats">{userRank.link_count}</span>

@@ -68,7 +68,11 @@ export default function Sidebar() {
             </div>
             <div className="user-info">
               <div className="user-name">@{user.username}</div>
-              <div className="user-karma">{user.karma?.toLocaleString()} karma · 🔥 {user.streak}d</div>
+              <div className="user-karma" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                {user.karma?.toLocaleString()} karma · 
+                <svg width="10" height="10" fill="currentColor" style={{ color: '#ff8a00' }} viewBox="0 0 24 24"><path d="M11.5 2C11.5 2 11.5 7 9 9C6.5 11 4 14 4 17C4 20 6 22 9 22C12 22 13 20 13 20C13 20 14 22 18 22C21 22 22 20 22 17C22 14 18 9 18 9C18 9 18 6 15.5 4C13 2 11.5 2 11.5 2Z"/></svg>
+                {user.streak}d
+              </div>
             </div>
           </div>
         ) : (

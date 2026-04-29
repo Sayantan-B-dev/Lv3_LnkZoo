@@ -14,10 +14,28 @@ export async function GET(req: NextRequest) {
   const offset = (page - 1) * limit;
   const tag    = sp.get('tag');
   const sort   = sp.get('sort') ?? 'hot';
+  const query  = sp.get('q')?.toLowerCase();
 
   let rows: any[];
 
-  if (tab === 'following' && session) {
+  if (query) {
+    rows = await sql`
+      SELECT l.id, l.title, l.description, l.original_url, l.short_code,
+             l.preview_image, l.is_anonymous, l.upvote_count, l.downvote_count,
+             l.comment_count, l.view_count, l.created_at,
+             u.username, u.avatar_url,
+             ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) AS tags
+      FROM links l
+      JOIN users u ON l.user_id = u.id
+      LEFT JOIN link_tags lt ON lt.link_id = l.id
+      LEFT JOIN tags t ON t.id = lt.tag_id
+      WHERE (LOWER(l.title) LIKE ${'%' + query + '%'} OR LOWER(t.name) LIKE ${'%' + query + '%'})
+        AND l.is_private = false
+      GROUP BY l.id, u.username, u.avatar_url
+      ORDER BY l.upvote_count DESC
+      LIMIT ${limit} OFFSET ${offset}
+    `;
+  } else if (tab === 'following' && session) {
     rows = await sql`
       SELECT l.id, l.title, l.description, l.original_url, l.short_code,
              l.preview_image, l.is_anonymous, l.upvote_count, l.downvote_count,
