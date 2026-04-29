@@ -8,7 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const navItems = [
     { label: 'Feed', items: [
@@ -48,7 +48,7 @@ export default function Sidebar() {
                 key={item.id}
                 href={item.href}
                 className={`nav-item ${pathname === item.href ? 'active' : ''}`}
-                onClick={item.id === 'login' && user ? (e) => { e.preventDefault(); /* logout logic */ } : undefined}
+                onClick={item.id === 'login' && user ? (e) => { e.preventDefault(); logout(); } : undefined}
               >
                 <span className="nav-icon">{item.icon}</span>
                 <span className="nav-text">{item.label}</span>
