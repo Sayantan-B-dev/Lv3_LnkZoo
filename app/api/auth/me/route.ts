@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   if (!session) return NextResponse.json({ user: null }, { status: 401 });
 
   const rows = await sql`
-    SELECT id, username, email, avatar_url, bio, website, interests,
+    SELECT id, username, email, avatar_url, cover_url, bio, website, interests,
            karma, streak, is_admin, created_at
     FROM users WHERE id = ${session.user_id} LIMIT 1
   `;

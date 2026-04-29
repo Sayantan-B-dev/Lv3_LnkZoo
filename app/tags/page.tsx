@@ -36,7 +36,7 @@ export default function TagsPage() {
   return (
     <div id="app">
       <CustomCursor />
-      <AnimatedBg />
+      
       <Sidebar />
       <main id="main">
         <Topbar title="Explore Tags" />

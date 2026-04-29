@@ -59,7 +59,7 @@ export default function RandomPage() {
   return (
     <div id="app">
       <CustomCursor />
-      <AnimatedBg />
+      
       <Sidebar />
       <main id="main">
         <Topbar title="Random Discovery" />

@@ -36,7 +36,6 @@ export default function TagPage({ params }: { params: { tag: string } }) {
   return (
     <div id="app">
       <CustomCursor />
-      <AnimatedBg />
       <Sidebar />
       <main id="main">
         <Topbar title={`#${tag}`} />

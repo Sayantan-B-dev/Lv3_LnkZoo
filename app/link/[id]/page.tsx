@@ -130,7 +130,6 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
   return (
     <div id="app">
       <CustomCursor />
-      <AnimatedBg />
       <Sidebar />
       <main id="main">
         <Topbar title="Discussion" />
@@ -166,7 +165,7 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
                 ) : (
                   <>
                     <h1 className="card-title" style={{ fontSize: '20px' }}>{link.title}</h1>
-                    <p className="card-desc" style={{ webkitLineClamp: 'unset' }}>{link.description}</p>
+                    <p className="card-desc" style={{ WebkitLineClamp: 'unset' }}>{link.description}</p>
                   </>
                 )}
 

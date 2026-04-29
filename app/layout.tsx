@@ -2,11 +2,15 @@ import type { Metadata } from 'next';
 import { AuthProvider } from '@/context/AuthContext';
 import { NotificationProvider } from '@/context/NotificationContext';
 import { UIProvider } from '@/context/UIContext';
+import AnimatedBg from '@/components/common/AnimatedBg';
 import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Glinqx — share links, find the web',
   description: 'A community for sharing and discovering the best links on the web.',
+  icons: {
+    icon: '/icon.svg',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -22,6 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthProvider>
           <NotificationProvider>
             <UIProvider>
+              <AnimatedBg />
               {children}
             </UIProvider>
           </NotificationProvider>

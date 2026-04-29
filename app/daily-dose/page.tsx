@@ -33,7 +33,7 @@ export default function DailyDose() {
   return (
     <div id="app">
       <CustomCursor />
-      <AnimatedBg />
+      
       <Sidebar />
       <main id="main">
         <Topbar title="Daily Dose" />

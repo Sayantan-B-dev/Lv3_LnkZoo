@@ -10,6 +10,7 @@ CREATE TABLE users (
   password_hash    TEXT,                          -- nullable for OAuth-only accounts
   google_id        TEXT UNIQUE,                   -- Google OAuth subject
   avatar_url       TEXT,
+  cover_url        TEXT,
   bio              TEXT,
   website          TEXT,
   interests        TEXT[]       DEFAULT '{}',     -- tag names user cares about

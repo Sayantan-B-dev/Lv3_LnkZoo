@@ -8,16 +8,17 @@ export async function PATCH(req: NextRequest) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    const { bio, avatar_url, website, interests } = await req.json();
+    const { bio, avatar_url, cover_url, website, interests } = await req.json();
 
     const [user] = await sql`
       UPDATE users
       SET bio = ${bio ?? null},
           avatar_url = ${avatar_url ?? null},
+          cover_url = ${cover_url ?? null},
           website = ${website ?? null},
           interests = ${interests ?? null}
       WHERE id = ${session.user_id}
-      RETURNING id, username, email, avatar_url, bio, website, interests, karma, streak, is_admin
+      RETURNING id, username, email, avatar_url, cover_url, bio, website, interests, karma, streak, is_admin
     `;
 
     return NextResponse.json({ user });

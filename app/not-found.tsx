@@ -11,7 +11,7 @@ export default function NotFound() {
   return (
     <div id="app">
       <CustomCursor />
-      <AnimatedBg />
+      
       <Sidebar />
       <main id="main">
         <Topbar title="404 — Not Found" />

@@ -35,8 +35,12 @@ export default function Sidebar() {
       <div className="sidebar-logo" style={{ flexDirection: collapsed ? 'column' : 'row', height: collapsed ? 'auto' : 'var(--header-h)', padding: collapsed ? '12px 0' : '0 16px', gap: collapsed ? '12px' : '10px' }}>
         <div className="logo-mark">gx</div>
         {!collapsed && <span className="logo-text">glinqx</span>}
-        <button className="collapse-toggle-top" onClick={() => setCollapsed(!collapsed)} title={collapsed ? "Expand" : "Collapse"} style={{ marginLeft: collapsed ? '0' : 'auto' }}>
-          <svg className="collapse-icon" style={{ transform: collapsed ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5"/></svg>
+        <button className="collapse-toggle-top" onClick={() => setCollapsed(!collapsed)} title={collapsed ? "Expand" : "Collapse"} style={{ 
+          marginLeft: collapsed ? '0' : 'auto',
+          zIndex: 101,
+          display: 'flex'
+        }}>
+          <svg className="collapse-icon" style={{ transform: collapsed ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5"/></svg>
         </button>
       </div>
 
@@ -59,12 +63,17 @@ export default function Sidebar() {
       </div>
 
       <div className="sidebar-config">
-        {!collapsed && (
-          <div className="config-trigger" onClick={() => setShowSettings(!showSettings)}>
-            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122l9.37-9.37a2.121 2.121 0 113 3l-9.37 9.37a4.5 4.5 0 01-1.697 1.134l-3.323 1.108 1.108-3.323a4.5 4.5 0 011.134-1.697z"/><path strokeLinecap="round" strokeLinejoin="round" d="M15 11l3 3"/></svg>
-            Background Settings
-          </div>
-        )}
+        <div className="config-trigger" onClick={() => {
+          if (collapsed) {
+            setCollapsed(false);
+            setShowSettings(true);
+          } else {
+            setShowSettings(!showSettings);
+          }
+        }} style={{ justifyContent: collapsed ? 'center' : 'flex-start' }}>
+          <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122l9.37-9.37a2.121 2.121 0 113 3l-9.37 9.37a4.5 4.5 0 01-1.697 1.134l-3.323 1.108 1.108-3.323a4.5 4.5 0 011.134-1.697z"/><path strokeLinecap="round" strokeLinejoin="round" d="M15 11l3 3"/></svg>
+          {!collapsed && <span>Background Settings</span>}
+        </div>
         {showSettings && !collapsed && (
           <div className="config-panel fade-in">
             <div className="config-item">

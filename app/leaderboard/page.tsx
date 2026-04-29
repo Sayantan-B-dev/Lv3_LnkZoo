@@ -36,7 +36,7 @@ export default function Leaderboard() {
   return (
     <div id="app">
       <CustomCursor />
-      <AnimatedBg />
+      
       <Sidebar />
       <main id="main">
         <Topbar title="Leaderboard" />
@@ -115,7 +115,7 @@ export default function Leaderboard() {
         </div>
 
         <style jsx>{`
-          .leaderboard-list { background: var(--bg-1); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+          .leaderboard-list { background: color-mix(in srgb, var(--bg-1) 45%, transparent); backdrop-filter: blur(8px); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
           .leaderboard-header { 
             display: grid; grid-template-columns: 50px 1fr 100px 80px; 
             padding: 12px 16px; border-bottom: 1px solid var(--border);

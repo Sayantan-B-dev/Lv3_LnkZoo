@@ -66,7 +66,7 @@ export default function Submit() {
   return (
     <div id="app">
       <CustomCursor />
-      <AnimatedBg />
+      
       <Sidebar />
       <main id="main">
         <Topbar title="Post Link" />
