@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { AuthProvider } from '@/context/AuthContext';
 import { NotificationProvider } from '@/context/NotificationContext';
+import { UIProvider } from '@/context/UIContext';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -20,7 +21,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body suppressHydrationWarning>
         <AuthProvider>
           <NotificationProvider>
-            {children}
+            <UIProvider>
+              {children}
+            </UIProvider>
           </NotificationProvider>
         </AuthProvider>
       </body>

@@ -4,11 +4,14 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { useUI } from '@/context/UIContext';
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const pathname = usePathname();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  const { bgSettings, setBgSettings, saveSettings, resetToDefaults } = useUI();
 
   const navItems = [
     { label: 'Feed', items: [
@@ -24,10 +27,6 @@ export default function Sidebar() {
     { label: 'Create', items: [
       { id: 'submit', label: 'Post Link', href: '/submit', icon: <svg fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg> },
       { id: 'tools', label: 'Tools', href: '/tools', icon: <svg fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z"/></svg> },
-    ]},
-    { label: 'Account', items: [
-      { id: 'profile', label: 'Profile', href: '/profile', icon: <svg fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg> },
-      { id: 'login', label: user ? 'Logout' : 'Login', href: user ? '#' : '/login', icon: <svg fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg> },
     ]},
   ];
 
@@ -50,7 +49,6 @@ export default function Sidebar() {
                 key={item.id}
                 href={item.href}
                 className={`nav-item ${pathname === item.href ? 'active' : ''}`}
-                onClick={item.id === 'login' && user ? (e) => { e.preventDefault(); logout(); } : undefined}
               >
                 <span className="nav-icon">{item.icon}</span>
                 <span className="nav-text">{item.label}</span>
@@ -60,31 +58,125 @@ export default function Sidebar() {
         ))}
       </div>
 
-      <div className="sidebar-bottom">
-        {user ? (
-          <div className="sidebar-user">
-            <div className="avatar">
-              {user.avatar_url ? <img src={user.avatar_url} alt={user.username} /> : user.username.slice(0, 2)}
-            </div>
-            <div className="user-info">
-              <div className="user-name">@{user.username}</div>
-              <div className="user-karma" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                {user.karma?.toLocaleString()} karma · 
-                <svg width="10" height="10" fill="currentColor" style={{ color: '#ff8a00' }} viewBox="0 0 24 24"><path d="M11.5 2C11.5 2 11.5 7 9 9C6.5 11 4 14 4 17C4 20 6 22 9 22C12 22 13 20 13 20C13 20 14 22 18 22C21 22 22 20 22 17C22 14 18 9 18 9C18 9 18 6 15.5 4C13 2 11.5 2 11.5 2Z"/></svg>
-                {user.streak}d
-              </div>
-            </div>
+      <div className="sidebar-config">
+        {!collapsed && (
+          <div className="config-trigger" onClick={() => setShowSettings(!showSettings)}>
+            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122l9.37-9.37a2.121 2.121 0 113 3l-9.37 9.37a4.5 4.5 0 01-1.697 1.134l-3.323 1.108 1.108-3.323a4.5 4.5 0 011.134-1.697z"/><path strokeLinecap="round" strokeLinejoin="round" d="M15 11l3 3"/></svg>
+            Background Settings
           </div>
-        ) : (
-           <div className="sidebar-user">
-            <div className="avatar">?</div>
-            <div className="user-info">
-              <div className="user-name">Guest</div>
-              <div className="user-karma">Sign in to earn karma</div>
+        )}
+        {showSettings && !collapsed && (
+          <div className="config-panel fade-in">
+            <div className="config-item">
+              <div className="config-row">
+                <label>Frequency</label>
+                <span>{bgSettings.frequency}</span>
+              </div>
+              <input 
+                type="range" min="5" max="300" step="5" 
+                value={bgSettings.frequency} 
+                onChange={(e) => setBgSettings({ frequency: parseInt(e.target.value) })} 
+              />
+            </div>
+            <div className="config-item">
+              <div className="config-row">
+                <label>Visibility</label>
+                <span>{Math.round(bgSettings.visibility * 100)}%</span>
+              </div>
+              <input 
+                type="range" min="0" max="1" step="0.01" 
+                value={bgSettings.visibility} 
+                onChange={(e) => setBgSettings({ visibility: parseFloat(e.target.value) })} 
+              />
+            </div>
+            <div className="config-item">
+              <div className="config-row">
+                <label>Size</label>
+                <span>{bgSettings.size.toFixed(1)}x</span>
+              </div>
+              <input 
+                type="range" min="0.1" max="15" step="0.1" 
+                value={bgSettings.size} 
+                onChange={(e) => setBgSettings({ size: parseFloat(e.target.value) })} 
+              />
+            </div>
+            <div className="config-item">
+              <div className="config-row">
+                <label>Speed</label>
+                <span>{bgSettings.speed.toFixed(1)}x</span>
+              </div>
+              <input 
+                type="range" min="0" max="25" step="0.1" 
+                value={bgSettings.speed} 
+                onChange={(e) => setBgSettings({ speed: parseFloat(e.target.value) })} 
+              />
+            </div>
+            <div className="config-item">
+              <div className="config-row">
+                <label>Repulsion</label>
+                <span>{bgSettings.repulsion}px</span>
+              </div>
+              <input 
+                type="range" min="20" max="500" step="10" 
+                value={bgSettings.repulsion} 
+                onChange={(e) => setBgSettings({ repulsion: parseInt(e.target.value) })} 
+              />
+            </div>
+            <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+              <button className="reset-config" style={{ flex: 1 }} onClick={saveSettings}>Save Locally</button>
+              <button className="reset-config" style={{ flex: 1 }} onClick={resetToDefaults}>Reset</button>
             </div>
           </div>
         )}
       </div>
+
+      <div className="sidebar-bottom">
+        <Link href={user ? `/profile/${user.username}` : '/login'} className={`sidebar-user-link ${pathname.includes('/profile/') ? 'active' : ''}`}>
+          <div className="sidebar-user">
+            <div className="avatar">
+              {user?.avatar_url ? <img src={user.avatar_url} alt={user.username} /> : (user ? user.username.slice(0, 2) : '?')}
+            </div>
+            <div className="user-info">
+              <div className="user-name">@{user ? user.username : 'Guest'}</div>
+              <div className="user-karma" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                {user ? (
+                  <>
+                    {user.karma?.toLocaleString()} karma · 
+                    <svg width="10" height="10" fill="currentColor" style={{ color: '#ff8a00' }} viewBox="0 0 24 24"><path d="M11.5 2C11.5 2 11.5 7 9 9C6.5 11 4 14 4 17C4 20 6 22 9 22C12 22 13 20 13 20C13 20 14 22 18 22C21 22 22 20 22 17C22 14 18 9 18 9C18 9 18 6 15.5 4C13 2 11.5 2 11.5 2Z"/></svg>
+                    {user.streak}d
+                  </>
+                ) : 'Sign in to earn karma'}
+              </div>
+            </div>
+          </div>
+        </Link>
+      </div>
+
+      <style jsx>{`
+        .sidebar-config { padding: 8px 16px; border-top: 1px solid var(--border); }
+        .config-trigger { 
+          display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; 
+          color: var(--text-4); cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em;
+          padding: 8px 0; transition: color 0.2s;
+        }
+        .config-trigger:hover { color: var(--text-2); }
+        .config-panel { display: flex; flex-direction: column; gap: 14px; padding: 12px 0; }
+        .config-item { display: flex; flex-direction: column; gap: 8px; }
+        .config-row { display: flex; justify-content: space-between; align-items: center; }
+        .config-row label { font-size: 10px; color: var(--text-4); font-weight: 600; text-transform: uppercase; }
+        .config-row span { font-size: 10px; color: var(--text-2); font-family: 'JetBrains Mono', monospace; }
+        
+        .config-item input { width: 100%; height: 2px; -webkit-appearance: none; background: var(--border); border-radius: 2px; outline: none; }
+        .config-item input::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; background: var(--text-2); border-radius: 50%; cursor: pointer; border: 2px solid var(--bg); box-shadow: 0 0 5px rgba(0,0,0,0.5); }
+        
+        .reset-config { padding: 6px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 4px; font-size: 10px; color: var(--text-4); cursor: pointer; transition: all 0.2s; }
+        .reset-config:hover { background: var(--bg-3); color: var(--text-2); border-color: var(--text-4); }
+
+        .sidebar-user-link { text-decoration: none; display: block; border-top: 1px solid var(--border); transition: background 0.2s; }
+        .sidebar-user-link:hover { background: var(--bg-2); }
+        .sidebar-user-link.active { background: var(--bg-2); border-left: 2px solid var(--text); }
+        .sidebar-user { display: flex; align-items: center; gap: 12px; padding: 16px; overflow: hidden; }
+      `}</style>
     </nav>
   );
 }

@@ -11,7 +11,7 @@ import { useAuth } from '@/context/AuthContext';
 
 export default function ProfilePage({ params }: { params: { username: string } }) {
   const { username } = params;
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, logout } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [links, setLinks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -174,7 +174,10 @@ export default function ProfilePage({ params }: { params: { username: string } }
                 </div>
                 <div className="profile-actions">
                   {currentUser?.username === profile.username ? (
-                    <button onClick={() => setIsEditing(true)} className="edit-btn">Edit Profile</button>
+                    <div style={{ display: 'flex', gap: '12px' }}>
+                      <button onClick={() => setIsEditing(true)} className="edit-btn">Edit Profile</button>
+                      <button onClick={() => { logout(); window.location.href = '/'; }} className="logout-btn">Logout</button>
+                    </div>
                   ) : (
                     <button onClick={handleFollow} className={`follow-btn ${profile.isFollowing ? 'active' : ''}`}>
                       {profile.isFollowing ? 'Following' : 'Follow'}
@@ -260,10 +263,11 @@ export default function ProfilePage({ params }: { params: { username: string } }
           .profile-feed { padding: 40px; }
           .links-grid { display: flex; flex-direction: column; gap: 16px; margin-top: 20px; }
           
-          .edit-btn, .follow-btn, .save-btn, .cancel-btn {
+          .edit-btn, .follow-btn, .save-btn, .cancel-btn, .logout-btn {
             padding: 10px 24px; border-radius: 8px; font-size: 13px; font-weight: 600; 
             transition: all 0.2s; border: 1px solid var(--border); background: var(--bg-2); color: var(--text-2); cursor: pointer;
           }
+          .logout-btn:hover { background: #ef4444; color: white; border-color: #ef4444; }
           .save-btn { background: var(--text); color: var(--bg); border-color: var(--text); }
           .follow-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
           .section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-4); margin-bottom: 20px; }
