@@ -6,9 +6,10 @@ const useLocal =
   process.env.LOCAL_DATABASE_URL;
 
 let sql: any;
+let pool: Pool | undefined;
 
 if (useLocal) {
-  const pool = new Pool({
+  pool = new Pool({
     connectionString: process.env.LOCAL_DATABASE_URL,
   });
 
@@ -32,5 +33,13 @@ if (useLocal) {
   sql = neon(process.env.NEON_DATABASE_URL!);
 }
 
-export { sql };
+async function query(text: string, values?: any[]) {
+  if (useLocal) {
+    const result = await pool!.query(text, values);
+    return result.rows;
+  }
+  return sql(text, values);
+}
+
+export { sql, query };
 export default sql;

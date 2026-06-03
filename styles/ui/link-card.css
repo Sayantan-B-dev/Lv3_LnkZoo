@@ -109,7 +109,11 @@
   padding: 1px 5px;
   letter-spacing: .04em;
 }
-
+.card-header{
+  display:flex;
+  flex-direction:column;
+  align-items: flex-start;
+}
 .card-title {
   font-size: 13px;
   font-weight: 500;
@@ -209,9 +213,115 @@
   opacity: .3
 }
 
+/* ── SHORT URL SECTION ─────────────────────────────── */
+.short-url-section {
+  margin-top: 14px;
+  margin-bottom: 4px;
+}
 
+.generate-short-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: fit-content;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--bg);
+  background: var(--text);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: opacity var(--t), transform .15s;
+}
 
+.generate-short-btn:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
 
+.generate-short-btn:active {
+  transform: scale(0.98);
+}
 
+.generate-short-btn svg {
+  width: 14px;
+  height: 14px;
+}
 
+.short-url-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  animation: fadeIn 0.3s ease;
+}
 
+.short-url-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.short-url-label {
+  font-size: 10px;
+  color: var(--text-4);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.short-url-expiry {
+  font-size: 10px;
+  color: var(--text-4);
+  margin-top: 2px;
+}
+
+.short-url-value {
+  font-size: 12px;
+  color: var(--text);
+  font-family: monospace;
+  word-break: break-all;
+}
+
+.short-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--text-4);
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color var(--t), border-color var(--t), background var(--t), transform .15s;
+  flex-shrink: 0;
+}
+
+.short-copy-btn:hover {
+  color: var(--text);
+  border-color: var(--text-4);
+  background: var(--bg-1);
+}
+
+.short-copy-btn.copied {
+  color: #22c55e;
+  border-color: #22c55e;
+  background: color-mix(in srgb, #22c55e 10%, var(--bg-2));
+  transform: scale(1.05);
+  animation: copyPop 0.3s ease;
+}
+
+@keyframes copyPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+  100% { transform: scale(1.05); }
+}

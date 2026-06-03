@@ -66,13 +66,20 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--text-4);
+    margin-bottom: 4px;
+}
+
+.result-expiry {
+    font-size: 10px;
+    color: var(--text-4);
     margin-bottom: 8px;
 }
 
 .result-box {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
+    width:100%;
     background: var(--bg-2);
     border: 1px solid var(--border);
     padding: 8px 12px;
@@ -80,15 +87,48 @@
     font-size: 13px;
     color: var(--text-2);
 }
-
-.copy-btn {
+.result-link{
+    font-family: monospace;
+    font-size: 13px;
+    color: var(--text);
+    word-break: break-all;
+    flex: 1;
+    min-width: 0;
+}
+.short-copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
     font-size: 11px;
     color: var(--text-4);
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 5px 10px;
     cursor: pointer;
+    white-space: nowrap;
+    transition: color var(--t), border-color var(--t), background var(--t), transform .15s;
+    flex-shrink: 0;
 }
 
-.copy-btn:hover {
+.short-copy-btn:hover {
     color: var(--text);
+    border-color: var(--text-4);
+    background: var(--bg-1);
+}
+
+.short-copy-btn.copied {
+    color: #22c55e;
+    border-color: #22c55e;
+    background: color-mix(in srgb, #22c55e 10%, var(--bg-2));
+    transform: scale(1.05);
+    animation: copyPop 0.3s ease;
+}
+
+@keyframes copyPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.12); }
+    100% { transform: scale(1.05); }
 }
 
 .coming-soon {

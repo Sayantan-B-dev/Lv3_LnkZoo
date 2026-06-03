@@ -7,9 +7,12 @@ export async function GET(req: NextRequest, { params }: { params: { code: string
 
   // Check standalone shortened_links first
   const [short] = await sql`
-    SELECT original_url FROM shortened_links WHERE short_code = ${code} LIMIT 1
+    SELECT original_url, created_at FROM shortened_links WHERE short_code = ${code} LIMIT 1
   `;
   if (short) {
+    if (new Date(short.created_at) < new Date(Date.now() - 86400000)) {
+      return NextResponse.json({ error: 'Short link expired' }, { status: 410 });
+    }
     await sql`UPDATE shortened_links SET click_count = click_count + 1 WHERE short_code = ${code}`;
     return NextResponse.redirect(short.original_url, 301);
   }

@@ -11,10 +11,41 @@ export async function POST(req: NextRequest) {
 
     const session = await getSessionFromRequest(req);
 
+    // Dedup: return existing non-expired short link for the same URL
+    const [existing] = await sql`
+      SELECT short_code, created_at
+      FROM shortened_links
+      WHERE original_url = ${url} AND created_at > NOW() - INTERVAL '1 day'
+      ORDER BY created_at DESC LIMIT 1
+    `;
+    if (existing) {
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
+      return NextResponse.json({
+        shortCode: existing.short_code,
+        shortUrl: `${appUrl}/s/${existing.short_code}`,
+        expiresAt: new Date(new Date(existing.created_at).getTime() + 86400000).toISOString(),
+      });
+    }
+
+    // Renew expired entry if one exists
+    const [expired] = await sql`
+      UPDATE shortened_links
+      SET created_at = NOW(), click_count = 0
+      WHERE original_url = ${url} AND created_at <= NOW() - INTERVAL '1 day'
+      RETURNING short_code
+    `;
+    if (expired) {
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
+      return NextResponse.json({
+        shortCode: expired.short_code,
+        shortUrl: `${appUrl}/s/${expired.short_code}`,
+        expiresAt: new Date(Date.now() + 86400000).toISOString(),
+      });
+    }
+
     let shortCode = generateShortCode(6);
-    // Ensure uniqueness
-    const [exists] = await sql`SELECT 1 FROM shortened_links WHERE short_code = ${shortCode}`;
-    if (exists) shortCode = generateShortCode(7);
+    const [dupe] = await sql`SELECT 1 FROM shortened_links WHERE short_code = ${shortCode}`;
+    if (dupe) shortCode = generateShortCode(7);
 
     const [row] = await sql`
       INSERT INTO shortened_links (short_code, original_url, user_id)
@@ -26,6 +57,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       shortCode: row.short_code,
       shortUrl: `${appUrl}/s/${row.short_code}`,
+      expiresAt: new Date(Date.now() + 86400000).toISOString(),
     });
   } catch (err) {
     console.error('[POST /api/tools/shorten]', err);

@@ -24,6 +24,9 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
 
   const [isEditingLink, setIsEditingLink] = useState(false);
   const [editLinkData, setEditLinkData] = useState({ title: '', description: '' });
+  const [showShortUrl, setShowShortUrl] = useState(false);
+  const [shortUrl, setShortUrl] = useState('');
+  const [copied, setCopied] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -82,6 +85,21 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
     });
   };
 
+  const handleGenerateShort = () => {
+    setShortUrl(`${window.location.origin}/s/${link.short_code}`);
+    setShowShortUrl(true);
+  };
+
+  const handleCopyShort = async () => {
+    try {
+      await navigator.clipboard.writeText(shortUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Copy failed', err);
+    }
+  };
+
   const handleLike = async () => {
     if (!user) {
       window.location.href = `/login?from=/link/${id}`;
@@ -136,68 +154,110 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
       <main id="main">
         <Topbar title="Discussion" />
         <NotificationPanel />
-        
+
         <div id="content">
           <div className="link-card detail">
-              <div className="card-body">
-                <div className="card-meta">
-                  <span className="card-domain">{new URL(link.original_url).hostname}</span>
-                  <span className="card-poster">@{link.username}</span>
-                  <span className="card-time">{new Date(link.created_at).toLocaleDateString()}</span>
-                </div>
-                
-                {isEditingLink ? (
-                  <form onSubmit={handleUpdateLink} className="edit-link-form">
-                    <input value={editLinkData.title} onChange={e => setEditLinkData({...editLinkData, title: e.target.value})} className="auth-input" style={{ width: '100%', marginBottom: '10px' }} />
-                    <textarea value={editLinkData.description} onChange={e => setEditLinkData({...editLinkData, description: e.target.value})} className="auth-input" style={{ width: '100%', minHeight: '80px', marginBottom: '10px' }} />
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                      <button type="submit" className="save-btn">Save</button>
-                      <button type="button" onClick={() => setIsEditingLink(false)} className="cancel-btn">Cancel</button>
-                    </div>
-                  </form>
-                ) : (
-                  <>
+            <div className="card-body">
+              <div className="card-meta">
+                <span className="card-domain">{new URL(link.original_url).hostname}</span>
+                <span className="card-poster">@{link.username}</span>
+                <span className="card-time">{new Date(link.created_at).toLocaleDateString()}</span>
+              </div>
+
+              {isEditingLink ? (
+                <form onSubmit={handleUpdateLink} className="edit-link-form">
+                  <input value={editLinkData.title} onChange={e => setEditLinkData({ ...editLinkData, title: e.target.value })} className="auth-input" style={{ width: '100%', marginBottom: '10px' }} />
+                  <textarea value={editLinkData.description} onChange={e => setEditLinkData({ ...editLinkData, description: e.target.value })} className="auth-input" style={{ width: '100%', minHeight: '80px', marginBottom: '10px' }} />
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <button type="submit" className="save-btn">Save</button>
+                    <button type="button" onClick={() => setIsEditingLink(false)} className="cancel-btn">Cancel</button>
+                  </div>
+                </form>
+              ) : (
+                <div className="card-header">
+                  <div>
                     <h1 className="card-title" style={{ fontSize: '20px' }}>{link.title}</h1>
                     <p className="card-desc" style={{ WebkitLineClamp: 'unset' }}>{link.description}</p>
-                  </>
-                )}
-
-                <div className="card-tags">
-                  {link.tags?.map((t: string) => <Link href={`/tags/${t}`} key={t} className="tag">#{t}</Link>)}
-                </div>
-                <div className="card-footer" style={{ marginTop: '20px', justifyContent: 'space-between' }}>
-                  <div style={{ display: 'flex', gap: '12px' }}>
-                    <a href={link.original_url} target="_blank" rel="noopener" className="visit-btn">Open Link ↗</a>
-                    <button onClick={handleLike} className={`like-btn ${link.liked_by_user ? 'active' : ''}`}>
-                      <svg width="14" height="14" fill={link.liked_by_user ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.35-1.92-4.25-4.29-4.25-1.69 0-3.15.97-3.85 2.38A4.32 4.32 0 008.86 4C6.48 4 4.5 5.9 4.5 8.25c0 6.03 7.5 10.75 7.5 10.75s9-4.72 9-10.75z" />
-                      </svg>
-                      {link.like_count ?? 0}
-                    </button>
-                    {user?.username === link.username && !isEditingLink && (
-                      <button onClick={() => setIsEditingLink(true)} className="edit-link-btn">Edit</button>
+                  </div>
+                  <div className="short-url-section">
+                    {!showShortUrl ? (
+                      <button onClick={handleGenerateShort} className="generate-short-btn">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                        </svg>
+                        Generate Short URL
+                      </button>
+                    ) : (
+                      <div className="short-url-result">
+                        <div className="short-url-info">
+                          <span className="short-url-label">Short URL</span>
+                          <span className="short-url-value">{shortUrl}</span>
+                          <span className="short-url-expiry">Expires in 24 hours</span>
+                        </div>
+                        <button onClick={handleCopyShort} className={`short-copy-btn ${copied ? 'copied' : ''}`}>
+                          {copied ? (
+                            <>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="20 6 9 17 4 12" />
+                              </svg>
+                              Copied
+                            </>
+                          ) : (
+                            <>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                              </svg>
+                              Copy
+                            </>
+                          )}
+                        </button>
+                      </div>
                     )}
                   </div>
-                  {user?.username === link.username && (
-                    <button onClick={() => {
-                      openConfirm('Delete this link? This cannot be undone.', async () => {
-                        closeConfirm();
-                        await fetch(`/api/links/${id}`, { method: 'DELETE' });
-                        window.location.href = '/';
-                      });
-                    }} className="delete-btn">Delete Link</button>
+                </div>
+              )}
+
+              <div className="card-tags">
+                {link.tags?.map((t: string) => <Link href={`/tags/${t}`} key={t} className="tag">#{t}</Link>)}
+              </div>
+
+
+
+              <div className="card-footer" style={{ marginTop: '20px', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <a href={link.original_url} target="_blank" rel="noopener" className="visit-btn">Open Link ↗</a>
+                  <button onClick={handleLike} className={`like-btn ${link.liked_by_user ? 'active' : ''}`}>
+                    <svg width="14" height="14" fill={link.liked_by_user ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.35-1.92-4.25-4.29-4.25-1.69 0-3.15.97-3.85 2.38A4.32 4.32 0 008.86 4C6.48 4 4.5 5.9 4.5 8.25c0 6.03 7.5 10.75 7.5 10.75s9-4.72 9-10.75z" />
+                    </svg>
+                    {link.like_count ?? 0}
+                  </button>
+                  {user?.username === link.username && !isEditingLink && (
+                    <button onClick={() => setIsEditingLink(true)} className="edit-link-btn">Edit</button>
                   )}
                 </div>
+                {user?.username === link.username && (
+                  <button onClick={() => {
+                    openConfirm('Delete this link? This cannot be undone.', async () => {
+                      closeConfirm();
+                      await fetch(`/api/links/${id}`, { method: 'DELETE' });
+                      window.location.href = '/';
+                    });
+                  }} className="delete-btn">Delete Link</button>
+                )}
               </div>
+            </div>
           </div>
 
           <div className="comments-section" style={{ marginTop: '40px' }}>
             <h2 className="section-title">Discussion ({comments.length})</h2>
-            
+
             {user ? (
               <form onSubmit={handlePostComment} className="comment-form">
-                <textarea 
-                  placeholder="What are your thoughts?" 
+                <textarea
+                  placeholder="What are your thoughts?"
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   className="comment-input"
