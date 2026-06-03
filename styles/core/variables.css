@@ -2,10 +2,10 @@
   --font: 'JetBrains Mono', 'Geist Mono', monospace;
 
   /* light */
-  --bg: #f8f8f7;
-  --bg-1: #f0f0ee;
-  --bg-2: #e8e8e5;
-  --bg-3: #d8d8d4;
+  --bg: #c3c4bac7;
+  --bg-1: #f0f0eed5;
+  --bg-2: #e8e8e5de;
+  --bg-3: #d8d8b9e5;
   --border: rgba(0, 0, 0, .10);
   --border-md: rgba(0, 0, 0, .16);
   --text: #111110;
