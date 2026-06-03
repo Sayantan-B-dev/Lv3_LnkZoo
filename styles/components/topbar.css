@@ -1,0 +1,96 @@
+/* ── TOPBAR ───────────────────────────────────────── */
+#topbar {
+  height: var(--header-h);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 12px;
+  background: color-mix(in srgb, var(--bg-1) 85%, transparent);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  transition: background var(--t), border-color var(--t);
+}
+
+.topbar-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+  flex: 1
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px
+}
+
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+  transition: color var(--t), background var(--t);
+  position: relative;
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  color: var(--text);
+  background: var(--bg-2)
+}
+
+.notif-dot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text);
+  border: 1.5px solid var(--bg-1);
+}
+
+.theme-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+  transition: color var(--t), background var(--t);
+  cursor: pointer;
+}
+
+.theme-btn:hover {
+  color: var(--text);
+  background: var(--bg-2)
+}
+
+.post-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--text);
+  color: var(--bg);
+  border-radius: var(--radius);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .02em;
+  transition: opacity var(--t);
+  cursor: pointer;
+}
+
+.post-btn:hover {
+  opacity: .8
+}
+
+
+

@@ -1,0 +1,217 @@
+Glinx
+├── app
+│   ├── api
+│   │   ├── admin
+│   │   │   ├── ban
+│   │   │   │   └── [userId]
+│   │   │   │       └── route.ts
+│   │   │   ├── flagged-links
+│   │   │   │   └── route.ts
+│   │   │   └── links
+│   │   │       └── [id]
+│   │   │           └── route.ts
+│   │   ├── auth
+│   │   │   ├── google
+│   │   │   │   ├── callback
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── route.ts
+│   │   │   ├── login
+│   │   │   │   └── route.ts
+│   │   │   ├── logout
+│   │   │   │   └── route.ts
+│   │   │   ├── me
+│   │   │   │   └── route.ts
+│   │   │   └── register
+│   │   │       └── route.ts
+│   │   ├── comments
+│   │   │   ├── [id]
+│   │   │   │   ├── vote
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── route.ts
+│   │   │   ├── link
+│   │   │   │   └── [linkId]
+│   │   │   │       └── route.ts
+│   │   │   └── route.ts
+│   │   ├── cron
+│   │   │   ├── daily-digest
+│   │   │   │   └── route.ts
+│   │   │   └── streaks
+│   │   │       └── route.ts
+│   │   ├── leaderboard
+│   │   │   └── route.ts
+│   │   ├── links
+│   │   │   ├── [id]
+│   │   │   │   ├── flag
+│   │   │   │   │   └── route.ts
+│   │   │   │   ├── vote
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── route.ts
+│   │   │   ├── daily-dose
+│   │   │   │   └── route.ts
+│   │   │   ├── random
+│   │   │   │   └── route.ts
+│   │   │   └── route.ts
+│   │   ├── notifications
+│   │   │   ├── mark-read
+│   │   │   │   └── route.ts
+│   │   │   └── route.ts
+│   │   ├── recommendations
+│   │   │   └── route.ts
+│   │   ├── tags
+│   │   │   ├── [name]
+│   │   │   │   └── links
+│   │   │   │       └── route.ts
+│   │   │   └── route.ts
+│   │   ├── tools
+│   │   │   ├── parse
+│   │   │   │   └── route.ts
+│   │   │   └── shorten
+│   │   │       └── route.ts
+│   │   ├── upload
+│   │   │   └── route.ts
+│   │   └── users
+│   │       ├── [username]
+│   │       │   ├── follow
+│   │       │   │   └── route.ts
+│   │       │   ├── followers
+│   │       │   │   └── route.ts
+│   │       │   ├── following
+│   │       │   │   └── route.ts
+│   │       │   ├── links
+│   │       │   │   └── route.ts
+│   │       │   └── route.ts
+│   │       ├── me
+│   │       │   └── route.ts
+│   │       └── profile
+│   │           └── route.ts
+│   ├── daily-dose
+│   │   └── page.tsx
+│   ├── explore
+│   │   └── page.tsx
+│   ├── leaderboard
+│   │   └── page.tsx
+│   ├── link
+│   │   └── [id]
+│   │       └── page.tsx
+│   ├── login
+│   │   └── page.tsx
+│   ├── profile
+│   │   ├── [username]
+│   │   │   └── page.tsx
+│   │   └── page.tsx
+│   ├── random
+│   │   └── page.tsx
+│   ├── register
+│   │   └── page.tsx
+│   ├── s
+│   │   └── [code]
+│   │       └── route.ts
+│   ├── submit
+│   │   └── page.tsx
+│   ├── tags
+│   │   ├── [tag]
+│   │   │   └── page.tsx
+│   │   └── page.tsx
+│   ├── tools
+│   │   └── page.tsx
+│   ├── globals.css
+│   ├── layout.tsx
+│   ├── not-found.tsx
+│   └── page.tsx
+├── components
+│   ├── comments
+│   │   ├── CommentForm.module.css
+│   │   ├── CommentForm.tsx
+│   │   ├── CommentItem.module.css
+│   │   ├── CommentItem.tsx
+│   │   ├── CommentThread.module.css
+│   │   └── CommentThread.tsx
+│   ├── common
+│   │   ├── AnimatedBg.tsx
+│   │   ├── CustomCursor.tsx
+│   │   ├── ErrorMessage.tsx
+│   │   ├── Footer.module.css
+│   │   ├── Footer.tsx
+│   │   ├── LoadingSpinner.module.css
+│   │   ├── LoadingSpinner.tsx
+│   │   ├── Navbar.module.css
+│   │   ├── Navbar.tsx
+│   │   ├── NotificationBell.module.css
+│   │   ├── NotificationBell.tsx
+│   │   ├── NotificationPanel.tsx
+│   │   ├── Sidebar.tsx
+│   │   └── Topbar.tsx
+│   ├── links
+│   │   ├── LinkCard.module.css
+│   │   ├── LinkCard.tsx
+│   │   ├── LinkForm.module.css
+│   │   ├── LinkForm.tsx
+│   │   ├── LinkPreview.module.css
+│   │   ├── LinkPreview.tsx
+│   │   ├── TagBadge.module.css
+│   │   ├── TagBadge.tsx
+│   │   ├── VoteButtons.module.css
+│   │   └── VoteButtons.tsx
+│   └── recommendations
+│       ├── Slider.module.css
+│       └── Slider.tsx
+├── context
+│   ├── AuthContext.tsx
+│   ├── NotificationContext.tsx
+│   └── UIContext.tsx
+├── database
+│   ├── init.sql
+│   └── seed.sql
+├── hooks
+│   ├── useAuth.ts
+│   ├── useInfiniteScroll.ts
+│   └── useNotifications.ts
+├── lib
+│   ├── auth.ts
+│   ├── db.ts
+│   └── shortCode.ts
+├── public
+│   ├── icon.svg
+│   ├── manifest.json
+│   └── sw.js
+├── scripts
+│   └── migrate.js
+├── services
+│   ├── autoTag.service.ts
+│   ├── dailyDigest.service.ts
+│   ├── gamification.service.ts
+│   ├── linkParser.service.ts
+│   ├── notification.service.ts
+│   └── shortCode.service.ts
+├── styles
+│   ├── components
+│   │   ├── animatedbg.css
+│   │   ├── animations.css
+│   │   ├── content.css
+│   │   ├── customcursor.css
+│   │   ├── layout.css
+│   │   ├── linkcard.css
+│   │   ├── main.css
+│   │   ├── popup.css
+│   │   ├── reset.css
+│   │   ├── responsive.css
+│   │   ├── sidebar.css
+│   │   ├── tabs.css
+│   │   ├── topbar.css
+│   │   ├── typography.css
+│   │   ├── utilities.css
+│   │   └── variables.css
+│   └── globals.css
+├── .env
+├── .gitignore
+├── middleware.ts
+├── next-env.d.ts
+├── next.config.js
+├── package.json
+├── README.md
+├── SRS.md
+├── tree.py
+├── tree.txt
+├── tsconfig.json
+├── tsconfig.tsbuildinfo
+└── ui-reference-version_3.0.html

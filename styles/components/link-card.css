@@ -1,0 +1,210 @@
+/* ── LINK CARD ────────────────────────────────────── */
+.link-card {
+  background: color-mix(in srgb, var(--bg-1) 45%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 8px;
+  display: flex;
+  gap: 12px;
+  transition: border-color var(--t), background var(--t), transform .1s;
+  position: relative;
+  max-width:fit-content;
+}
+
+.link-card:hover {
+  border-color: var(--text-4);
+  background: color-mix(in srgb, var(--bg-2) 65%, transparent);
+  transform: translateY(-2px) scale(1.005);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+}
+
+.link-card:active {
+  transform: scale(.995)
+}
+
+/* votes */
+.vote-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding-top: 2px;
+  flex-shrink: 0;
+}
+
+.vote-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-4);
+  transition: color var(--t), background var(--t);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.vote-btn:hover {
+  color: var(--text);
+  background: var(--bg-3)
+}
+
+.vote-btn.up.active {
+  color: var(--text)
+}
+
+.vote-btn.down.active {
+  color: var(--text-3)
+}
+
+.vote-count {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-2);
+  min-width: 16px;
+  text-align: center
+}
+
+/* card body */
+.card-body {
+  flex: 1;
+  min-width: 0
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  flex-wrap: wrap
+}
+
+.card-domain {
+  font-size: 10px;
+  color: var(--text-4);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 6px;
+}
+
+.card-poster {
+  font-size: 10px;
+  color: var(--text-4)
+}
+
+.card-time {
+  font-size: 10px;
+  color: var(--text-4)
+}
+
+.anon-badge {
+  font-size: 9px;
+  color: var(--text-4);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 5px;
+  letter-spacing: .04em;
+}
+
+.card-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 5px;
+  line-height: 1.4;
+  letter-spacing: -.1px;
+}
+
+.card-desc {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-bottom: 8px;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-tags {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-bottom: 8px
+}
+
+.tag {
+  font-size: 10px;
+  color: var(--text-4);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 7px;
+  transition: color var(--t), border-color var(--t), background var(--t);
+  cursor: pointer;
+}
+
+.tag:hover {
+  color: var(--text);
+  border-color: var(--border-md);
+  background: var(--bg-3)
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px
+}
+
+.card-stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--text-4);
+  transition: color var(--t);
+  cursor: pointer;
+}
+
+.card-stat:hover {
+  color: var(--text-2)
+}
+
+.card-stat svg {
+  width: 12px;
+  height: 12px
+}
+
+.card-preview {
+  width: 72px;
+  height: 52px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover
+}
+
+.no-preview {
+  font-size: 18px;
+  opacity: .3
+}
+
+
+
+
+
+
+

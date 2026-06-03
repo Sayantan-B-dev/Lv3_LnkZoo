@@ -1,0 +1,40 @@
+/* ── CUSTOM CURSOR ────────────────────────────────── */
+#cursor {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  background: var(--cursor-c);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width .12s, height .12s, background .12s
+}
+
+#cursor-ring {
+  position: fixed;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--cursor-c);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: width .22s, height .22s, transform .06s, border-color .18s;
+  opacity: .45
+}
+
+body.hovering #cursor {
+  width: 12px;
+  height: 12px
+}
+
+body.hovering #cursor-ring {
+  width: 40px;
+  height: 40px;
+  opacity: .25
+}
+
+
+
+
