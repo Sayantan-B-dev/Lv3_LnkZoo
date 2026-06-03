@@ -155,14 +155,6 @@ export default function Home() {
         </div>
       </main>
 
-      <style jsx>{`
-        .search-bar { 
-          display: flex; align-items: center; gap: 12px; padding: 10px 16px; 
-          background: var(--bg-1); border: 1px solid var(--border); border-radius: 8px;
-          transition: all 0.2s;
-        }
-        .search-bar:focus-within { border-color: var(--text-4); background: var(--bg-2); }
-      `}</style>
     </div>
   );
 }

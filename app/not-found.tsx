@@ -11,7 +11,7 @@ export default function NotFound() {
   return (
     <div id="app">
       <CustomCursor />
-      
+
       <Sidebar />
       <main id="main">
         <Topbar title="404 — Not Found" />
@@ -22,20 +22,12 @@ export default function NotFound() {
             The link you're looking for doesn't exist or has been moved to another dimension.
           </p>
           <Link href="/" className="back-home">
-            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ marginRight: '8px' }}><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
+            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ marginRight: '8px' }}><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
             Back to safety
           </Link>
         </div>
       </main>
 
-      <style jsx>{`
-        .back-home {
-          display: flex; align-items: center; padding: 12px 24px; 
-          background: var(--text); color: var(--bg); border-radius: 8px;
-          font-size: 14px; font-weight: 600; transition: all 0.2s;
-        }
-        .back-home:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(255,255,255,0.1); }
-      `}</style>
     </div>
   );
 }

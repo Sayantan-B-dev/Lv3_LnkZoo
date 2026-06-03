@@ -78,37 +78,6 @@ export default function Tools() {
           </div>
         </div>
 
-        <style jsx>{`
-          .tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; }
-          .tool-card { background: var(--bg-1); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
-          .tool-card.disabled { opacity: 0.6; pointer-events: none; }
-          .tool-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: var(--text); }
-          .tool-desc { font-size: 13px; color: var(--text-4); margin-bottom: 20px; line-height: 1.5; }
-          .tool-form { display: flex; gap: 8px; }
-          .tool-input { 
-            flex: 1; padding: 10px 14px; background: var(--bg-2); 
-            border: 1px solid var(--border); border-radius: 6px; 
-            color: var(--text); font-size: 13px; outline: none;
-          }
-          .tool-btn { 
-            padding: 0 16px; background: var(--text); color: var(--bg); 
-            border-radius: 6px; font-size: 12px; font-weight: 500;
-          }
-          .tool-result { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
-          .result-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-4); margin-bottom: 8px; }
-          .result-box { 
-            display: flex; align-items: center; justify-content: space-between; 
-            background: var(--bg-2); border: 1px solid var(--border); 
-            padding: 8px 12px; border-radius: 6px; font-size: 13px; color: var(--text-2);
-          }
-          .copy-btn { font-size: 11px; color: var(--text-4); cursor: pointer; }
-          .copy-btn:hover { color: var(--text); }
-          .coming-soon { 
-            display: inline-block; padding: 4px 10px; background: var(--bg-3); 
-            border-radius: 4px; font-size: 10px; font-weight: 600; 
-            text-transform: uppercase; color: var(--text-4);
-          }
-        `}</style>
       </main>
     </div>
   );

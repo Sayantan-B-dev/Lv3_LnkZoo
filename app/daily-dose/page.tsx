@@ -83,14 +83,7 @@ export default function DailyDose() {
           </div>
         </div>
 
-        <style jsx>{`
-          .dose-header { margin-bottom: 40px; border-bottom: 1px solid var(--border); padding-bottom: 24px; }
-          .dose-title { font-size: 28px; font-weight: 700; color: var(--text); margin-bottom: 8px; letter-spacing: -0.5px; }
-          .dose-sub { font-size: 14px; color: var(--text-4); }
-          .dose-list { display: flex; flex-direction: column; gap: 24px; }
-          .dose-card { display: flex; gap: 20px; align-items: flex-start; }
-          .dose-number { font-size: 32px; font-weight: 700; color: var(--text-4); font-family: 'Geist Mono'; opacity: 0.3; padding-top: 10px; }
-        `}</style>
+
       </main>
     </div>
   );

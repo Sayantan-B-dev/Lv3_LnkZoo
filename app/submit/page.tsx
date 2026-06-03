@@ -134,40 +134,7 @@ export default function Submit() {
           </div>
         </div>
 
-        <style jsx>{`
-          .submit-card { 
-            max-width: 500px; margin: 40px auto; 
-            background: var(--bg-1); border: 1px solid var(--border); 
-            border-radius: 12px; padding: 32px; 
-          }
-          .form-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: var(--text); }
-          .form-sub { font-size: 13px; color: var(--text-4); margin-bottom: 24px; }
-          .input-group { display: flex; gap: 8px; }
-          .main-input { 
-            flex: 1; padding: 12px 16px; background: var(--bg-2); 
-            border: 1px solid var(--border); border-radius: 8px; 
-            color: var(--text); font-size: 14px; outline: none;
-          }
-          .main-input:focus { border-color: var(--text-4); }
-          .submit-btn { 
-            padding: 0 20px; background: var(--text); color: var(--bg); 
-            border-radius: 8px; font-weight: 500; font-size: 13px;
-          }
-          .input-group-v { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
-          .input-group-v label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-4); }
-          .sub-input { 
-            padding: 10px 14px; background: var(--bg-2); 
-            border: 1px solid var(--border); border-radius: 6px; 
-            color: var(--text); font-size: 13px; outline: none;
-          }
-          .sub-input.textarea { min-height: 80px; resize: vertical; }
-          .form-actions { display: flex; justify-content: space-between; margin-top: 24px; }
-          .back-btn { font-size: 13px; color: var(--text-4); }
-          .final-btn { 
-            padding: 10px 20px; background: var(--text); color: var(--bg); 
-            border-radius: 8px; font-weight: 500; font-size: 13px;
-          }
-        `}</style>
+
       </main>
     </div>
   );

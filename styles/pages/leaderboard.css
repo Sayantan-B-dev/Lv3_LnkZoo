@@ -1,0 +1,93 @@
+.leaderboard-list {
+    background: color-mix(in srgb, var(--bg-1) 45%, transparent);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.leaderboard-header {
+    display: grid;
+    grid-template-columns: 50px 1fr 100px 80px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-4);
+}
+
+.leaderboard-row {
+    display: grid;
+    grid-template-columns: 50px 1fr 100px 80px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    transition: background 0.2s;
+}
+
+.leaderboard-row.is-me {
+    background: rgba(255, 255, 255, 0.05);
+    border-left: 2px solid var(--text-4);
+}
+
+.leaderboard-row:last-child {
+    border-bottom: none;
+}
+
+.leaderboard-row:hover {
+    background: var(--bg-2);
+}
+
+.leaderboard-divider {
+    text-align: center;
+    padding: 8px;
+    color: var(--text-4);
+    font-size: 12px;
+    background: var(--bg-1);
+}
+
+.rank {
+    font-size: 12px;
+    color: var(--text-4);
+    font-weight: 500;
+}
+
+.user-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow: hidden;
+}
+
+.avatar.mini {
+    width: 24px;
+    height: 24px;
+    font-size: 9px;
+}
+
+.username {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-2);
+}
+
+.streak {
+    font-size: 10px;
+    color: #ff8a00;
+}
+
+.stats {
+    font-size: 12px;
+    color: var(--text-3);
+}
+
+.stats.karma {
+    color: var(--text);
+    font-weight: 500;
+}
+
+.skel-row {
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border);
+}

@@ -74,24 +74,6 @@ export default function TagsPage() {
         </div>
       </main>
 
-      <style jsx>{`
-        .search-bar { 
-          display: flex; align-items: center; gap: 12px; padding: 10px 16px; 
-          background: var(--bg-1); border: 1px solid var(--border); border-radius: 8px;
-          transition: all 0.2s;
-        }
-        .search-bar:focus-within { border-color: var(--text-4); background: var(--bg-2); }
-        .tag-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin-top: 24px; }
-        .tag-large { 
-          display: flex; flex-direction: column; gap: 4px; padding: 20px; background: var(--bg-1); border: 1px solid var(--border); 
-          border-radius: 12px; transition: all 0.2s; text-decoration: none;
-        }
-        .tag-large:hover { border-color: var(--text-4); transform: translateY(-2px); background: var(--bg-2); }
-        .tag-name { font-size: 16px; font-weight: 600; color: var(--text-2); }
-        .tag-count { font-size: 12px; color: var(--text-4); }
-        .tag-skeleton { height: 80px; background: var(--bg-2); border-radius: 12px; border: 1px solid var(--border); opacity: 0.5; }
-        .section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-4); }
-      `}</style>
     </div>
   );
 }

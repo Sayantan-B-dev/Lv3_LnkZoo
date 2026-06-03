@@ -1,16 +1,34 @@
-@import './components/variables.css';
-@import './components/reset.css';
-@import './components/typography.css';
-@import './components/utilities.css';
-@import './components/custom-cursor.css';
-@import './components/animated-bg.css';
-@import './components/layout.css';
-@import './components/sidebar.css';
-@import './components/main.css';
-@import './components/topbar.css';
-@import './components/content.css';
-@import './components/tabs.css';
-@import './components/link-card.css';
-@import './components/popup.css';
-@import './components/responsive.css';
-@import './components/animations.css';
+@import './core/variables.css';
+@import './core/reset.css';
+@import './core/typography.css';
+@import './core/utilities.css';
+@import './core/animations.css';
+
+@import './layout/layout.css';
+@import './layout/main.css';
+@import './layout/content.css';
+@import './layout/sidebar.css';
+@import './layout/topbar.css';
+@import './layout/tabs.css';
+@import './layout/responsive.css';
+
+@import './ui/animated-bg.css';
+@import './ui/custom-cursor.css';
+@import './ui/link-card.css';
+@import './ui/popup.css';
+
+@import './pages/home.css';
+@import './pages/explore.css';
+@import './pages/tags.css';
+@import './pages/profile.css';
+@import './pages/leaderboard.css';
+@import './pages/login.css';
+@import './pages/register.css';
+@import './pages/submit.css';
+@import './pages/random.css';
+@import './pages/tools.css';
+@import './pages/daily-dose.css';
+@import './pages/link-detail.css';
+@import './pages/not-found.css';
+
+@import './components/common.css';

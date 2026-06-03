@@ -92,10 +92,6 @@ export default function TagPage({ params }: { params: { tag: string } }) {
           </div>
         </div>
 
-        <style jsx>{`
-          .section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-4); margin-bottom: 24px; }
-          .tag.active { border-color: var(--text-2); color: var(--text); }
-        `}</style>
       </main>
     </div>
   );

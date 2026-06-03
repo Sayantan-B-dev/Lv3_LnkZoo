@@ -91,28 +91,6 @@ export default function Login() {
         </div>
       </div>
 
-      <style jsx>{`
-        .auth-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--bg); padding: 20px; }
-        .auth-card { width: 100%; max-width: 400px; background: var(--bg-1); border: 1px solid var(--border); border-radius: 12px; padding: 40px; }
-        .auth-header { text-align: center; margin-bottom: 32px; }
-        .auth-header .logo-mark { margin: 0 auto 16px; width: 40px; height: 40px; font-size: 18px; }
-        .auth-header h1 { font-size: 20px; font-weight: 600; margin-bottom: 8px; color: var(--text); }
-        .auth-header p { font-size: 14px; color: var(--text-4); }
-        .auth-error { padding: 10px; background: rgba(255,0,0,0.1); color: #ff5555; border-radius: 6px; font-size: 12px; margin-bottom: 20px; border: 1px solid rgba(255,0,0,0.2); }
-        .input-group-v { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-        .input-group-v label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-4); }
-        .auth-input { padding: 12px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; outline: none; }
-        .auth-input:focus { border-color: var(--text-4); }
-        .auth-btn { width: 100%; padding: 12px; background: var(--text); color: var(--bg); border-radius: 8px; font-weight: 600; font-size: 14px; margin-top: 8px; transition: opacity 0.2s; }
-        .auth-btn:hover { opacity: 0.9; }
-        .auth-divider { position: relative; margin: 32px 0; text-align: center; }
-        .auth-divider::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--border); }
-        .auth-divider span { position: relative; background: var(--bg-1); padding: 0 12px; font-size: 12px; color: var(--text-4); }
-        .google-btn { width: 100%; padding: 10px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 8px; color: var(--text-2); font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background 0.2s; }
-        .google-btn:hover { background: var(--bg-3); }
-        .auth-footer { margin-top: 32px; text-align: center; font-size: 13px; color: var(--text-4); }
-        .auth-footer a { color: var(--text-2); font-weight: 500; }
-      `}</style>
     </div>
   );
 }
