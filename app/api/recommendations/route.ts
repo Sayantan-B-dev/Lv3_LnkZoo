@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     // Unauthenticated: just return hot feed
     const rows = await sql`
       SELECT l.id, l.title, l.description, l.original_url, l.short_code,
-             l.preview_image, l.is_anonymous, l.upvote_count, l.downvote_count,
+             l.preview_image, l.is_anonymous, l.like_count,
              l.comment_count, l.view_count, l.created_at,
              u.username, u.avatar_url,
              ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) AS tags
@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
       LEFT JOIN tags t ON t.id = lt.tag_id
       WHERE l.is_private = false
       GROUP BY l.id, u.username, u.avatar_url
-      ORDER BY l.upvote_count DESC
+      ORDER BY l.like_count DESC
       LIMIT 20
     `;
     return NextResponse.json({ links: rows });
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
   if (interests.length === 0) {
     const rows = await sql`
       SELECT l.id, l.title, l.description, l.original_url, l.short_code,
-             l.preview_image, l.is_anonymous, l.upvote_count, l.downvote_count,
+             l.preview_image, l.is_anonymous, l.like_count,
              l.comment_count, l.view_count, l.created_at,
              u.username, u.avatar_url,
              ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) AS tags
@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
       LEFT JOIN tags t ON t.id = lt.tag_id
       WHERE l.is_private = false
       GROUP BY l.id, u.username, u.avatar_url
-      ORDER BY l.upvote_count DESC
+      ORDER BY l.like_count DESC
       LIMIT 20
     `;
     return NextResponse.json({ links: rows });
@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
   // Personalised: boost links tagged with user's interests
   const rows = await sql`
     SELECT l.id, l.title, l.description, l.original_url, l.short_code,
-           l.preview_image, l.is_anonymous, l.upvote_count, l.downvote_count,
+           l.preview_image, l.is_anonymous, l.like_count,
            l.comment_count, l.view_count, l.created_at,
            u.username, u.avatar_url,
            ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) AS tags,
@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
     LEFT JOIN tags t ON t.id = lt.tag_id
     WHERE l.is_private = false
     GROUP BY l.id, u.username, u.avatar_url
-    ORDER BY interest_match DESC, l.upvote_count DESC
+    ORDER BY interest_match DESC, l.like_count DESC
     LIMIT 20
   `;
 

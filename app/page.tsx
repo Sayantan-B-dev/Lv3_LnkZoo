@@ -51,12 +51,10 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  const handleVote = async (id: string, vote: number) => {
+  const handleLike = async (id: string) => {
     try {
-      const res = await fetch(`/api/links/${id}/vote`, {
+      const res = await fetch(`/api/links/${id}/like`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ vote }),
       });
       if (res.status === 401) {
         window.location.href = `/login?from=/`;
@@ -115,7 +113,7 @@ export default function Home() {
                     key={link.id}
                     link={link}
                     variant="full"
-                    onVote={handleVote}
+                    onLike={handleLike}
                     onClick={() => router.push(`/link/${link.id}`)}
                     isClickable={true}
                   />

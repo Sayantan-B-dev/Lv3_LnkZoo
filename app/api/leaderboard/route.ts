@@ -7,21 +7,26 @@ export async function GET(req: NextRequest) {
   const period = req.nextUrl.searchParams.get('period') ?? 'week';
   const session = await getSessionFromRequest(req);
 
-  let interval: string;
-  if (period === 'month') interval = '30 days';
-  else if (period === 'all') interval = '100 years';
-  else interval = '7 days';
+  // Build an optional date fragment — for 'all', skip the filter entirely
+  const interval = period === 'month' ? '30 days' : '7 days';
+  const dateFilter =
+    period === 'all'
+      ? sql``
+      : sql`AND l.created_at >= NOW() - ${interval}::interval`;
 
   const top20 = await sql`
     SELECT
-      u.id, u.username, u.avatar_url, u.karma, u.streak,
-      COUNT(DISTINCT l.id) AS link_count
+      u.id, u.username, u.avatar_url, u.streak,
+      COUNT(DISTINCT l.id) AS link_count,
+      COALESCE(SUM(l.like_count), 0)::int AS like_count,
+      COALESCE(SUM(l.comment_count), 0)::int AS comment_count
     FROM users u
     LEFT JOIN links l ON l.user_id = u.id
-      AND l.created_at >= NOW() - ${interval}::interval
+      AND l.is_private = false
+      ${dateFilter}
     WHERE u.is_banned = false
     GROUP BY u.id
-    ORDER BY u.karma DESC
+    ORDER BY like_count DESC, comment_count DESC, link_count DESC
     LIMIT 20
   `;
 
@@ -29,16 +34,34 @@ export async function GET(req: NextRequest) {
   if (session) {
     const [row] = await sql`
       WITH ranked AS (
-        SELECT id, ROW_NUMBER() OVER (ORDER BY karma DESC) as rank
-        FROM users WHERE is_banned = false
+        SELECT
+          u.id,
+          ROW_NUMBER() OVER (
+            ORDER BY COALESCE(SUM(l.like_count), 0) DESC,
+                     COALESCE(SUM(l.comment_count), 0) DESC,
+                     COUNT(DISTINCT l.id) DESC
+          ) as rank
+        FROM users u
+        LEFT JOIN links l ON l.user_id = u.id
+          AND l.is_private = false
+          ${dateFilter}
+        WHERE u.is_banned = false
+        GROUP BY u.id
       )
       SELECT rank FROM ranked WHERE id = ${session.user_id}
     `;
+
     if (row) {
       const [userStats] = await sql`
-        SELECT u.id, u.username, u.avatar_url, u.karma, u.streak, COUNT(DISTINCT l.id) as link_count
+        SELECT
+          u.id, u.username, u.avatar_url, u.streak,
+          COUNT(DISTINCT l.id) as link_count,
+          COALESCE(SUM(l.like_count), 0)::int AS like_count,
+          COALESCE(SUM(l.comment_count), 0)::int AS comment_count
         FROM users u
-        LEFT JOIN links l ON l.user_id = u.id AND l.created_at >= NOW() - ${interval}::interval
+        LEFT JOIN links l ON l.user_id = u.id
+          AND l.is_private = false
+          ${dateFilter}
         WHERE u.id = ${session.user_id}
         GROUP BY u.id
       `;

@@ -246,7 +246,7 @@ export default function ProfilePage({ params }: { params: { username: string } }
                   </div>
                   <p className="profile-bio">{profile.bio || 'No bio yet.'}</p>
                   <div className="profile-stats">
-                    <span className="stat-item"><b>{profile.karma}</b> karma</span>
+                    <span className="stat-item"><b>{profile.like_count}</b> likes</span>
                     <span className="stat-item"><b>{profile.link_count}</b> posts</span>
                     <span className="stat-item clickable" onClick={() => openPopup('followers')}><b>{profile.follower_count}</b> followers</span>
                     <span className="stat-item clickable" onClick={() => openPopup('following')}><b>{profile.following_count}</b> following</span>
@@ -310,7 +310,7 @@ export default function ProfilePage({ params }: { params: { username: string } }
                       </div>
                       <div className="user-details">
                         <span className="u-name">@{u.username}</span>
-                        <span className="u-karma">{u.karma} karma</span>
+                        <span className="u-meta">{u.link_count ?? 0} posts</span>
                       </div>
                     </Link>
                   ))

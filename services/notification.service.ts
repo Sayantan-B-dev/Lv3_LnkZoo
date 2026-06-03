@@ -3,7 +3,7 @@ import sql from '@/lib/db';
 interface NotifParams {
   user_id: string;
   actor_id: string;
-  type: 'upvote' | 'reply' | 'follow' | 'mention';
+  type: 'like' | 'reply' | 'follow' | 'mention';
   entity_id: string;
   message: string;
 }

@@ -21,7 +21,11 @@ export async function GET(req: NextRequest) {
   if (query) {
     rows = await sql`
       SELECT l.id, l.title, l.description, l.original_url, l.short_code,
-             l.preview_image, l.is_anonymous, l.upvote_count, l.downvote_count,
+             l.preview_image, l.is_anonymous, l.like_count,
+             EXISTS (
+               SELECT 1 FROM link_likes ll
+               WHERE ll.link_id = l.id AND ll.user_id = ${session?.user_id ?? null}
+             ) AS liked_by_user,
              l.comment_count, l.view_count, l.created_at,
              u.username, u.avatar_url,
              ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) AS tags
@@ -32,13 +36,17 @@ export async function GET(req: NextRequest) {
       WHERE (LOWER(l.title) LIKE ${'%' + query + '%'} OR LOWER(t.name) LIKE ${'%' + query + '%'})
         AND l.is_private = false
       GROUP BY l.id, u.username, u.avatar_url
-      ORDER BY l.upvote_count DESC
+      ORDER BY l.like_count DESC
       LIMIT ${limit} OFFSET ${offset}
     `;
   } else if (tab === 'following' && session) {
     rows = await sql`
       SELECT l.id, l.title, l.description, l.original_url, l.short_code,
-             l.preview_image, l.is_anonymous, l.upvote_count, l.downvote_count,
+             l.preview_image, l.is_anonymous, l.like_count,
+             EXISTS (
+               SELECT 1 FROM link_likes ll
+               WHERE ll.link_id = l.id AND ll.user_id = ${session?.user_id ?? null}
+             ) AS liked_by_user,
              l.comment_count, l.view_count, l.created_at,
              u.username, u.avatar_url,
              ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) AS tags
@@ -56,7 +64,11 @@ export async function GET(req: NextRequest) {
   } else if (tag) {
     rows = await sql`
       SELECT l.id, l.title, l.description, l.original_url, l.short_code,
-             l.preview_image, l.is_anonymous, l.upvote_count, l.downvote_count,
+             l.preview_image, l.is_anonymous, l.like_count,
+             EXISTS (
+               SELECT 1 FROM link_likes ll
+               WHERE ll.link_id = l.id AND ll.user_id = ${session?.user_id ?? null}
+             ) AS liked_by_user,
              l.comment_count, l.view_count, l.created_at,
              u.username, u.avatar_url,
              ARRAY_AGG(DISTINCT t2.name) FILTER (WHERE t2.name IS NOT NULL) AS tags
@@ -68,13 +80,17 @@ export async function GET(req: NextRequest) {
       LEFT JOIN tags t2 ON t2.id = lt2.tag_id
       WHERE l.is_private = false
       GROUP BY l.id, u.username, u.avatar_url
-      ORDER BY l.upvote_count DESC
+      ORDER BY l.like_count DESC
       LIMIT ${limit} OFFSET ${offset}
     `;
   } else if (sort === 'top') {
     rows = await sql`
       SELECT l.id, l.title, l.description, l.original_url, l.short_code,
-             l.preview_image, l.is_anonymous, l.upvote_count, l.downvote_count,
+             l.preview_image, l.is_anonymous, l.like_count,
+             EXISTS (
+               SELECT 1 FROM link_likes ll
+               WHERE ll.link_id = l.id AND ll.user_id = ${session?.user_id ?? null}
+             ) AS liked_by_user,
              l.comment_count, l.view_count, l.created_at,
              u.username, u.avatar_url,
              ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) AS tags
@@ -84,13 +100,17 @@ export async function GET(req: NextRequest) {
       LEFT JOIN tags t ON t.id = lt.tag_id
       WHERE l.is_private = false
       GROUP BY l.id, u.username, u.avatar_url
-      ORDER BY l.upvote_count DESC
+      ORDER BY l.like_count DESC
       LIMIT ${limit} OFFSET ${offset}
     `;
   } else if (sort === 'new') {
     rows = await sql`
       SELECT l.id, l.title, l.description, l.original_url, l.short_code,
-             l.preview_image, l.is_anonymous, l.upvote_count, l.downvote_count,
+             l.preview_image, l.is_anonymous, l.like_count,
+             EXISTS (
+               SELECT 1 FROM link_likes ll
+               WHERE ll.link_id = l.id AND ll.user_id = ${session?.user_id ?? null}
+             ) AS liked_by_user,
              l.comment_count, l.view_count, l.created_at,
              u.username, u.avatar_url,
              ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) AS tags
@@ -104,16 +124,18 @@ export async function GET(req: NextRequest) {
       LIMIT ${limit} OFFSET ${offset}
     `;
   } else {
-    // "hot" — Wilson score approximation: upvotes weighted + recency decay
+    // "hot" — likes with recency decay
     rows = await sql`
       SELECT l.id, l.title, l.description, l.original_url, l.short_code,
-             l.preview_image, l.is_anonymous, l.upvote_count, l.downvote_count,
+             l.preview_image, l.is_anonymous, l.like_count,
+             EXISTS (
+               SELECT 1 FROM link_likes ll
+               WHERE ll.link_id = l.id AND ll.user_id = ${session?.user_id ?? null}
+             ) AS liked_by_user,
              l.comment_count, l.view_count, l.created_at,
              u.username, u.avatar_url,
              ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) AS tags,
-             (l.upvote_count - l.downvote_count +
-              EXTRACT(EPOCH FROM l.created_at - '2020-01-01'::timestamp) / 45000.0
-             ) AS hot_score
+             (l.like_count / POWER(EXTRACT(EPOCH FROM (NOW() - l.created_at)) / 3600.0 + 2, 1.2)) AS hot_score
       FROM links l
       JOIN users u ON l.user_id = u.id
       LEFT JOIN link_tags lt ON lt.link_id = l.id
@@ -168,11 +190,10 @@ export async function POST(req: NextRequest) {
       `;
     }
 
-    // Gamification: update karma + streak
+    // Keep posting streak lightweight; ranking is based on likes.
     await sql`
       UPDATE users
-      SET karma = karma + 5,
-          last_post_date = CURRENT_DATE,
+      SET last_post_date = CURRENT_DATE,
           streak = CASE
             WHEN last_post_date = CURRENT_DATE - 1 THEN streak + 1
             WHEN last_post_date = CURRENT_DATE THEN streak

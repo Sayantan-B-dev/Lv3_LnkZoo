@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
   if (!linkId) return NextResponse.json({ error: 'link_id required' }, { status: 400 });
 
   const rows = await sql`
-    SELECT c.id, c.parent_id, c.content, c.upvote_count, c.is_deleted, c.created_at,
+    SELECT c.id, c.parent_id, c.content, c.is_deleted, c.created_at,
            u.username, u.avatar_url
     FROM comments c
     LEFT JOIN users u ON c.user_id = u.id
@@ -37,7 +37,6 @@ export async function POST(req: NextRequest) {
   `;
 
   await sql`UPDATE links SET comment_count = comment_count + 1 WHERE id = ${linkId}`;
-  await sql`UPDATE users SET karma = karma + 1 WHERE id = ${session.user_id}`;
 
   // Notify link author (if different)
   const [link] = await sql`SELECT user_id, title FROM links WHERE id = ${linkId}`;

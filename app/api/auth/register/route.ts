@@ -45,7 +45,6 @@ export async function POST(req: NextRequest) {
           username: user.username, 
           email: email.toLowerCase(),
           is_admin: user.is_admin,
-          karma: 0,
           streak: 0
         } 
       },

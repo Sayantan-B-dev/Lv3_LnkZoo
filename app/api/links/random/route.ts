@@ -1,14 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
+import { getSessionFromRequest } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
+  const session = await getSessionFromRequest(req);
   const excludeId = req.nextUrl.searchParams.get('exclude') || null;
 
   try {
     const rows = await sql`
       SELECT l.*, u.username, u.avatar_url,
+             EXISTS (
+               SELECT 1 FROM link_likes ll
+               WHERE ll.link_id = l.id AND ll.user_id = ${session?.user_id ?? null}
+             ) AS liked_by_user,
              (SELECT ARRAY_AGG(t.name) FROM link_tags lt JOIN tags t ON lt.tag_id = t.id WHERE lt.link_id = l.id) as tags
       FROM links l
       JOIN users u ON l.user_id = u.id
@@ -22,6 +28,10 @@ export async function GET(req: NextRequest) {
       // If no result (could happen if we exclude the only link), fetch ANY link
       const fallback = await sql`
         SELECT l.*, u.username, u.avatar_url,
+               EXISTS (
+                 SELECT 1 FROM link_likes ll
+                 WHERE ll.link_id = l.id AND ll.user_id = ${session?.user_id ?? null}
+               ) AS liked_by_user,
                (SELECT ARRAY_AGG(t.name) FROM link_tags lt JOIN tags t ON lt.tag_id = t.id WHERE lt.link_id = l.id) as tags
         FROM links l
         JOIN users u ON l.user_id = u.id

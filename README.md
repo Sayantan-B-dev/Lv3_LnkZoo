@@ -6,7 +6,7 @@ Glinqx is a modern, high-performance community platform designed for sharing, di
 
 * **Advanced Discovery Engine**: Navigate the web through tags, community leaderboards, or spin the **Internet Roulette** for an automated, auto-playing slideshow of top-tier content.
 * **Premium Interactive UI**: Experience a sleek dark-mode interface with glassmorphism, dynamic scaling, and a fully customizable "antigravity" background particle system that reacts to your cursor.
-* **Robust Social Features**: Follow users, build karma, track streaks, and earn verification badges. Dive deep into infinite nested comment threads with real-time upvoting and downvoting.
+* **Robust Social Features**: Follow users, track streaks, and earn verification badges. Dive deep into infinite nested comment threads with real-time upvoting and downvoting.
 * **Cloudinary Image Cropping**: Seamlessly upload and crop high-quality avatar and cover images directly from your profile, stored securely via Cloudinary.
 * **Smart Search & Tag Graphing**: Find exactly what you're looking for with instantaneous search and explore dynamic relationships between content tags.
 * **Authentication**: Secure JWT-based session management with support for Google OAuth and standard credential logins.

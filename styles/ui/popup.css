@@ -107,3 +107,78 @@
 .popup-body::-webkit-scrollbar-thumb {
   background: var(--border)
 }
+
+/* ── CONFIRM MODAL ──────────────────────────────────── */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(0, 0, 0, .6);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn .15s ease;
+}
+
+.confirm-box {
+  background: var(--bg-1);
+  border: 1px solid var(--border-md);
+  border-radius: 10px;
+  padding: 24px 28px;
+  width: min(380px, 90vw);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.4);
+  animation: fadeIn .18s ease;
+}
+
+.confirm-message {
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.confirm-cancel-btn {
+  padding: 7px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  border: 1px solid var(--border-md);
+  color: var(--text-3);
+  background: transparent;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+
+.confirm-cancel-btn:hover {
+  background: var(--bg-2);
+  color: var(--text);
+}
+
+.confirm-ok-btn {
+  padding: 7px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  background: var(--text-4);
+  color: var(--bg);
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: opacity .15s;
+}
+
+.confirm-ok-btn.danger {
+  background: #e53e3e;
+  color: #fff;
+}
+
+.confirm-ok-btn:hover {
+  opacity: .85;
+}

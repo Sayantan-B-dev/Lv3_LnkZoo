@@ -82,7 +82,7 @@
     color: var(--text-3);
 }
 
-.stats.karma {
+.stats.likes {
     color: var(--text);
     font-weight: 500;
 }

@@ -14,7 +14,6 @@ CREATE TABLE users (
   bio              TEXT,
   website          TEXT,
   interests        TEXT[]       DEFAULT '{}',     -- tag names user cares about
-  karma            INT          DEFAULT 0,
   streak           INT          DEFAULT 0,
   last_post_date   DATE,
   is_admin         BOOLEAN      DEFAULT false,
@@ -65,8 +64,7 @@ CREATE TABLE links (
   is_anonymous          BOOLEAN DEFAULT false,     -- hide poster identity
   is_promoted           BOOLEAN DEFAULT false,
   flagged_count         INT     DEFAULT 0,
-  upvote_count          INT     DEFAULT 0,
-  downvote_count        INT     DEFAULT 0,
+  like_count            INT     DEFAULT 0,
   comment_count         INT     DEFAULT 0,
   view_count            INT     DEFAULT 0,
   click_count           INT     DEFAULT 0,         -- short link clicks
@@ -84,12 +82,12 @@ CREATE TABLE link_tags (
 );
 
 -- ─────────────────────────────────────────
--- LINK VOTES (upvote = 1, downvote = -1)
+-- LINK LIKES
 -- ─────────────────────────────────────────
-CREATE TABLE link_votes (
-  user_id  UUID     REFERENCES users(id) ON DELETE CASCADE,
-  link_id  UUID     REFERENCES links(id) ON DELETE CASCADE,
-  vote     SMALLINT CHECK (vote IN (1, -1)),
+CREATE TABLE link_likes (
+  user_id    UUID      REFERENCES users(id) ON DELETE CASCADE,
+  link_id    UUID      REFERENCES links(id) ON DELETE CASCADE,
+  created_at TIMESTAMP DEFAULT NOW(),
   PRIMARY KEY (user_id, link_id)
 );
 
@@ -102,19 +100,9 @@ CREATE TABLE comments (
   user_id       UUID REFERENCES users(id)    ON DELETE SET NULL,
   parent_id     UUID REFERENCES comments(id) ON DELETE CASCADE,
   content       TEXT    NOT NULL,
-  upvote_count  INT     DEFAULT 0,
   is_deleted    BOOLEAN DEFAULT false,         -- soft delete (keep thread shape)
   created_at    TIMESTAMP DEFAULT NOW(),
   updated_at    TIMESTAMP DEFAULT NOW()
-);
-
--- ─────────────────────────────────────────
--- COMMENT VOTES (upvote only)
--- ─────────────────────────────────────────
-CREATE TABLE comment_votes (
-  user_id    UUID REFERENCES users(id)    ON DELETE CASCADE,
-  comment_id UUID REFERENCES comments(id) ON DELETE CASCADE,
-  PRIMARY KEY (user_id, comment_id)
 );
 
 -- ─────────────────────────────────────────
@@ -136,7 +124,7 @@ CREATE TABLE notifications (
   id         SERIAL PRIMARY KEY,
   user_id    UUID REFERENCES users(id) ON DELETE CASCADE,  -- recipient
   actor_id   UUID REFERENCES users(id) ON DELETE SET NULL, -- who triggered it
-  type       VARCHAR(50) NOT NULL,  -- 'reply' | 'follow' | 'upvote' | 'mention'
+  type       VARCHAR(50) NOT NULL,  -- 'reply' | 'follow' | 'like' | 'mention'
   entity_id  UUID,                  -- link_id or comment_id
   message    TEXT,
   is_read    BOOLEAN   DEFAULT false,
@@ -149,7 +137,7 @@ CREATE TABLE notifications (
 CREATE INDEX idx_links_user_id        ON links(user_id);
 CREATE INDEX idx_links_created_at     ON links(created_at DESC);
 CREATE INDEX idx_links_short_code     ON links(short_code);
-CREATE INDEX idx_links_upvotes        ON links(upvote_count DESC);
+CREATE INDEX idx_links_likes          ON links(like_count DESC);
 CREATE INDEX idx_comments_link_id     ON comments(link_id);
 CREATE INDEX idx_comments_parent_id   ON comments(parent_id);
 CREATE INDEX idx_tags_normalized      ON tags(normalized_name);
@@ -157,3 +145,4 @@ CREATE INDEX idx_link_tags_tag_id     ON link_tags(tag_id);
 CREATE INDEX idx_notifications_user   ON notifications(user_id, is_read);
 CREATE INDEX idx_follows_follower     ON follows(follower_id);
 CREATE INDEX idx_follows_followee     ON follows(followee_id);
+CREATE INDEX idx_link_likes_link_id   ON link_likes(link_id);

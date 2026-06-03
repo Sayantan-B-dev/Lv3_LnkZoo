@@ -18,7 +18,7 @@ export async function PATCH(req: NextRequest) {
           website = ${website ?? null},
           interests = ${interests ?? null}
       WHERE id = ${session.user_id}
-      RETURNING id, username, email, avatar_url, cover_url, bio, website, interests, karma, streak, is_admin
+      RETURNING id, username, email, avatar_url, cover_url, bio, website, interests,  streak, is_admin
     `;
 
     return NextResponse.json({ user });

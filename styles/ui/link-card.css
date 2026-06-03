@@ -165,12 +165,19 @@
   gap: 4px;
   font-size: 10px;
   color: var(--text-4);
+  background: none;
+  border: 0;
+  padding: 0;
   transition: color var(--t);
   cursor: pointer;
 }
 
 .card-stat:hover {
   color: var(--text-2)
+}
+
+.like-stat.active {
+  color: var(--text);
 }
 
 .card-stat svg {

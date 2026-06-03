@@ -56,6 +56,20 @@ export default function RandomPage() {
     }
   }, [countdown, loading, isPaused, fetchRandom, link?.id]);
 
+  const handleLike = async () => {
+    if (!link) return;
+
+    const res = await fetch(`/api/links/${link.id}/like`, { method: 'POST' });
+    if (res.status === 401) {
+      window.location.href = `/login?from=/random`;
+      return;
+    }
+    if (res.ok) {
+      const data = await res.json();
+      setLink({ ...link, like_count: data.like_count, liked_by_user: data.liked });
+    }
+  };
+
   return (
     <div id="app">
       <CustomCursor />
@@ -92,12 +106,12 @@ export default function RandomPage() {
                   </div>
                   <div className="card-footer" style={{ borderTop: '1px solid var(--border)', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <a href={link.original_url} target="_blank" rel="noopener" className="visit-btn" onClick={() => setIsPaused(true)}>Visit Discovery ↗</a>
-                    {/* <div className="card-stats" style={{ display: 'flex', gap: '16px' }}>
-                      <span className="card-stat" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"/></svg>
-                        {link.upvote_count}
-                      </span>
-                    </div> */}
+                    <button onClick={handleLike} className={`like-btn ${link.liked_by_user ? 'active' : ''}`}>
+                      <svg width="14" height="14" fill={link.liked_by_user ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.35-1.92-4.25-4.29-4.25-1.69 0-3.15.97-3.85 2.38A4.32 4.32 0 008.86 4C6.48 4 4.5 5.9 4.5 8.25c0 6.03 7.5 10.75 7.5 10.75s9-4.72 9-10.75z" />
+                      </svg>
+                      {link.like_count ?? 0}
+                    </button>
                   </div>
                 </div>
               </div>

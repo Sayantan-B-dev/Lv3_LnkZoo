@@ -7,7 +7,7 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
   try {
     const rows = await sql`
       SELECT l.id, l.title, l.description, l.original_url, l.short_code,
-             l.preview_image, l.is_anonymous, l.upvote_count, l.downvote_count,
+             l.preview_image, l.is_anonymous, l.like_count,
              l.comment_count, l.view_count, l.created_at,
              ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) AS tags
       FROM links l

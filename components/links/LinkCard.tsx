@@ -15,7 +15,7 @@ interface LinkCardProps {
   showPoster?: boolean;
   showDescription?: boolean;
   doseNumber?: number;
-  onVote?: (linkId: string, vote: number) => Promise<void>;
+  onLike?: (linkId: string) => Promise<void>;
   onClick?: () => void;
   isClickable?: boolean;
 }
@@ -31,20 +31,37 @@ export default function LinkCard({
   showPoster = true,
   showDescription = true,
   doseNumber,
-  onVote,
+  onLike,
   onClick,
   isClickable = true,
 }: LinkCardProps) {
   const router = useRouter();
+  const [likeCount, setLikeCount] = React.useState(link.like_count ?? 0);
+  const [likedByUser, setLikedByUser] = React.useState(!!link.liked_by_user);
 
-  const handleVote = async (e: React.MouseEvent, vote: number) => {
+  React.useEffect(() => {
+    setLikeCount(link.like_count ?? 0);
+    setLikedByUser(!!link.liked_by_user);
+  }, [link.like_count, link.liked_by_user]);
+
+  const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!onVote) {
-      window.location.href = `/login?from=${window.location.pathname}`;
-      return;
-    }
     try {
-      await onVote(link.id, vote);
+      if (onLike) {
+        await onLike(link.id);
+        return;
+      }
+
+      const res = await fetch(`/api/links/${link.id}/like`, { method: 'POST' });
+      if (res.status === 401) {
+        window.location.href = `/login?from=${window.location.pathname}`;
+        return;
+      }
+      if (res.ok) {
+        const data = await res.json();
+        setLikedByUser(data.liked);
+        setLikeCount(data.like_count);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -60,6 +77,30 @@ export default function LinkCard({
 
   const domain = new URL(link.original_url).hostname;
   const date = new Date(link.created_at).toLocaleDateString();
+
+  const renderFooter = () => (
+    <div className="card-footer">
+      <button
+        className={`card-stat like-stat ${likedByUser ? 'active' : ''}`}
+        onClick={handleLike}
+        type="button"
+        title={likedByUser ? 'Unlike' : 'Like'}
+      >
+        <svg width="14" height="14" fill={likedByUser ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.35-1.92-4.25-4.29-4.25-1.69 0-3.15.97-3.85 2.38A4.32 4.32 0 008.86 4C6.48 4 4.5 5.9 4.5 8.25c0 6.03 7.5 10.75 7.5 10.75s9-4.72 9-10.75z" />
+        </svg>
+        <span>{likeCount}</span>
+      </button>
+      {showComments && (
+        <span className="card-stat">
+          <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+          </svg>
+          <span>{link.comment_count ?? 0}</span>
+        </span>
+      )}
+    </div>
+  );
 
   // Full variant - complete card with votes and all info
   if (variant === 'full') {
@@ -116,25 +157,7 @@ export default function LinkCard({
             </div>
           )}
 
-          {/* <div className="card-footer">
-            {showComments && (
-              <div className="card-stat">
-                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
-                </svg>
-                {link.comment_count}
-              </div>
-            )}
-            {showViews && (
-              <span className="card-stat">
-                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                {link.view_count}
-              </span>
-            )}
-          </div> */}
+          {renderFooter()}
         </div>
       </div>
     );
@@ -172,11 +195,7 @@ export default function LinkCard({
               ))}
             </div>
           )}
-          {/* <div className="card-meta">
-            <span className="card-domain">{domain}</span>
-            {showComments && <span className="card-stat">💬 {link.comment_count}</span>}
-            {showVotes && <span className="card-stat">▲ {link.upvote_count}</span>}
-          </div> */}
+          {renderFooter()}
         </div>
       </div>
     );
@@ -213,10 +232,7 @@ export default function LinkCard({
               ))}
             </div>
           )}
-          {/* <div className="card-footer">
-            {showVotes && <span className="card-stat">▲ {link.upvote_count}</span>}
-            {showComments && <span className="card-stat">● {link.comment_count}</span>}
-          </div> */}
+          {renderFooter()}
         </div>
       </Link>
     );
@@ -255,10 +271,7 @@ export default function LinkCard({
               ))}
             </div>
           )}
-            {/* <div className="card-footer">
-              {showVotes && <span className="card-stat">▲ {link.upvote_count}</span>}
-              {showComments && <span className="card-stat">💬 {link.comment_count}</span>}
-            </div> */}
+            {renderFooter()}
           </div>
           {showPreview && link.preview_image && (
             <div className="card-preview" style={{ width: '100px', height: '70px' }}>

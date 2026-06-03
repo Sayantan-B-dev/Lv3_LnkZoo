@@ -53,7 +53,7 @@ export default function Leaderboard() {
             <div className="leaderboard-header">
               <span className="rank">#</span>
               <span className="user">User</span>
-              <span className="stats">Karma</span>
+              <span className="stats">Likes</span>
               <span className="stats">Links</span>
             </div>
 
@@ -81,7 +81,7 @@ export default function Leaderboard() {
                       </span>
                     )}
                   </div>
-                  <span className="stats karma">{user.karma.toLocaleString()}</span>
+                  <span className="stats likes">{user.like_count.toLocaleString()}</span>
                   <span className="stats">{user.link_count}</span>
                 </div>
               ))
@@ -106,7 +106,7 @@ export default function Leaderboard() {
                       </span>
                     )}
                   </div>
-                  <span className="stats karma">{userRank.karma.toLocaleString()}</span>
+                  <span className="stats likes">{userRank.like_count.toLocaleString()}</span>
                   <span className="stats">{userRank.link_count}</span>
                 </div>
               </>

@@ -7,6 +7,7 @@ import Topbar from '@/components/common/Topbar';
 import NotificationPanel from '@/components/common/NotificationPanel';
 import CustomCursor from '@/components/common/CustomCursor';
 import AnimatedBg from '@/components/common/AnimatedBg';
+import ConfirmModal from '@/components/common/ConfirmModal';
 import { useAuth } from '@/context/AuthContext';
 
 export default function LinkDetailPage({ params }: { params: { id: string } }) {
@@ -16,6 +17,10 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(true);
+
+  const [confirm, setConfirm] = useState<{ message: string; onConfirm: () => void } | null>(null);
+  const openConfirm = (message: string, onConfirm: () => void) => setConfirm({ message, onConfirm });
+  const closeConfirm = () => setConfirm(null);
 
   const [isEditingLink, setIsEditingLink] = useState(false);
   const [editLinkData, setEditLinkData] = useState({ title: '', description: '' });
@@ -65,31 +70,28 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
     }
   };
 
-  const handleCommentDelete = async (commentId: string) => {
-    if (!confirm('Delete this comment?')) return;
-    try {
-      const res = await fetch(`/api/comments/${commentId}`, { method: 'DELETE' });
-      if (res.ok) {
-        setComments(comments.filter((c: any) => c.id !== commentId));
+  const handleCommentDelete = (commentId: string) => {
+    openConfirm('Delete this comment?', async () => {
+      closeConfirm();
+      try {
+        const res = await fetch(`/api/comments/${commentId}`, { method: 'DELETE' });
+        if (res.ok) setComments(comments.filter((c: any) => c.id !== commentId));
+      } catch (err) {
+        console.error('Comment delete failed', err);
       }
-    } catch (err) {
-      console.error('Comment delete failed', err);
-    }
+    });
   };
 
-  const handleVote = async (vote: number) => {
+  const handleLike = async () => {
     if (!user) {
       window.location.href = `/login?from=/link/${id}`;
       return;
     }
     try {
-      const res = await fetch(`/api/links/${id}/vote`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ vote }),
-      });
+      const res = await fetch(`/api/links/${id}/like`, { method: 'POST' });
       if (res.ok) {
-        fetchData(); // Refresh counts
+        const data = await res.json();
+        setLink((prev: any) => ({ ...prev, liked_by_user: data.liked, like_count: data.like_count }));
       }
     } catch (err) {
       console.error('Vote failed', err);
@@ -137,15 +139,6 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
         
         <div id="content">
           <div className="link-card detail">
-             {/* <div className="vote-col">
-                <button className="vote-btn up" onClick={() => handleVote(1)}>
-                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"/></svg>
-                </button>
-                <span className="vote-count">{link.upvote_count - link.downvote_count}</span>
-                <button className="vote-btn down" onClick={() => handleVote(-1)}>
-                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
-                </button>
-              </div> */}
               <div className="card-body">
                 <div className="card-meta">
                   <span className="card-domain">{new URL(link.original_url).hostname}</span>
@@ -175,15 +168,23 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
                 <div className="card-footer" style={{ marginTop: '20px', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', gap: '12px' }}>
                     <a href={link.original_url} target="_blank" rel="noopener" className="visit-btn">Open Link ↗</a>
+                    <button onClick={handleLike} className={`like-btn ${link.liked_by_user ? 'active' : ''}`}>
+                      <svg width="14" height="14" fill={link.liked_by_user ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.35-1.92-4.25-4.29-4.25-1.69 0-3.15.97-3.85 2.38A4.32 4.32 0 008.86 4C6.48 4 4.5 5.9 4.5 8.25c0 6.03 7.5 10.75 7.5 10.75s9-4.72 9-10.75z" />
+                      </svg>
+                      {link.like_count ?? 0}
+                    </button>
                     {user?.username === link.username && !isEditingLink && (
                       <button onClick={() => setIsEditingLink(true)} className="edit-link-btn">Edit</button>
                     )}
                   </div>
                   {user?.username === link.username && (
                     <button onClick={() => {
-                      if(confirm('Delete this link?')) {
-                        fetch(`/api/links/${id}`, { method: 'DELETE' }).then(() => window.location.href = '/');
-                      }
+                      openConfirm('Delete this link? This cannot be undone.', async () => {
+                        closeConfirm();
+                        await fetch(`/api/links/${id}`, { method: 'DELETE' });
+                        window.location.href = '/';
+                      });
                     }} className="delete-btn">Delete Link</button>
                   )}
                 </div>
@@ -222,7 +223,6 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
                     </div>
                     <div className="comment-content">{c.content}</div>
                     <div className="comment-actions">
-                      <span className="comment-stat">▲ {c.upvote_count}</span>
                       <span className="comment-stat">Reply</span>
                     </div>
                   </div>
@@ -232,7 +232,14 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
           </div>
         </div>
 
-
+        {confirm && (
+          <ConfirmModal
+            message={confirm.message}
+            onConfirm={confirm.onConfirm}
+            onCancel={closeConfirm}
+            danger={true}
+          />
+        )}
       </main>
     </div>
   );

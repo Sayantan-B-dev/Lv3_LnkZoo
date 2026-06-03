@@ -6,7 +6,8 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
 
   try {
     const rows = await sql`
-      SELECT u.id, u.username, u.avatar_url, u.karma
+      SELECT u.id, u.username, u.avatar_url,
+             (SELECT COUNT(*)::int FROM links WHERE user_id = u.id AND is_private = false) AS link_count
       FROM follows f
       JOIN users u ON f.followee_id = u.id
       JOIN users follower ON f.follower_id = follower.id

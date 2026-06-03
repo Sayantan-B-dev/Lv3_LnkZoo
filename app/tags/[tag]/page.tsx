@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation';
 export default function TagPage({ params }: { params: { tag: string } }) {
   const { tag } = params;
   const router = useRouter();
-  const [links, setLinks] = useState([]);
+  const [links, setLinks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,25 +34,20 @@ export default function TagPage({ params }: { params: { tag: string } }) {
     fetchLinks();
   }, [tag]);
 
-  const handleVote = async (id: string, vote: number) => {
+  const handleLike = async (id: string) => {
     try {
-      const res = await fetch(`/api/links/${id}/vote`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ vote }),
-      });
+      const res = await fetch(`/api/links/${id}/like`, { method: 'POST' });
       if (res.status === 401) {
         window.location.href = `/login?from=/tags/${tag}`;
         return;
       }
       if (res.ok) {
-        setLinks(links.map(link => {
-          if (link.id === id) {
-            if (vote === 1) link.upvote_count++;
-            else if (vote === -1) link.downvote_count++;
-          }
-          return link;
-        }));
+        const data = await res.json();
+        setLinks(links.map((link: any) => (
+          link.id === id
+            ? { ...link, like_count: data.like_count, liked_by_user: data.liked }
+            : link
+        )));
       }
     } catch (err) {
       console.error(err);
@@ -86,7 +81,7 @@ export default function TagPage({ params }: { params: { tag: string } }) {
                     key={link.id}
                     link={link}
                     variant="full"
-                    onVote={handleVote}
+                    onLike={handleLike}
                   />
                 ))
               )}

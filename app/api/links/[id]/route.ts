@@ -5,11 +5,16 @@ import { getSessionFromRequest } from '@/lib/auth';
 // ── GET /api/links/[id] ─────────────────────────────────────
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   const { id } = params;
+  const session = await getSessionFromRequest(req);
 
   const rows = await sql`
     SELECT l.id, l.title, l.description, l.original_url, l.short_code,
            l.preview_image, l.is_anonymous, l.is_private,
-           l.upvote_count, l.downvote_count, l.comment_count, l.view_count, l.click_count,
+           l.like_count, l.comment_count, l.view_count, l.click_count,
+           EXISTS (
+             SELECT 1 FROM link_likes ll
+             WHERE ll.link_id = l.id AND ll.user_id = ${session?.user_id ?? null}
+           ) AS liked_by_user,
            l.flagged_count, l.created_at, l.updated_at,
            u.username, u.avatar_url,
            ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) AS tags
@@ -36,8 +41,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 
   const [link] = await sql`SELECT user_id FROM links WHERE id = ${params.id}`;
   if (!link) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-
-  if (link.user_id !== session.user_id && !session.is_admin) {
+  if (link.user_id !== session.user_id) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
@@ -45,16 +49,26 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   return NextResponse.json({ ok: true });
 }
 
-// ── PATCH /api/links/[id] — flag ────────────────────────────
+// ── PATCH /api/links/[id] ───────────────────────────────────
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { action } = await req.json();
-  if (action === 'flag') {
-    await sql`UPDATE links SET flagged_count = flagged_count + 1 WHERE id = ${params.id}`;
-    return NextResponse.json({ ok: true });
+  const { title, description } = await req.json();
+  const [link] = await sql`SELECT user_id FROM links WHERE id = ${params.id}`;
+  if (!link) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  if (link.user_id !== session.user_id) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
-  return NextResponse.json({ error: 'Unknown action' }, { status: 400 });
+  const [updated] = await sql`
+    UPDATE links
+    SET title = COALESCE(${title ?? null}, title),
+        description = ${description ?? null},
+        updated_at = NOW()
+    WHERE id = ${params.id}
+    RETURNING id, title, description
+  `;
+
+  return NextResponse.json({ link: updated });
 }
