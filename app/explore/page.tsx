@@ -6,6 +6,7 @@ import Sidebar from '@/components/common/Sidebar';
 import Topbar from '@/components/common/Topbar';
 import CustomCursor from '@/components/common/CustomCursor';
 import AnimatedBg from '@/components/common/AnimatedBg';
+import LinkCard from '@/components/links/LinkCard';
 import { useRouter } from 'next/navigation';
 
 export default function Explore() {
@@ -98,15 +99,12 @@ export default function Explore() {
                   <div className="empty">No matches found.</div>
                 ) : (
                   searchResults.map((link: any) => (
-                    <div key={link.id} className="link-card mini" onClick={() => router.push(`/link/${link.id}`)} style={{ cursor: 'pointer' }}>
-                      <div className="card-body">
-                        <div className="card-title">{link.title}</div>
-                        <div className="card-meta">
-                          <span className="card-domain">{new URL(link.original_url).hostname}</span>
-                          <span className="card-stat">▲ {link.upvote_count}</span>
-                        </div>
-                      </div>
-                    </div>
+                    <LinkCard
+                      key={link.id}
+                      link={link}
+                      variant="mini"
+                      showComments={true}
+                    />
                   ))
                 )}
               </div>
@@ -140,15 +138,13 @@ export default function Explore() {
                     ))
                   ) : (
                     latestLinks.map((link: any) => (
-                      <div key={link.id} className="link-card mini" onClick={() => router.push(`/link/${link.id}`)} style={{ cursor: 'pointer' }}>
-                        <div className="card-body">
-                          <div className="card-title">{link.title}</div>
-                          <div className="card-meta">
-                            <span className="card-domain">{new URL(link.original_url).hostname}</span>
-                            <span className="card-time">{new Date(link.created_at).toLocaleDateString()}</span>
-                          </div>
-                        </div>
-                      </div>
+                      <LinkCard
+                        key={link.id}
+                        link={link}
+                        variant="mini"
+                        showVotes={false}
+                        showComments={false}
+                      />
                     ))
                   )}
                 </div>
@@ -156,8 +152,6 @@ export default function Explore() {
             </>
           )}
         </div>
-
-
       </main>
     </div>
   );

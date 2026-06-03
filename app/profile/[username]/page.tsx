@@ -7,6 +7,7 @@ import Topbar from '@/components/common/Topbar';
 import NotificationPanel from '@/components/common/NotificationPanel';
 import CustomCursor from '@/components/common/CustomCursor';
 import AnimatedBg from '@/components/common/AnimatedBg';
+import LinkCard from '@/components/links/LinkCard';
 import { useAuth } from '@/context/AuthContext';
 import Cropper from 'react-easy-crop';
 
@@ -272,19 +273,13 @@ export default function ProfilePage({ params }: { params: { username: string } }
                 <div className="empty">No posts yet.</div>
               ) : (
                 links.map((link: any) => (
-                  <Link href={`/link/${link.id}`} key={link.id} className="link-card">
-                    <div className="card-body">
-                      <div className="card-meta">
-                        <span className="card-domain">{new URL(link.original_url).hostname}</span>
-                        <span className="card-time">{new Date(link.created_at).toLocaleDateString()}</span>
-                      </div>
-                      <div className="card-title">{link.title}</div>
-                      <div className="card-footer">
-                        <span className="card-stat">▲ {link.upvote_count}</span>
-                        <span className="card-stat">● {link.comment_count}</span>
-                      </div>
-                    </div>
-                  </Link>
+                  <LinkCard
+                    key={link.id}
+                    link={link}
+                    variant="profile"
+                    showVotes={true}
+                    showComments={true}
+                  />
                 ))
               )}
             </div>

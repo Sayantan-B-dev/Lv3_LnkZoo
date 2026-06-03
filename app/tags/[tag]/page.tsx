@@ -7,6 +7,7 @@ import NotificationPanel from '@/components/common/NotificationPanel';
 import CustomCursor from '@/components/common/CustomCursor';
 import AnimatedBg from '@/components/common/AnimatedBg';
 import Link from 'next/link';
+import LinkCard from '@/components/links/LinkCard';
 import { useRouter } from 'next/navigation';
 
 export default function TagPage({ params }: { params: { tag: string } }) {
@@ -33,6 +34,31 @@ export default function TagPage({ params }: { params: { tag: string } }) {
     fetchLinks();
   }, [tag]);
 
+  const handleVote = async (id: string, vote: number) => {
+    try {
+      const res = await fetch(`/api/links/${id}/vote`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ vote }),
+      });
+      if (res.status === 401) {
+        window.location.href = `/login?from=/tags/${tag}`;
+        return;
+      }
+      if (res.ok) {
+        setLinks(links.map(link => {
+          if (link.id === id) {
+            if (vote === 1) link.upvote_count++;
+            else if (vote === -1) link.downvote_count++;
+          }
+          return link;
+        }));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div id="app">
       <CustomCursor />
@@ -56,36 +82,12 @@ export default function TagPage({ params }: { params: { tag: string } }) {
                 <div className="empty">No posts found with this tag.</div>
               ) : (
                 links.map((link: any) => (
-                  <div 
-                    key={link.id} 
-                    className="link-card" 
-                    onClick={() => router.push(`/link/${link.id}`)}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <div className="vote-col" onClick={(e) => e.stopPropagation()}>
-                      <button className="vote-btn up">▲</button>
-                      <span className="vote-count">{link.upvote_count - link.downvote_count}</span>
-                      <button className="vote-btn down">▼</button>
-                    </div>
-                    <div className="card-body">
-                      <div className="card-meta">
-                        <span className="card-domain">{new URL(link.original_url).hostname}</span>
-                        <span className="card-poster" onClick={(e) => e.stopPropagation()}>
-                          {link.is_anonymous ? <span className="anon-badge">anon</span> : <Link href={`/profile/${link.username}`}>@{link.username}</Link>}
-                        </span>
-                        <span className="card-time">{new Date(link.created_at).toLocaleDateString()}</span>
-                      </div>
-                      <div className="card-title" style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text)', marginBottom: '5px' }}>
-                        {link.title}
-                      </div>
-                      <div className="card-desc">{link.description}</div>
-                      <div className="card-tags" onClick={(e) => e.stopPropagation()}>
-                        {link.tags?.map((t: string) => (
-                          <Link key={t} href={`/tags/${t}`} className={`tag ${t === tag ? 'active' : ''}`}>#{t}</Link>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                  <LinkCard
+                    key={link.id}
+                    link={link}
+                    variant="full"
+                    onVote={handleVote}
+                  />
                 ))
               )}
             </div>

@@ -6,6 +6,7 @@ import Sidebar from '@/components/common/Sidebar';
 import Topbar from '@/components/common/Topbar';
 import CustomCursor from '@/components/common/CustomCursor';
 import AnimatedBg from '@/components/common/AnimatedBg';
+import LinkCard from '@/components/links/LinkCard';
 
 import { useRouter } from 'next/navigation';
 
@@ -50,8 +51,7 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  const handleVote = async (e: React.MouseEvent, id: string, vote: number) => {
-    e.stopPropagation();
+  const handleVote = async (id: string, vote: number) => {
     try {
       const res = await fetch(`/api/links/${id}/vote`, {
         method: 'POST',
@@ -111,43 +111,12 @@ export default function Home() {
                 <div className="empty">No results found.</div>
               ) : (
                 links.map((link: any) => (
-                  <div key={link.id} className="link-card" onClick={() => router.push(`/link/${link.id}`)} style={{ cursor: 'pointer' }}>
-                    <div className="vote-col" onClick={(e) => e.stopPropagation()}>
-                      <button className="vote-btn up" onClick={(e) => handleVote(e, link.id, 1)}>
-                        <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"/></svg>
-                      </button>
-                      <span className="vote-count">{link.upvote_count - link.downvote_count}</span>
-                      <button className="vote-btn down" onClick={(e) => handleVote(e, link.id, -1)}>
-                        <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
-                      </button>
-                    </div>
-                    <div className="card-body">
-                      <div className="card-meta">
-                        <span className="card-domain">{new URL(link.original_url).hostname}</span>
-                        <span className="card-poster" onClick={(e) => e.stopPropagation()}>
-                          {link.is_anonymous ? <span className="anon-badge">anon</span> : <Link href={`/profile/${link.username}`}>@{link.username}</Link>}
-                        </span>
-                        <span className="card-time">{new Date(link.created_at).toLocaleDateString()}</span>
-                      </div>
-                      <div className="card-title" style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text)', marginBottom: '5px' }}>{link.title}</div>
-                      <div className="card-desc">{link.description}</div>
-                      <div className="card-tags" onClick={(e) => e.stopPropagation()}>
-                        {link.tags?.map((tag: string) => (
-                          <Link key={tag} href={`/tags/${tag}`} className="tag">#{tag}</Link>
-                        ))}
-                      </div>
-                      <div className="card-footer">
-                        <div className="card-stat">
-                          <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
-                          {link.comment_count}
-                        </div>
-                        <span className="card-stat">
-                          <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                          {link.view_count}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+                  <LinkCard
+                    key={link.id}
+                    link={link}
+                    variant="full"
+                    onVote={handleVote}
+                  />
                 ))
               )}
             </div>

@@ -7,6 +7,7 @@ import Topbar from '@/components/common/Topbar';
 import NotificationPanel from '@/components/common/NotificationPanel';
 import CustomCursor from '@/components/common/CustomCursor';
 import AnimatedBg from '@/components/common/AnimatedBg';
+import LinkCard from '@/components/links/LinkCard';
 
 export default function DailyDose() {
   const [links, setLinks] = useState([]);
@@ -54,30 +55,15 @@ export default function DailyDose() {
               <div className="empty">The community was quiet today. check back soon!</div>
             ) : (
               links.map((link: any, index: number) => (
-                <div key={link.id} className="dose-card">
-                  <div className="dose-number">0{index + 1}</div>
-                  <div className="link-card" style={{ flex: 1, marginBottom: 0 }}>
-                    <div className="card-body">
-                      <div className="card-meta">
-                        <span className="card-domain">{new URL(link.original_url).hostname}</span>
-                        <span className="card-poster">@{link.username}</span>
-                      </div>
-                      <Link href={`/link/${link.id}`} className="card-title" style={{ fontSize: '15px', fontWeight: '500', color: 'var(--text)', marginBottom: '5px', display: 'block' }}>
-                        {link.title}
-                      </Link>
-                      <div className="card-desc">{link.description}</div>
-                      <div className="card-footer">
-                        <span className="card-stat">▲ {link.upvote_count}</span>
-                        <span className="card-stat">💬 {link.comment_count}</span>
-                      </div>
-                    </div>
-                    {link.preview_image && (
-                      <div className="card-preview" style={{ width: '100px', height: '70px' }}>
-                        <img src={link.preview_image} alt={link.title} />
-                      </div>
-                    )}
-                  </div>
-                </div>
+                <LinkCard
+                  key={link.id}
+                  link={link}
+                  variant="dose"
+                  doseNumber={index + 1}
+                  showPoster={true}
+                  showDescription={true}
+                  showPreview={true}
+                />
               ))
             )}
           </div>
