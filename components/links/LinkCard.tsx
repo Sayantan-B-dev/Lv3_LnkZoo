@@ -54,7 +54,7 @@ export default function LinkCard({
 
       const res = await fetch(`/api/links/${link.id}/like`, { method: 'POST' });
       if (res.status === 401) {
-        window.location.href = `/login?from=${window.location.pathname}`;
+        router.push(`/login?from=${window.location.pathname}`);
         return;
       }
       if (res.ok) {

@@ -26,7 +26,7 @@ if (useLocal) {
       }
     });
 
-    const result = await pool.query(text, values);
+    const result = await pool!.query(text, values);
     return result.rows;
   };
 } else {
