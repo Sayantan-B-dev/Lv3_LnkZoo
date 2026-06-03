@@ -92,12 +92,12 @@ export default function RandomPage() {
                   </div>
                   <div className="card-footer" style={{ borderTop: '1px solid var(--border)', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <a href={link.original_url} target="_blank" rel="noopener" className="visit-btn" onClick={() => setIsPaused(true)}>Visit Discovery ↗</a>
-                    <div className="card-stats" style={{ display: 'flex', gap: '16px' }}>
+                    {/* <div className="card-stats" style={{ display: 'flex', gap: '16px' }}>
                       <span className="card-stat" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"/></svg>
                         {link.upvote_count}
                       </span>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>

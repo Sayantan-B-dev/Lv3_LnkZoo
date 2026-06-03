@@ -69,7 +69,7 @@ export default function LinkCard({
         onClick={handleCardClick}
         style={{ cursor: isClickable ? 'pointer' : 'default' }}
       >
-        {showVotes && (
+        {/* {showVotes && (
           <div className="vote-col" onClick={(e) => e.stopPropagation()}>
             <button className="vote-btn up" onClick={(e) => handleVote(e, 1)}>
               <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -83,7 +83,7 @@ export default function LinkCard({
               </svg>
             </button>
           </div>
-        )}
+        )} */}
 
         <div className="card-body">
           <div className="card-meta">
@@ -116,7 +116,7 @@ export default function LinkCard({
             </div>
           )}
 
-          <div className="card-footer">
+          {/* <div className="card-footer">
             {showComments && (
               <div className="card-stat">
                 <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
@@ -134,7 +134,7 @@ export default function LinkCard({
                 {link.view_count}
               </span>
             )}
-          </div>
+          </div> */}
         </div>
       </div>
     );
@@ -145,12 +145,38 @@ export default function LinkCard({
     return (
       <div className="link-card mini" onClick={handleCardClick} style={{ cursor: isClickable ? 'pointer' : 'default' }}>
         <div className="card-body">
-          <div className="card-title">{link.title}</div>
           <div className="card-meta">
+            <span className="card-domain">{domain}</span>
+            {showPoster && (
+              <span className="card-poster" onClick={(e) => e.stopPropagation()}>
+                {link.is_anonymous ? (
+                  <span className="anon-badge">anon</span>
+                ) : (
+                  <Link href={`/profile/${link.username}`}>@{link.username}</Link>
+                )}
+              </span>
+            )}
+            <span className="card-time">{date}</span>
+          </div>
+          <Link href={`/link/${link.id}`} className="card-title" style={{ fontSize: '15px', fontWeight: '500', color: 'var(--text)', marginBottom: '5px', display: 'block' }} onClick={(e) => e.preventDefault()}>
+              {link.title}
+            </Link>
+          {showDescription && <div className="card-desc">{link.description}</div>}
+
+          {showTags && link.tags && link.tags.length > 0 && (
+            <div className="card-tags" onClick={(e) => e.stopPropagation()}>
+              {link.tags.map((tag: string) => (
+                <Link key={tag} href={`/tags/${tag}`} className="tag">
+                  #{tag}
+                </Link>
+              ))}
+            </div>
+          )}
+          {/* <div className="card-meta">
             <span className="card-domain">{domain}</span>
             {showComments && <span className="card-stat">💬 {link.comment_count}</span>}
             {showVotes && <span className="card-stat">▲ {link.upvote_count}</span>}
-          </div>
+          </div> */}
         </div>
       </div>
     );
@@ -161,15 +187,36 @@ export default function LinkCard({
     return (
       <Link href={`/link/${link.id}`} className="link-card" onClick={(e) => e.preventDefault()}>
         <div className="card-body">
-          <div className="card-meta">
+                    <div className="card-meta">
             <span className="card-domain">{domain}</span>
+            {showPoster && (
+              <span className="card-poster" onClick={(e) => e.stopPropagation()}>
+                {link.is_anonymous ? (
+                  <span className="anon-badge">anon</span>
+                ) : (
+                  <Link href={`/profile/${link.username}`}>@{link.username}</Link>
+                )}
+              </span>
+            )}
             <span className="card-time">{date}</span>
           </div>
-          <div className="card-title">{link.title}</div>
-          <div className="card-footer">
+          <Link href={`/link/${link.id}`} className="card-title" style={{ fontSize: '15px', fontWeight: '500', color: 'var(--text)', marginBottom: '5px', display: 'block' }}>
+              {link.title}
+            </Link>
+          {showDescription && <div className="card-desc">{link.description}</div>}
+          {showTags && link.tags && link.tags.length > 0 && (
+            <div className="card-tags" onClick={(e) => e.stopPropagation()}>
+              {link.tags.map((tag: string) => (
+                <Link key={tag} href={`/tags/${tag}`} className="tag">
+                  #{tag}
+                </Link>
+              ))}
+            </div>
+          )}
+          {/* <div className="card-footer">
             {showVotes && <span className="card-stat">▲ {link.upvote_count}</span>}
             {showComments && <span className="card-stat">● {link.comment_count}</span>}
-          </div>
+          </div> */}
         </div>
       </Link>
     );
@@ -182,18 +229,36 @@ export default function LinkCard({
         {doseNumber && <div className="dose-number">0{doseNumber}</div>}
         <div className="link-card" style={{ flex: 1, marginBottom: 0 }}>
           <div className="card-body">
-            <div className="card-meta">
-              <span className="card-domain">{domain}</span>
-              {showPoster && <span className="card-poster">@{link.username}</span>}
-            </div>
+          <div className="card-meta">
+            <span className="card-domain">{domain}</span>
+            {showPoster && (
+              <span className="card-poster" onClick={(e) => e.stopPropagation()}>
+                {link.is_anonymous ? (
+                  <span className="anon-badge">anon</span>
+                ) : (
+                  <Link href={`/profile/${link.username}`}>@{link.username}</Link>
+                )}
+              </span>
+            )}
+            <span className="card-time">{date}</span>
+          </div>
             <Link href={`/link/${link.id}`} className="card-title" style={{ fontSize: '15px', fontWeight: '500', color: 'var(--text)', marginBottom: '5px', display: 'block' }}>
               {link.title}
             </Link>
             {showDescription && <div className="card-desc">{link.description}</div>}
-            <div className="card-footer">
+            {showTags && link.tags && link.tags.length > 0 && (
+            <div className="card-tags" onClick={(e) => e.stopPropagation()}>
+              {link.tags.map((tag: string) => (
+                <Link key={tag} href={`/tags/${tag}`} className="tag">
+                  #{tag}
+                </Link>
+              ))}
+            </div>
+          )}
+            {/* <div className="card-footer">
               {showVotes && <span className="card-stat">▲ {link.upvote_count}</span>}
               {showComments && <span className="card-stat">💬 {link.comment_count}</span>}
-            </div>
+            </div> */}
           </div>
           {showPreview && link.preview_image && (
             <div className="card-preview" style={{ width: '100px', height: '70px' }}>

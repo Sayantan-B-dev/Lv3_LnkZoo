@@ -116,6 +116,8 @@ export default function Home() {
                     link={link}
                     variant="full"
                     onVote={handleVote}
+                    onClick={() => router.push(`/link/${link.id}`)}
+                    isClickable={true}
                   />
                 ))
               )}

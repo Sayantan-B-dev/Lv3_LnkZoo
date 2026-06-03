@@ -9,7 +9,10 @@ import CustomCursor from '@/components/common/CustomCursor';
 import AnimatedBg from '@/components/common/AnimatedBg';
 import LinkCard from '@/components/links/LinkCard';
 
+import { useRouter } from 'next/navigation';
+
 export default function DailyDose() {
+  const router = useRouter();
   const [links, setLinks] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -63,6 +66,8 @@ export default function DailyDose() {
                   showPoster={true}
                   showDescription={true}
                   showPreview={true}
+                  onClick={() => router.push(`/link/${link.id}`)}
+                  isClickable={true}
                 />
               ))
             )}

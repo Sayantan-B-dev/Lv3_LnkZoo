@@ -104,6 +104,8 @@ export default function Explore() {
                       link={link}
                       variant="mini"
                       showComments={true}
+                      onClick={() => router.push(`/link/${link.id}`)}
+                      isClickable={true}
                     />
                   ))
                 )}
@@ -144,6 +146,8 @@ export default function Explore() {
                         variant="mini"
                         showVotes={false}
                         showComments={false}
+                        onClick={() => router.push(`/link/${link.id}`)}
+                        isClickable={true}
                       />
                     ))
                   )}

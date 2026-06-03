@@ -10,6 +10,7 @@ import AnimatedBg from '@/components/common/AnimatedBg';
 import LinkCard from '@/components/links/LinkCard';
 import { useAuth } from '@/context/AuthContext';
 import Cropper from 'react-easy-crop';
+import { useRouter } from 'next/navigation';
 
 const getCroppedImg = async (imageSrc: string, pixelCrop: any): Promise<string> => {
   const image = new Image();
@@ -26,6 +27,7 @@ const getCroppedImg = async (imageSrc: string, pixelCrop: any): Promise<string> 
 
 export default function ProfilePage({ params }: { params: { username: string } }) {
   const { username } = params;
+  const router = useRouter();
   const { user: currentUser, logout } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [links, setLinks] = useState([]);
@@ -279,6 +281,8 @@ export default function ProfilePage({ params }: { params: { username: string } }
                     variant="profile"
                     showVotes={true}
                     showComments={true}
+                    onClick={() => router.push(`/link/${link.id}`)}
+                    isClickable={true}
                   />
                 ))
               )}
