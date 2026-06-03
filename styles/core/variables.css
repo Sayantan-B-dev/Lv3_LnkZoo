@@ -15,6 +15,8 @@
   --accent: #111110;
   --accent-inv: #f8f8f7;
   --cursor-c: #111;
+  --cursor: #f8f8f7;
+  --cursor2: #e8e8e5;
 
   /* shared */
   --radius: 6px;
@@ -38,4 +40,6 @@
   --accent: #ededec;
   --accent-inv: #0e0e0d;
   --cursor-c: #fff;
+  --cursor: #f8f8f7;
+  --cursor2: #e8e8e5;
 }

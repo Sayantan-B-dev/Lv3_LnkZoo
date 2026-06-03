@@ -10,7 +10,7 @@
   gap: 12px;
   transition: border-color var(--t), background var(--t), transform .1s;
   position: relative;
-  max-width:fit-content;
+  max-width:full;
 }
 
 .link-card:hover {

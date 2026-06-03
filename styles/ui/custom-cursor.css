@@ -1,40 +1,113 @@
 /* ── CUSTOM CURSOR ────────────────────────────────── */
-#cursor {
+.custom-cursor-wrapper {
   position: fixed;
-  width: 8px;
-  height: 8px;
-  background: var(--cursor-c);
-  border-radius: 50%;
+  top: 0;
+  left: 0;
   pointer-events: none;
-  z-index: 9999;
+  z-index: 999999;
   transform: translate(-50%, -50%);
-  transition: width .12s, height .12s, background .12s
+  mix-blend-mode: difference;
+    isolation: isolate;
 }
 
-#cursor-ring {
-  position: fixed;
-  width: 28px;
-  height: 28px;
-  border: 1px solid var(--cursor-c);
+/* Hide on mobile if NOT loading */
+@media (pointer: coarse) {
+  .custom-cursor-wrapper:not(.loading) {
+    display: none;
+  }
+}
+
+.cursor-dot {
+  width: 20px;
+  height: 20px;
+  background-color: var(--cursor);
   border-radius: 50%;
-  pointer-events: none;
-  z-index: 9998;
+  box-shadow: 0 0 15px var(--cursor);
+}
+
+.cursor-outline {
+  position: absolute;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
-  transition: width .22s, height .22s, transform .06s, border-color .18s;
-  opacity: .45
+  width: 30px;
+  height: 30px;
+  border: 3px solid var(--cursor);
+  border-radius: 50%;
+  transition: all 0.3s ease-out;
 }
 
-body.hovering #cursor {
-  width: 12px;
-  height: 12px
+.custom-cursor-wrapper.pointer .cursor-outline {
+  width: 50px;
+  height: 50px;
+  background-color: rgba(0, 210, 255, 0.1);
+  border-color: var(--cursor2);
 }
 
-body.hovering #cursor-ring {
+.custom-cursor-wrapper.pointer .cursor-dot {
+  transform: scale(1.5);
+}
+
+.custom-cursor-wrapper.grab .cursor-outline {
   width: 40px;
   height: 40px;
-  opacity: .25
+  border-style: dashed;
 }
 
+.cursor-icon {
+  position: absolute;
+  top: -25px;
+  right: -25px;
+  color: var(--cursor);
+  animation: fadeIn 0.3s ease forwards;
+}
 
+.custom-cursor-wrapper.loading .cursor-outline {
+  width: 44px;
+  height: 44px;
+  border-color: var(--cursor);
+  border-width: 2px;
+  background: rgba(10, 8, 7, 0.4);
+  backdrop-filter: blur(4px);
+}
 
+.cursor-loader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  animation: rotate 1s linear infinite;
+}
 
+.cursor-loader svg {
+  width: 100%;
+  height: 100%;
+}
+
+.cursor-loader circle {
+  stroke: var(--cursor);
+  stroke-linecap: round;
+  animation: dash 1.5s ease-in-out infinite;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
+}

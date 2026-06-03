@@ -3,6 +3,8 @@ import { AuthProvider } from '@/context/AuthContext';
 import { NotificationProvider } from '@/context/NotificationContext';
 import { UIProvider } from '@/context/UIContext';
 import AnimatedBg from '@/components/common/AnimatedBg';
+import { LoadingProvider } from '@/context/LoadingContext';
+// @ts-ignore: CSS side-effect import
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -26,8 +28,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthProvider>
           <NotificationProvider>
             <UIProvider>
-              <AnimatedBg />
-              {children}
+              <LoadingProvider>
+                <AnimatedBg />
+                {children}
+              </LoadingProvider>
             </UIProvider>
           </NotificationProvider>
         </AuthProvider>
