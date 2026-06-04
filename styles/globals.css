@@ -34,5 +34,6 @@
 @import './pages/daily-dose.css';
 @import './pages/link-detail.css';
 @import './pages/not-found.css';
+@import './pages/users.css';
 
 @import './components/common.css';

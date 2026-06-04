@@ -1,0 +1,126 @@
+/* ── Users Directory Page ── */
+.users-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 16px; margin-bottom: 24px; flex-wrap: wrap;
+}
+
+.users-title {
+  font-size: 22px; font-weight: 600; color: var(--text);
+  margin: 0 0 4px;
+}
+
+.users-sub {
+  font-size: 13px; color: var(--text-4); margin: 0;
+}
+
+.users-search {
+  position: relative; display: flex; align-items: center;
+}
+
+.users-search-icon {
+  position: absolute; left: 12px; color: var(--text-4);
+  pointer-events: none;
+}
+
+.users-search-input {
+  padding: 8px 12px 8px 34px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--bg-1);
+  color: var(--text); font-size: 13px; width: 220px;
+  outline: none; transition: border-color 0.15s;
+}
+
+.users-search-input:focus { border-color: var(--accent); }
+
+.users-search-input::placeholder { color: var(--text-4); }
+
+/* ── Grid ── */
+.users-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+/* ── Card ── */
+.user-card {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 10px; padding: 24px 16px 20px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 12px; text-decoration: none;
+  transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+  cursor: pointer;
+}
+
+.user-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.user-card-avatar {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--bg-1); overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 600; color: var(--text-2);
+  flex-shrink: 0;
+}
+
+.user-card-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.user-card-name {
+  font-size: 14px; font-weight: 500; color: var(--text);
+  text-align: center;
+}
+
+.user-card-stats {
+  display: flex; gap: 16px; margin-top: 4px;
+}
+
+.user-card-stat {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+
+.user-card-stat-num {
+  font-size: 14px; font-weight: 600; color: var(--text-2);
+}
+
+.user-card-stat-label {
+  font-size: 10px; color: var(--text-4); text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ── Empty ── */
+.users-empty {
+  text-align: center; padding: 60px 20px;
+  color: var(--text-4); font-size: 14px;
+}
+
+/* ── Pagination ── */
+.users-pagination {
+  display: flex; align-items: center; justify-content: center;
+  gap: 16px; margin-top: 28px;
+}
+
+.users-page-btn {
+  padding: 8px 18px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--bg);
+  color: var(--text-2); font-size: 13px; cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.users-page-btn:hover:not(:disabled) { background: var(--bg-1); color: var(--text); }
+.users-page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.users-page-info {
+  font-size: 13px; color: var(--text-3);
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .users-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+  }
+
+  .users-header { flex-direction: column; }
+  .users-search-input { width: 100%; }
+}
