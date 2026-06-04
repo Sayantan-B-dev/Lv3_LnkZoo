@@ -106,6 +106,7 @@ export default function Home() {
                   key={link.id}
                   link={link}
                   variant="full"
+                  showPreview={true}
                   onLike={handleLike}
                   onClick={() => router.push(`/link/${link.id}`)}
                   isClickable={true}

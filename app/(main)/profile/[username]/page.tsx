@@ -276,6 +276,7 @@ export default function ProfilePage({ params }: { params: { username: string } }
                   key={link.id}
                   link={link}
                   variant="profile"
+                  showPreview={true}
                   showVotes={true}
                   showComments={true}
                   onClick={() => router.push(`/link/${link.id}`)}

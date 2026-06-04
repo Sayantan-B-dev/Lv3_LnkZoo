@@ -159,6 +159,11 @@ export default function LinkCard({
 
           {renderFooter()}
         </div>
+        {showPreview && link.preview_image && (
+          <div className="card-preview right">
+            <img src={link.preview_image} alt={link.title} />
+          </div>
+        )}
       </div>
     );
   }
@@ -197,6 +202,11 @@ export default function LinkCard({
           )}
           {renderFooter()}
         </div>
+        {showPreview && link.preview_image && (
+          <div className="card-preview right">
+            <img src={link.preview_image} alt={link.title} />
+          </div>
+        )}
       </div>
     );
   }
@@ -234,6 +244,11 @@ export default function LinkCard({
           )}
           {renderFooter()}
         </div>
+        {showPreview && link.preview_image && (
+          <div className="card-preview right">
+            <img src={link.preview_image} alt={link.title} />
+          </div>
+        )}
       </Link>
     );
   }
@@ -273,12 +288,12 @@ export default function LinkCard({
           )}
             {renderFooter()}
           </div>
-          {showPreview && link.preview_image && (
-            <div className="card-preview" style={{ width: '100px', height: '70px' }}>
-              <img src={link.preview_image} alt={link.title} />
-            </div>
-          )}
         </div>
+        {showPreview && link.preview_image && (
+          <div className="card-preview right">
+            <img src={link.preview_image} alt={link.title} />
+          </div>
+        )}
       </div>
     );
   }

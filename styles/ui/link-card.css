@@ -1,6 +1,6 @@
 /* ── LINK CARD ────────────────────────────────────── */
 .link-card {
-  background: color-mix(in srgb, var(--bg-1) 45%, transparent);
+  background: color-mix(in srgb, var(--bg-1) 55%, transparent);
   backdrop-filter: blur(8px);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -8,17 +8,26 @@
   margin-bottom: 8px;
   display: flex;
   gap: 12px;
-  transition: border-color var(--t), background var(--t), transform .1s;
+  transition: border-color var(--t), background var(--t), box-shadow var(--t), transform .15s;
   position: relative;
-  max-width:full;
+  max-width: full;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .link-card:hover {
-  border-color: var(--text-4);
-  background: color-mix(in srgb, var(--bg-2) 65%, transparent);
-  transform: translateY(-2px) scale(1.005);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-color: var(--border-md);
+  background: color-mix(in srgb, var(--bg-2) 70%, transparent);
+  transform: translateY(-2px);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.06),
+    0 8px 24px rgba(0, 0, 0, 0.04);
   z-index: 2;
+}
+
+[data-theme="dark"] .link-card:hover {
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
 .link-card:active {
@@ -200,6 +209,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.card-preview.right {
+  width: 100px;
+  height: 72px;
+  border-radius: 6px;
+  align-self: center;
 }
 
 .card-preview img {

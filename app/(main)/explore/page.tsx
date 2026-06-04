@@ -96,6 +96,7 @@ export default function Explore() {
                     key={link.id}
                     link={link}
                     variant="mini"
+                    showPreview={true}
                     showComments={true}
                     onClick={() => router.push(`/link/${link.id}`)}
                     isClickable={true}
@@ -137,6 +138,7 @@ export default function Explore() {
                       key={link.id}
                       link={link}
                       variant="mini"
+                      showPreview={true}
                       showVotes={false}
                       showComments={false}
                       onClick={() => router.push(`/link/${link.id}`)}

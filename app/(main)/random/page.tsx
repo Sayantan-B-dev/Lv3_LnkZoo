@@ -109,6 +109,11 @@ export default function RandomPage() {
                   </button>
                 </div>
               </div>
+              {link.preview_image && (
+                <div className="card-preview right" style={{ width: '140px', height: '100px', alignSelf: 'center' }}>
+                  <img src={link.preview_image} alt={link.title} />
+                </div>
+              )}
             </div>
           ) : (
             <div className="empty">No links available to discover.</div>

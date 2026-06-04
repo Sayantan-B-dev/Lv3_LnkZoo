@@ -75,6 +75,7 @@ export default function TagPage({ params }: { params: { tag: string } }) {
                   key={link.id}
                   link={link}
                   variant="full"
+                  showPreview={true}
                   onLike={handleLike}
                 />
               ))
