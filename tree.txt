@@ -1,5 +1,31 @@
 Glinx
 ├── app
+│   ├── (main)
+│   │   ├── daily-dose
+│   │   │   └── page.tsx
+│   │   ├── explore
+│   │   │   └── page.tsx
+│   │   ├── leaderboard
+│   │   │   └── page.tsx
+│   │   ├── link
+│   │   │   └── [id]
+│   │   │       └── page.tsx
+│   │   ├── profile
+│   │   │   ├── [username]
+│   │   │   │   └── page.tsx
+│   │   │   └── page.tsx
+│   │   ├── random
+│   │   │   └── page.tsx
+│   │   ├── submit
+│   │   │   └── page.tsx
+│   │   ├── tags
+│   │   │   ├── [tag]
+│   │   │   │   └── page.tsx
+│   │   │   └── page.tsx
+│   │   ├── tools
+│   │   │   └── page.tsx
+│   │   ├── layout.tsx
+│   │   └── page.tsx
 │   ├── api
 │   │   ├── admin
 │   │   │   ├── ban
@@ -26,7 +52,6 @@ Glinx
 │   │   ├── comments
 │   │   │   ├── [id]
 │   │   │   │   ├── vote
-│   │   │   │   │   └── route.ts
 │   │   │   │   └── route.ts
 │   │   │   ├── link
 │   │   │   │   └── [linkId]
@@ -43,8 +68,9 @@ Glinx
 │   │   │   ├── [id]
 │   │   │   │   ├── flag
 │   │   │   │   │   └── route.ts
-│   │   │   │   ├── vote
+│   │   │   │   ├── like
 │   │   │   │   │   └── route.ts
+│   │   │   │   ├── vote
 │   │   │   │   └── route.ts
 │   │   │   ├── daily-dose
 │   │   │   │   └── route.ts
@@ -84,83 +110,48 @@ Glinx
 │   │       │   └── route.ts
 │   │       └── profile
 │   │           └── route.ts
-│   ├── daily-dose
-│   │   └── page.tsx
-│   ├── explore
-│   │   └── page.tsx
-│   ├── leaderboard
-│   │   └── page.tsx
-│   ├── link
-│   │   └── [id]
-│   │       └── page.tsx
 │   ├── login
-│   │   └── page.tsx
-│   ├── profile
-│   │   ├── [username]
-│   │   │   └── page.tsx
-│   │   └── page.tsx
-│   ├── random
 │   │   └── page.tsx
 │   ├── register
 │   │   └── page.tsx
 │   ├── s
 │   │   └── [code]
 │   │       └── route.ts
-│   ├── submit
-│   │   └── page.tsx
-│   ├── tags
-│   │   ├── [tag]
-│   │   │   └── page.tsx
-│   │   └── page.tsx
-│   ├── tools
-│   │   └── page.tsx
 │   ├── globals.css
 │   ├── layout.tsx
-│   ├── not-found.tsx
-│   └── page.tsx
+│   └── not-found.tsx
 ├── components
 │   ├── comments
-│   │   ├── CommentForm.module.css
 │   │   ├── CommentForm.tsx
-│   │   ├── CommentItem.module.css
 │   │   ├── CommentItem.tsx
-│   │   ├── CommentThread.module.css
 │   │   └── CommentThread.tsx
 │   ├── common
 │   │   ├── AnimatedBg.tsx
+│   │   ├── ConfirmModal.tsx
 │   │   ├── CustomCursor.tsx
 │   │   ├── ErrorMessage.tsx
-│   │   ├── Footer.module.css
 │   │   ├── Footer.tsx
-│   │   ├── LoadingSpinner.module.css
 │   │   ├── LoadingSpinner.tsx
-│   │   ├── Navbar.module.css
 │   │   ├── Navbar.tsx
-│   │   ├── NotificationBell.module.css
 │   │   ├── NotificationBell.tsx
 │   │   ├── NotificationPanel.tsx
 │   │   ├── Sidebar.tsx
 │   │   └── Topbar.tsx
 │   ├── links
-│   │   ├── LinkCard.module.css
 │   │   ├── LinkCard.tsx
-│   │   ├── LinkForm.module.css
 │   │   ├── LinkForm.tsx
-│   │   ├── LinkPreview.module.css
 │   │   ├── LinkPreview.tsx
-│   │   ├── TagBadge.module.css
-│   │   ├── TagBadge.tsx
-│   │   ├── VoteButtons.module.css
-│   │   └── VoteButtons.tsx
+│   │   └── TagBadge.tsx
 │   └── recommendations
-│       ├── Slider.module.css
 │       └── Slider.tsx
 ├── context
 │   ├── AuthContext.tsx
+│   ├── LoadingContext.tsx
 │   ├── NotificationContext.tsx
 │   └── UIContext.tsx
 ├── database
 │   ├── init.sql
+│   ├── migrate_likes.sql
 │   └── seed.sql
 ├── hooks
 │   ├── useAuth.ts
@@ -175,6 +166,7 @@ Glinx
 │   ├── manifest.json
 │   └── sw.js
 ├── scripts
+│   ├── apply-migration.cjs
 │   └── migrate.js
 ├── services
 │   ├── autoTag.service.ts
@@ -185,33 +177,50 @@ Glinx
 │   └── shortCode.service.ts
 ├── styles
 │   ├── components
-│   │   ├── animatedbg.css
+│   │   └── common.css
+│   ├── core
 │   │   ├── animations.css
-│   │   ├── content.css
-│   │   ├── customcursor.css
-│   │   ├── layout.css
-│   │   ├── linkcard.css
-│   │   ├── main.css
-│   │   ├── popup.css
 │   │   ├── reset.css
-│   │   ├── responsive.css
-│   │   ├── sidebar.css
-│   │   ├── tabs.css
-│   │   ├── topbar.css
 │   │   ├── typography.css
 │   │   ├── utilities.css
 │   │   └── variables.css
+│   ├── layout
+│   │   ├── content.css
+│   │   ├── layout.css
+│   │   ├── main.css
+│   │   ├── responsive.css
+│   │   ├── sidebar.css
+│   │   ├── tabs.css
+│   │   └── topbar.css
+│   ├── pages
+│   │   ├── daily-dose.css
+│   │   ├── explore.css
+│   │   ├── home.css
+│   │   ├── leaderboard.css
+│   │   ├── link-detail.css
+│   │   ├── login.css
+│   │   ├── not-found.css
+│   │   ├── profile.css
+│   │   ├── random.css
+│   │   ├── register.css
+│   │   ├── submit.css
+│   │   ├── tags.css
+│   │   └── tools.css
+│   ├── ui
+│   │   ├── animated-bg.css
+│   │   ├── custom-cursor.css
+│   │   ├── link-card.css
+│   │   └── popup.css
 │   └── globals.css
 ├── .env
 ├── .gitignore
+├── extractcss.py
 ├── middleware.ts
 ├── next-env.d.ts
 ├── next.config.js
 ├── package.json
 ├── README.md
-├── SRS.md
+├── todo.md
 ├── tree.py
-├── tree.txt
 ├── tsconfig.json
-├── tsconfig.tsbuildinfo
-└── ui-reference-version_3.0.html
+└── tsconfig.tsbuildinfo

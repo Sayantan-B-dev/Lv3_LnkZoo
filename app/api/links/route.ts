@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
 import { getSessionFromRequest } from '@/lib/auth';
 import { generateShortCode } from '@/lib/shortCode';
+import { gamificationService } from '@/services/gamification.service';
 
 // ── GET /api/links ─────────────────────────────────────────
 // ?tab=following|explore|recommended  &page=1  &limit=20  &tag=xyz  &sort=hot|new|top
@@ -190,17 +191,7 @@ export async function POST(req: NextRequest) {
       `;
     }
 
-    // Keep posting streak lightweight; ranking is based on likes.
-    await sql`
-      UPDATE users
-      SET last_post_date = CURRENT_DATE,
-          streak = CASE
-            WHEN last_post_date = CURRENT_DATE - 1 THEN streak + 1
-            WHEN last_post_date = CURRENT_DATE THEN streak
-            ELSE 1
-          END
-      WHERE id = ${session.user_id}
-    `;
+    await gamificationService.updateStreak(session.user_id);
 
     return NextResponse.json({ link: { id: link.id, shortCode: link.short_code } }, { status: 201 });
   } catch (err) {

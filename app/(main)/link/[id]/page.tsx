@@ -5,6 +5,8 @@ import Link from 'next/link';
 import Topbar from '@/components/common/Topbar';
 import NotificationPanel from '@/components/common/NotificationPanel';
 import ConfirmModal from '@/components/common/ConfirmModal';
+import CommentThread from '@/components/comments/CommentThread';
+import LoadingSpinner from '@/components/common/LoadingSpinner';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 
@@ -133,7 +135,7 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
     }
   };
 
-  if (loading) return null;
+  if (loading) return <LoadingSpinner text="Loading link..." />;
   if (!link) {
     return (
       <>
@@ -242,45 +244,15 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
           </div>
         </div>
 
-        <div className="comments-section" style={{ marginTop: '40px' }}>
-          <h2 className="section-title">Discussion ({comments.length})</h2>
-
-          {user ? (
-            <form onSubmit={handlePostComment} className="comment-form">
-              <textarea
-                placeholder="What are your thoughts?"
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                className="comment-input"
-              />
-              <button type="submit" className="comment-btn">Post Comment</button>
-            </form>
-          ) : (
-            <div className="auth-prompt">Sign in to join the discussion.</div>
-          )}
-
-          <div className="comments-list">
-            {comments.length === 0 ? (
-              <div className="empty">No comments yet. Be the first!</div>
-            ) : (
-              comments.map((c: any) => (
-                <div key={c.id} className="comment-item">
-                  <div className="comment-meta">
-                    <span className="comment-author">@{c.username}</span>
-                    <span className="comment-time">{new Date(c.created_at).toLocaleDateString()}</span>
-                    {user?.username === c.username && (
-                      <button onClick={() => handleCommentDelete(c.id)} className="comment-del-btn">delete</button>
-                    )}
-                  </div>
-                  <div className="comment-content">{c.content}</div>
-                  <div className="comment-actions">
-                    <span className="comment-stat">Reply</span>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
+        <CommentThread
+          comments={comments}
+          currentUsername={user?.username}
+          commentValue={newComment}
+          onCommentChange={setNewComment}
+          onCommentSubmit={handlePostComment}
+          onCommentDelete={handleCommentDelete}
+          isAuthenticated={!!user}
+        />
       </div>
 
       {confirm && (

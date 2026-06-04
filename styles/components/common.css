@@ -23,3 +23,69 @@
         .sidebar-user-link.active { background: var(--bg-2); border-left: 2px solid var(--text); }
         .sidebar-user { display: flex; align-items: center; gap: 12px; padding: 16px; overflow: hidden; }
 
+/* ── LOADING SPINNER ──────────────────────────────── */
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 20px;
+}
+
+.spinner {
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  border-top-color: var(--text-2);
+  animation: spin 0.7s linear infinite;
+}
+
+.loading-sm .spinner { width: 20px; height: 20px; }
+.loading-md .spinner { width: 32px; height: 32px; }
+.loading-lg .spinner { width: 48px; height: 48px; border-width: 3px; }
+
+.spinner-text {
+  font-size: 11px;
+  color: var(--text-4);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── ERROR MESSAGE ────────────────────────────────── */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  background: color-mix(in srgb, #e53e3e 8%, var(--bg-1));
+  border: 1px solid color-mix(in srgb, #e53e3e 20%, var(--border));
+  border-radius: 8px;
+  color: var(--text-2);
+  font-size: 12px;
+}
+
+.error-text {
+  flex: 1;
+  line-height: 1.4;
+}
+
+.error-retry-btn {
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.error-retry-btn:hover {
+  background: var(--bg-2);
+  border-color: var(--text-4);
+}
+

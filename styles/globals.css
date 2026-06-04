@@ -16,6 +16,8 @@
 @import './ui/custom-cursor.css';
 @import './ui/link-card.css';
 @import './ui/popup.css';
+@import './ui/comments.css';
+@import './ui/slider.css';
 
 @import './pages/home.css';
 @import './pages/explore.css';

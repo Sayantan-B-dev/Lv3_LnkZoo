@@ -1,0 +1,65 @@
+/* ── SLIDER ────────────────────────────────────────── */
+.slider {
+  margin-bottom: 24px;
+}
+
+.slider-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.slider-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-4);
+}
+
+.slider-arrows {
+  display: flex;
+  gap: 4px;
+}
+
+.slider-arrow {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-4);
+  border: 1px solid var(--border);
+  transition: color var(--t), border-color var(--t), background var(--t);
+  cursor: pointer;
+}
+
+.slider-arrow:hover {
+  color: var(--text);
+  border-color: var(--border-md);
+  background: var(--bg-2);
+}
+
+.slider-track {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+}
+
+.slider-track::-webkit-scrollbar {
+  height: 2px;
+}
+
+.slider-track::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+
+.slider-item {
+  flex-shrink: 0;
+  scroll-snap-align: start;
+}

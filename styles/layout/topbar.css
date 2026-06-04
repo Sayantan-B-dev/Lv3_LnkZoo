@@ -92,5 +92,41 @@
   opacity: .8
 }
 
+/* ── NOTIFICATION BELL ──────────────────────────────── */
+.notif-bell {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+  transition: color var(--t), background var(--t);
+  cursor: pointer;
+}
+
+.notif-bell:hover {
+  color: var(--text);
+  background: var(--bg-2);
+}
+
+.notif-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 9px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
 
 
