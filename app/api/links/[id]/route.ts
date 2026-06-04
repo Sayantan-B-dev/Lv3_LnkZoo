@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
 import { getSessionFromRequest } from '@/lib/auth';
+import { apiHandler } from '@/lib/api-utils';
 
 // ── GET /api/links/[id] ─────────────────────────────────────
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export const GET = apiHandler(async (req: NextRequest, { params }: { params: { id: string } }) => {
   const { id } = params;
   const session = await getSessionFromRequest(req);
 
@@ -32,10 +33,10 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   sql`UPDATE links SET view_count = view_count + 1 WHERE id = ${id}`.catch(() => {});
 
   return NextResponse.json({ link: rows[0] });
-}
+});
 
 // ── DELETE /api/links/[id] ──────────────────────────────────
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export const DELETE = apiHandler(async (req: NextRequest, { params }: { params: { id: string } }) => {
   const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -47,10 +48,10 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 
   await sql`DELETE FROM links WHERE id = ${params.id}`;
   return NextResponse.json({ ok: true });
-}
+});
 
 // ── PATCH /api/links/[id] ───────────────────────────────────
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export const PATCH = apiHandler(async (req: NextRequest, { params }: { params: { id: string } }) => {
   const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -71,4 +72,4 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   `;
 
   return NextResponse.json({ link: updated });
-}
+});

@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
 import { getSessionFromRequest } from '@/lib/auth';
 import { notificationService } from '@/services/notification.service';
+import { apiHandler } from '@/lib/api-utils';
 
 // POST /api/links/[id]/like toggles a logged-in user's like.
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export const POST = apiHandler(async (req: NextRequest, { params }: { params: { id: string } }) => {
   const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -47,4 +48,4 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   }
 
   return NextResponse.json({ liked: true, like_count: updated.like_count });
-}
+});

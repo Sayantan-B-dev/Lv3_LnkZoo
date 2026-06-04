@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
 import { getSessionFromRequest } from '@/lib/auth';
+import { apiHandler } from '@/lib/api-utils';
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export const POST = apiHandler(async (req: NextRequest, { params }: { params: { id: string } }) => {
   const session = await getSessionFromRequest(req);
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -13,4 +14,4 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   `;
 
   return NextResponse.json({ ok: true });
-}
+});

@@ -29,7 +29,8 @@ function LoginForm() {
         login(data.user);
         addToast('Welcome back!', 'success');
         const from = searchParams.get('from') || '/';
-        router.push(from);
+        const safeFrom = from.startsWith('/') && !from.startsWith('//') ? from : '/';
+        router.push(safeFrom);
       } else {
         const data = await res.json();
         addToast(data.error || 'Login failed', 'error');

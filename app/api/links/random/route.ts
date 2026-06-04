@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
 import { getSessionFromRequest } from '@/lib/auth';
+import { apiHandler } from '@/lib/api-utils';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(req: NextRequest) {
+export const GET = apiHandler(async (req: NextRequest) => {
   const session = await getSessionFromRequest(req);
   const excludeId = req.nextUrl.searchParams.get('exclude') || null;
 
@@ -51,4 +52,4 @@ export async function GET(req: NextRequest) {
     console.error('[Random API Error]', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
+});

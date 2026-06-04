@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
 import { getSessionFromRequest } from '@/lib/auth';
+import { apiHandler } from '@/lib/api-utils';
 import { generateShortCode } from '@/lib/shortCode';
 import { gamificationService } from '@/services/gamification.service';
 
 // ── GET /api/links ─────────────────────────────────────────
 // ?tab=following|explore|recommended  &page=1  &limit=20  &tag=xyz  &sort=hot|new|top
-export async function GET(req: NextRequest) {
+export const GET = apiHandler(async (req: NextRequest) => {
   const session = await getSessionFromRequest(req);
   const sp = req.nextUrl.searchParams;
   const tab    = sp.get('tab') ?? 'explore';
@@ -149,10 +150,10 @@ export async function GET(req: NextRequest) {
   }
 
   return NextResponse.json({ links: rows, page, limit });
-}
+});
 
 // ── POST /api/links ─────────────────────────────────────────
-export async function POST(req: NextRequest) {
+export const POST = apiHandler(async (req: NextRequest) => {
   const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -198,4 +199,4 @@ export async function POST(req: NextRequest) {
     console.error('[POST /api/links]', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
+});

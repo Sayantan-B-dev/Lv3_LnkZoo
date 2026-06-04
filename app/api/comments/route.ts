@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
 import { getSessionFromRequest } from '@/lib/auth';
 import { notificationService } from '@/services/notification.service';
+import { apiHandler } from '@/lib/api-utils';
 
 // ── GET /api/comments?link_id=xxx ───────────────────────────
-export async function GET(req: NextRequest) {
+export const GET = apiHandler(async (req: NextRequest) => {
   const linkId = req.nextUrl.searchParams.get('link_id');
   if (!linkId) return NextResponse.json({ error: 'link_id required' }, { status: 400 });
 
@@ -18,10 +19,10 @@ export async function GET(req: NextRequest) {
   `;
 
   return NextResponse.json({ comments: rows });
-}
+});
 
 // ── POST /api/comments ───────────────────────────────────────
-export async function POST(req: NextRequest) {
+export const POST = apiHandler(async (req: NextRequest) => {
   const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -65,4 +66,4 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({ comment }, { status: 201 });
-}
+});

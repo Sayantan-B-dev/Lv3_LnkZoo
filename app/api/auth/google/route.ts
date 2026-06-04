@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { apiHandler } from '@/lib/api-utils';
 
-export async function GET(req: NextRequest) {
+export const GET = apiHandler(async (req: NextRequest) => {
   const rootUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
   
   const options = {
@@ -17,4 +18,4 @@ export async function GET(req: NextRequest) {
 
   const qs = new URLSearchParams(options);
   return NextResponse.redirect(`${rootUrl}?${qs.toString()}`);
-}
+});

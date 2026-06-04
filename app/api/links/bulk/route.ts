@@ -3,6 +3,7 @@ import sql from '@/lib/db';
 import { getSessionFromRequest } from '@/lib/auth';
 import { generateShortCode } from '@/lib/shortCode';
 import { gamificationService } from '@/services/gamification.service';
+import { apiHandler } from '@/lib/api-utils';
 
 const CONCURRENCY = 5;
 
@@ -65,7 +66,7 @@ async function createLink(
   }
 }
 
-export async function POST(req: NextRequest) {
+export const POST = apiHandler(async (req: NextRequest) => {
   const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -108,4 +109,4 @@ export async function POST(req: NextRequest) {
     limitApplied: !isAdmin && urls.length > 10,
     results,
   });
-}
+});

@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
 import { getSessionFromRequest } from '@/lib/auth';
+import { apiHandler } from '@/lib/api-utils';
 
 // GET /api/users/[username]
-export async function GET(req: NextRequest, { params }: { params: { username: string } }) {
+export const GET = apiHandler(async (req: NextRequest, { params }: { params: { username: string } }) => {
   const username = params.username.toLowerCase();
 
   const [user] = await sql`
@@ -31,4 +32,4 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
   }
 
   return NextResponse.json({ user: { ...user, isFollowing } });
-}
+});

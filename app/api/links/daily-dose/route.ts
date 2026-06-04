@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
+import { apiHandler } from '@/lib/api-utils';
 
 export const dynamic = 'force-dynamic';
 
 // GET /api/links/daily-dose
-export async function GET(_req: NextRequest) {
+export const GET = apiHandler(async (_req: NextRequest) => {
   // Top 5 links posted in the last 24h by likes
   const rows = await sql`
     SELECT l.id, l.title, l.description, l.original_url, l.short_code,
@@ -24,4 +25,4 @@ export async function GET(_req: NextRequest) {
   `;
 
   return NextResponse.json({ links: rows });
-}
+});

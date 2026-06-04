@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
 import { getSessionFromRequest } from '@/lib/auth';
+import { apiHandler } from '@/lib/api-utils';
 
 // GET /api/recommendations — personalised "for you" feed
-export async function GET(req: NextRequest) {
+export const GET = apiHandler(async (req: NextRequest) => {
   const session = await getSessionFromRequest(req);
   if (!session) {
     // Unauthenticated: just return hot feed
@@ -67,4 +68,4 @@ export async function GET(req: NextRequest) {
   `;
 
   return NextResponse.json({ links: rows });
-}
+});

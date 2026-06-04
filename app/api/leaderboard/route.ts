@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 import { getSessionFromRequest } from '@/lib/auth';
+import { apiHandler } from '@/lib/api-utils';
 
 // GET /api/leaderboard?period=week|month|all
-export async function GET(req: NextRequest) {
+export const GET = apiHandler(async (req: NextRequest) => {
   const period = req.nextUrl.searchParams.get('period') ?? 'week';
   const session = await getSessionFromRequest(req);
 
@@ -63,4 +64,4 @@ export async function GET(req: NextRequest) {
   }
 
   return NextResponse.json({ leaderboard: top20, userRank, period });
-}
+});

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
+import { apiHandler } from '@/lib/api-utils';
 
-export async function GET(req: NextRequest, { params }: { params: { username: string } }) {
+export const GET = apiHandler(async (req: NextRequest, { params }: { params: { username: string } }) => {
   const { username } = params;
 
   try {
@@ -25,4 +26,4 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
     console.error('[GET /api/users/[username]/links]', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
+});

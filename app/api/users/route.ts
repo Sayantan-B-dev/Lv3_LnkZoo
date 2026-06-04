@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/db';
+import { apiHandler } from '@/lib/api-utils';
 
-export async function GET(req: NextRequest) {
+export const GET = apiHandler(async (req: NextRequest) => {
   const sp = req.nextUrl.searchParams;
   const page = Math.max(1, parseInt(sp.get('page') ?? '1'));
   const limit = Math.min(50, parseInt(sp.get('limit') ?? '20'));
@@ -46,4 +47,4 @@ export async function GET(req: NextRequest) {
     page,
     limit,
   });
-}
+});

@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
 import { getSessionFromRequest } from '@/lib/auth';
+import { apiHandler } from '@/lib/api-utils';
 
 // PATCH /api/users/profile
-export async function PATCH(req: NextRequest) {
+export const PATCH = apiHandler(async (req: NextRequest) => {
   const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -26,4 +27,4 @@ export async function PATCH(req: NextRequest) {
     console.error('[PATCH /api/users/profile]', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
+});

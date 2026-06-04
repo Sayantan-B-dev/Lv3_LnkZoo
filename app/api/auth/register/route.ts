@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import sql from '@/lib/db';
 import { signToken, cookieOptions } from '@/lib/auth';
+import { apiHandler } from '@/lib/api-utils';
 
-export async function POST(req: NextRequest) {
+export const POST = apiHandler(async (req: NextRequest) => {
   try {
     const { username, email, password, interests = [] } = await req.json();
 
@@ -17,6 +18,9 @@ export async function POST(req: NextRequest) {
 
     if (password.length < 8) {
       return NextResponse.json({ error: 'Password must be at least 8 characters' }, { status: 400 });
+    }
+    if (password.length > 128) {
+      return NextResponse.json({ error: 'Password must be 128 characters or less' }, { status: 400 });
     }
 
     // Check uniqueness
@@ -57,4 +61,4 @@ export async function POST(req: NextRequest) {
     console.error('[POST /api/auth/register]', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
+});

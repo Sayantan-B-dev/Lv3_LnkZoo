@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
 import { getSessionFromRequest } from '@/lib/auth';
+import { apiHandler } from '@/lib/api-utils';
 
-export async function GET(req: NextRequest, { params }: { params: { name: string } }) {
+export const GET = apiHandler(async (req: NextRequest, { params }: { params: { name: string } }) => {
   const session = await getSessionFromRequest(req);
 
   const rows = await sql`
@@ -25,4 +26,4 @@ export async function GET(req: NextRequest, { params }: { params: { name: string
   `;
 
   return NextResponse.json({ links: rows });
-}
+});

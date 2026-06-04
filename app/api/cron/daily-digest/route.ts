@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import sql from '@/lib/db';
+import { apiHandler } from '@/lib/api-utils';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export const GET = apiHandler(async () => {
   try {
     const topLinks = await sql`
       SELECT l.id, l.title, l.original_url, l.like_count, l.created_at,
@@ -20,4 +21,4 @@ export async function GET() {
     console.error('[CRON daily-digest]', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
+});

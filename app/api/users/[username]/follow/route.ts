@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
 import { getSessionFromRequest } from '@/lib/auth';
 import { notificationService } from '@/services/notification.service';
+import { apiHandler } from '@/lib/api-utils';
 
 // POST /api/users/[username]/follow — toggle follow
-export async function POST(req: NextRequest, { params }: { params: { username: string } }) {
+export const POST = apiHandler(async (req: NextRequest, { params }: { params: { username: string } }) => {
   const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -32,4 +33,4 @@ export async function POST(req: NextRequest, { params }: { params: { username: s
   });
 
   return NextResponse.json({ following: true });
-}
+});

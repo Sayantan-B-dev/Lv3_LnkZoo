@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
 import { getSessionFromRequest } from '@/lib/auth';
+import { apiHandler } from '@/lib/api-utils';
 
 // GET /api/notifications
-export async function GET(req: NextRequest) {
+export const GET = apiHandler(async (req: NextRequest) => {
   const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -19,13 +20,13 @@ export async function GET(req: NextRequest) {
 
   const unread = rows.filter((r: any) => !r.is_read).length;
   return NextResponse.json({ notifications: rows, unread });
-}
+});
 
 // PATCH /api/notifications — mark all read
-export async function PATCH(req: NextRequest) {
+export const PATCH = apiHandler(async (req: NextRequest) => {
   const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   await sql`UPDATE notifications SET is_read = true WHERE user_id = ${session.user_id}`;
   return NextResponse.json({ ok: true });
-}
+});

@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
 import { getSessionFromRequest } from '@/lib/auth';
 import { generateShortCode } from '@/lib/shortCode';
+import { apiHandler } from '@/lib/api-utils';
 
 // POST /api/tools/shorten
-export async function POST(req: NextRequest) {
+export const POST = apiHandler(async (req: NextRequest) => {
   try {
     const { url } = await req.json();
     if (!url) return NextResponse.json({ error: 'url required' }, { status: 400 });
@@ -63,4 +64,4 @@ export async function POST(req: NextRequest) {
     console.error('[POST /api/tools/shorten]', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
+});

@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
 import { getSessionFromRequest } from '@/lib/auth';
+import { apiHandler } from '@/lib/api-utils';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(req: NextRequest) {
+export const GET = apiHandler(async (req: NextRequest) => {
   const session = await getSessionFromRequest(req);
   if (session?.role !== 'admin') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
@@ -84,4 +85,4 @@ export async function GET(req: NextRequest) {
     console.error('[GET /api/admin/stats]', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
+});

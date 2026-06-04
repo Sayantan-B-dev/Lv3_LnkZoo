@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
+import { apiHandler } from '@/lib/api-utils';
 
-export async function GET(req: NextRequest) {
+export const GET = apiHandler(async (req: NextRequest) => {
   try {
     const rows = await sql`
       SELECT id, name, usage_count
@@ -14,4 +15,4 @@ export async function GET(req: NextRequest) {
     console.error('[GET /api/tags]', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
+});

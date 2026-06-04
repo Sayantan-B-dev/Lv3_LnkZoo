@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
 import { signToken, cookieOptions } from '@/lib/auth';
+import { apiHandler } from '@/lib/api-utils';
 
-export async function GET(req: NextRequest) {
+export const GET = apiHandler(async (req: NextRequest) => {
   const code = req.nextUrl.searchParams.get('code');
   if (!code) return NextResponse.redirect(new URL('/login?error=no_code', req.url));
 
@@ -75,4 +76,4 @@ export async function GET(req: NextRequest) {
     console.error('[Google OAuth]', err);
     return NextResponse.redirect(new URL('/login?error=oauth_fail', req.url));
   }
-}
+});

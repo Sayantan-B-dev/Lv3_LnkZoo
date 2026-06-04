@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
 import { getSessionFromRequest } from '@/lib/auth';
+import { apiHandler } from '@/lib/api-utils';
 
-export async function GET(req: NextRequest) {
+export const GET = apiHandler(async (req: NextRequest) => {
   const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ user: null }, { status: 401 });
 
@@ -14,4 +15,4 @@ export async function GET(req: NextRequest) {
   if (!rows.length) return NextResponse.json({ user: null }, { status: 404 });
 
   return NextResponse.json({ user: rows[0] });
-}
+});

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { apiHandler } from '@/lib/api-utils';
 
 // POST /api/tools/parse — fetch OG metadata from a URL
-export async function POST(req: NextRequest) {
+export const POST = apiHandler(async (req: NextRequest) => {
   try {
     const { url } = await req.json();
     if (!url) return NextResponse.json({ error: 'url required' }, { status: 400 });
@@ -31,4 +32,4 @@ export async function POST(req: NextRequest) {
   } catch (err: any) {
     return NextResponse.json({ error: 'Failed to parse URL', detail: err?.message }, { status: 422 });
   }
-}
+});

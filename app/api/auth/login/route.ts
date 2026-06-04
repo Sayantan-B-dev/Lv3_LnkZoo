@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import sql from '@/lib/db';
 import { signToken, cookieOptions } from '@/lib/auth';
+import { apiHandler } from '@/lib/api-utils';
 
-export async function POST(req: NextRequest) {
+export const POST = apiHandler(async (req: NextRequest) => {
   try {
     const { email, password } = await req.json();
 
@@ -60,4 +61,4 @@ export async function POST(req: NextRequest) {
     console.error('[POST /api/auth/login]', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
+});
