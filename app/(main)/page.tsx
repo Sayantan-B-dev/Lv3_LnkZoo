@@ -4,12 +4,14 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Topbar from '@/components/common/Topbar';
 import LinkCard from '@/components/links/LinkCard';
+import SortDropdown from '@/components/common/SortDropdown';
 
 import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('explore');
+  const [sortBy, setSortBy] = useState('new');
   const [links, setLinks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,7 +21,7 @@ export default function Home() {
     try {
       const url = query 
         ? `/api/links?q=${encodeURIComponent(query)}`
-        : `/api/links?tab=${activeTab}`;
+        : `/api/links?tab=${activeTab}&sort=${sortBy}`;
       const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
@@ -36,7 +38,7 @@ export default function Home() {
     if (!searchQuery) {
       fetchLinks();
     }
-  }, [activeTab, searchQuery]);
+  }, [activeTab, sortBy, searchQuery]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -84,10 +86,13 @@ export default function Home() {
           </div>
 
           {!searchQuery && (
-            <div className="tabs">
-              <button className={`tab ${activeTab === 'following' ? 'active' : ''}`} onClick={() => setActiveTab('following')}>following</button>
-              <button className={`tab ${activeTab === 'explore' ? 'active' : ''}`} onClick={() => setActiveTab('explore')}>explore</button>
-              <button className={`tab ${activeTab === 'recommended' ? 'active' : ''}`} onClick={() => setActiveTab('recommended')}>for you</button>
+            <div className="tabs-row">
+              <div className="tabs">
+                <button className={`tab ${activeTab === 'following' ? 'active' : ''}`} onClick={() => setActiveTab('following')}>following</button>
+                <button className={`tab ${activeTab === 'explore' ? 'active' : ''}`} onClick={() => setActiveTab('explore')}>explore</button>
+                <button className={`tab ${activeTab === 'recommended' ? 'active' : ''}`} onClick={() => setActiveTab('recommended')}>for you</button>
+              </div>
+              <SortDropdown value={sortBy} onChange={setSortBy} />
             </div>
           )}
           

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Topbar from '@/components/common/Topbar';
 import LinkCard from '@/components/links/LinkCard';
+import SortDropdown from '@/components/common/SortDropdown';
 import { useRouter } from 'next/navigation';
 
 export default function Explore() {
@@ -12,6 +13,7 @@ export default function Explore() {
   const [latestLinks, setLatestLinks] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('new');
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
 
@@ -21,7 +23,7 @@ export default function Explore() {
       try {
         const [tagsRes, linksRes] = await Promise.all([
           fetch('/api/tags'),
-          fetch('/api/links?sort=new&limit=10')
+          fetch(`/api/links?sort=${sortBy}&limit=10`)
         ]);
         if (tagsRes.ok) {
           const data = await tagsRes.json();
@@ -38,7 +40,7 @@ export default function Explore() {
       }
     };
     fetchData();
-  }, []);
+  }, [sortBy]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -126,7 +128,10 @@ export default function Explore() {
             </section>
 
             <section className="explore-section">
-              <h2 className="section-title">Latest Discoveries</h2>
+              <div className="section-header-row">
+                <h2 className="section-title">Latest Discoveries</h2>
+                <SortDropdown value={sortBy} onChange={setSortBy} />
+              </div>
               <div className="latest-list">
                 {loading ? (
                   Array.from({ length: 5 }).map((_, i) => (

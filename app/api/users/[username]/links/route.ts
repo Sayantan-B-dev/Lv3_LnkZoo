@@ -1,25 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
-import sql from '@/lib/db';
+import { query } from '@/lib/db';
 import { apiHandler } from '@/lib/api-utils';
+
+const ORDER_MAP: Record<string, string> = {
+  new: 'l.created_at DESC',
+  oldest: 'l.created_at ASC',
+  top: 'l.like_count DESC, l.created_at DESC',
+};
 
 export const GET = apiHandler(async (req: NextRequest, { params }: { params: { username: string } }) => {
   const { username } = params;
+  const sort = req.nextUrl.searchParams.get('sort') ?? 'new';
+  const orderBy = ORDER_MAP[sort] || ORDER_MAP.new;
 
   try {
-    const rows = await sql`
-      SELECT l.id, l.title, l.description, l.original_url, l.short_code,
-             l.preview_image, l.is_anonymous, l.like_count,
-             l.comment_count, l.view_count, l.created_at,
-             ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) AS tags
-      FROM links l
-      JOIN users u ON l.user_id = u.id
-      LEFT JOIN link_tags lt ON lt.link_id = l.id
-      LEFT JOIN tags t ON t.id = lt.tag_id
-      WHERE u.username = ${username.toLowerCase()}
-        AND l.is_private = false
-      GROUP BY l.id
-      ORDER BY l.created_at DESC
-    `;
+    const rows = await query(
+      `SELECT l.id, l.title, l.description, l.original_url, l.short_code,
+              l.preview_image, l.is_anonymous, l.like_count,
+              l.comment_count, l.view_count, l.created_at,
+              ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) AS tags
+       FROM links l
+       JOIN users u ON l.user_id = u.id
+       LEFT JOIN link_tags lt ON lt.link_id = l.id
+       LEFT JOIN tags t ON t.id = lt.tag_id
+       WHERE u.username = $1
+         AND l.is_private = false
+       GROUP BY l.id
+       ORDER BY ${orderBy}`,
+      [username.toLowerCase()]
+    );
 
     return NextResponse.json({ links: rows });
   } catch (err) {

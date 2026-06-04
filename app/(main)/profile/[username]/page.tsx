@@ -6,6 +6,7 @@ import Topbar from '@/components/common/Topbar';
 import NotificationPanel from '@/components/common/NotificationPanel';
 import LinkCard from '@/components/links/LinkCard';
 import LoadingGlobe from '@/components/common/LoadingGlobe';
+import SortDropdown from '@/components/common/SortDropdown';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import Cropper from 'react-easy-crop';
@@ -31,6 +32,7 @@ export default function ProfilePage({ params }: { params: { username: string } }
   const { addToast } = useToast();
   const [profile, setProfile] = useState<any>(null);
   const [links, setLinks] = useState([]);
+  const [sortBy, setSortBy] = useState('new');
   const [loading, setLoading] = useState(true);
   const [showGlobe, setShowGlobe] = useState(true);
   const [fadeIn, setFadeIn] = useState(false);
@@ -63,7 +65,7 @@ export default function ProfilePage({ params }: { params: { username: string } }
     try {
       const [profRes, linksRes] = await Promise.all([
         fetch(`/api/users/${cleanUsername}`, { cache: 'no-store' }),
-        fetch(`/api/users/${cleanUsername}/links`, { cache: 'no-store' })
+        fetch(`/api/users/${cleanUsername}/links?sort=${sortBy}`, { cache: 'no-store' })
       ]);
       if (profRes.ok && linksRes.ok) {
         const profData = await profRes.json();
@@ -138,7 +140,7 @@ export default function ProfilePage({ params }: { params: { username: string } }
     return () => {
       if (minTimer.current) clearTimeout(minTimer.current);
     };
-  }, [username]);
+  }, [username, sortBy]);
 
   useEffect(() => {
     if (!loading && minTimer.current && dataReady.current) {
@@ -315,7 +317,10 @@ export default function ProfilePage({ params }: { params: { username: string } }
         )}
 
         <div className="profile-feed">
-          <h2 className="section-title">Submissions</h2>
+          <div className="section-header-row">
+            <h2 className="section-title">Submissions</h2>
+            <SortDropdown value={sortBy} onChange={setSortBy} />
+          </div>
           <div className="links-grid">
             {links.length === 0 ? (
               <div className="empty">No posts yet.</div>
