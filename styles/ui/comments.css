@@ -146,3 +146,75 @@
   color: var(--text-4);
   margin-bottom: 24px;
 }
+
+/* ── NESTED REPLIES ────────────────────────────── */
+
+.comment-item {
+  position: relative;
+}
+
+.comment-item.deleted {
+  background: none;
+  border-left: 2px solid var(--border);
+  padding: 4px 0 4px 16px;
+}
+
+.comment-content.deleted {
+  color: var(--text-4);
+  font-style: italic;
+  font-size: 12px;
+}
+
+.thread-line {
+  position: absolute;
+  left: -12px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border);
+  opacity: 0.4;
+}
+
+.comment-replies {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.toggle-replies-btn {
+  background: none;
+  border: none;
+  color: var(--text-4);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: color 0.15s;
+}
+
+.toggle-replies-btn:hover {
+  color: var(--text-2);
+}
+
+.inline-reply-form .comment-input {
+  min-height: 60px;
+  font-size: 13px;
+}
+
+.inline-reply-form .comment-btn {
+  font-size: 11px;
+  padding: 6px 16px;
+}
+
+.reply-btn.disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.cancel-reply {
+  color: #ff5555;
+}
+
+.cancel-reply:hover {
+  color: #ff7777;
+}

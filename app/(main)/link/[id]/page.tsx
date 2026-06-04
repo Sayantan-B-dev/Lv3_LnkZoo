@@ -35,6 +35,8 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
   const [shortUrl, setShortUrl] = useState('');
   const [copied, setCopied] = useState(false);
   const [postingComment, setPostingComment] = useState(false);
+  const [postingReply, setPostingReply] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -196,6 +198,34 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
     }
   };
 
+  const handleReply = async (parentId: string, content: string): Promise<boolean> => {
+    if (!user) return false;
+    setPostingReply(true);
+    try {
+      const res = await fetch('/api/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ linkId: id, parentId, content }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        addToast('Reply posted!', 'success');
+        setReplyingTo(null);
+        await fetchComments();
+        return true;
+      } else {
+        const data = await res.json();
+        addToast(data.error || 'Failed to post reply', 'error');
+        return false;
+      }
+    } catch {
+      addToast('Failed to post reply', 'error');
+      return false;
+    } finally {
+      setPostingReply(false);
+    }
+  };
+
   if (!link) {
     if (!showGlobe) {
       return (
@@ -321,8 +351,12 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
           onCommentChange={setNewComment}
           onCommentSubmit={handlePostComment}
           onCommentDelete={handleCommentDelete}
+          onReply={handleReply}
           isAuthenticated={!!user}
           postingComment={postingComment}
+          postingReply={postingReply}
+          replyingTo={replyingTo}
+          setReplyingTo={setReplyingTo}
         />
       </div>
       )}
