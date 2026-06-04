@@ -34,17 +34,17 @@ export async function POST(req: NextRequest) {
     const [user] = await sql`
       INSERT INTO users (username, email, password_hash, interests)
       VALUES (${username.toLowerCase()}, ${email.toLowerCase()}, ${hash}, ${interests})
-      RETURNING id, username, is_admin
+      RETURNING id, username, role
     `;
 
-    const token = await signToken({ user_id: user.id, username: user.username, is_admin: user.is_admin });
+    const token = await signToken({ user_id: user.id, username: user.username, role: user.role });
 
     const res = NextResponse.json(
       { user: { 
           id: user.id, 
           username: user.username, 
           email: email.toLowerCase(),
-          is_admin: user.is_admin,
+          role: user.role,
           streak: 0
         } 
       },

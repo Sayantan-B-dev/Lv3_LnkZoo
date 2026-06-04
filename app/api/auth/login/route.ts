@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     }
 
     const rows = await sql`
-      SELECT id, username, email, password_hash, avatar_url, bio, website, interests, streak, is_admin, is_banned
+      SELECT id, username, email, password_hash, avatar_url, bio, website, interests, streak, role, is_banned
       FROM users WHERE email = ${email.toLowerCase().trim()}
       LIMIT 1
     `;
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     const token = await signToken({
       user_id: user.id,
       username: user.username,
-      is_admin: user.is_admin,
+      role: user.role,
     });
 
     const res = NextResponse.json({
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
         avatar_url: user.avatar_url,
         bio: user.bio,
         streak: user.streak || 0,
-        is_admin: user.is_admin
+        role: user.role
       },
     });
     const opts = cookieOptions();

@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
 
   const rows = await sql`
     SELECT id, username, email, avatar_url, cover_url, bio, website, interests,
-           streak, is_admin, created_at
+           streak, role, created_at
     FROM users WHERE id = ${session.user_id} LIMIT 1
   `;
   if (!rows.length) return NextResponse.json({ user: null }, { status: 404 });

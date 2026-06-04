@@ -36,13 +36,13 @@ export async function GET(req: NextRequest) {
 
     // Upsert user
     let user = (
-      await sql`SELECT id, username, is_admin FROM users WHERE google_id = ${googleId} LIMIT 1`
+      await sql`SELECT id, username, role FROM users WHERE google_id = ${googleId} LIMIT 1`
     )[0];
 
     if (!user) {
       // Check if email already registered (link accounts)
       const byEmail = (
-        await sql`SELECT id, username, is_admin FROM users WHERE email = ${email} LIMIT 1`
+        await sql`SELECT id, username, role FROM users WHERE email = ${email} LIMIT 1`
       )[0];
 
       if (byEmail) {
@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
         [user] = await sql`
           INSERT INTO users (username, email, google_id, avatar_url)
           VALUES (${username}, ${email}, ${googleId}, ${avatar})
-          RETURNING id, username, is_admin
+          RETURNING id, username, role
         `;
       }
     } else {
@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
       await sql`UPDATE users SET avatar_url = ${avatar} WHERE id = ${user.id}`;
     }
 
-    const token = await signToken({ user_id: user.id, username: user.username, is_admin: user.is_admin });
+    const token = await signToken({ user_id: user.id, username: user.username, role: user.role });
     const res = NextResponse.redirect(new URL('/', req.url));
     const opts = cookieOptions();
     res.cookies.set(opts.name, token, opts);

@@ -9,7 +9,7 @@ const MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 export interface JWTPayload {
   user_id: string;
   username: string;
-  is_admin: boolean;
+  role: string;
 }
 
 export async function signToken(payload: JWTPayload): Promise<string> {

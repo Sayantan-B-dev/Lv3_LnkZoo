@@ -3,18 +3,18 @@
 -- ─────────────────────────────────────────
 
 -- USERS (password: "password123" for all)
-INSERT INTO users (id, username, email, password_hash, bio, streak, last_post_date, is_admin)
+INSERT INTO users (id, username, email, password_hash, bio, streak, last_post_date, role)
 VALUES
-  ('11111111-1111-1111-1111-111111111111','priya',   'priya@example.com',   '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGX1R3wvKpQzQpQpQpQpQpQpQ1','full-stack dev. loves systems and open source.',           22, CURRENT_DATE - 1, false),
-  ('22222222-2222-2222-2222-222222222222','kshetra', 'kshetra@example.com', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGX1R3wvKpQzQpQpQpQpQpQpQ2','rust & go enthusiast. building fast things.',              14, CURRENT_DATE - 1, false),
-  ('33333333-3333-3333-3333-333333333333','arjun',   'arjun@example.com',   '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGX1R3wvKpQzQpQpQpQpQpQpQ3','building things on the internet. curious about systems, design, and the open web.', 7, CURRENT_DATE, false),
-  ('44444444-4444-4444-4444-444444444444','meera',   'meera@example.com',   '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGX1R3wvKpQzQpQpQpQpQpQpQ4','data journalist. obsessed with dataviz.',                  3, CURRENT_DATE - 2, false),
-  ('55555555-5555-5555-5555-555555555555','rahul',   'rahul@example.com',   '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGX1R3wvKpQzQpQpQpQpQpQpQ5','linux, security, and cli tools.',                         0, CURRENT_DATE - 5, false),
-  ('66666666-6666-6666-6666-666666666666','ananya',  'ananya@example.com',  '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGX1R3wvKpQzQpQpQpQpQpQpQ6','ux designer + frontend dev.',                             5, CURRENT_DATE - 1, false),
-  ('77777777-7777-7777-7777-777777777777','kunal',   'kunal@example.com',   '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGX1R3wvKpQzQpQpQpQpQpQpQ7','backend-first developer.',                                1, CURRENT_DATE - 3, false),
-  ('88888888-8888-8888-8888-888888888888','tanvi',   'tanvi@example.com',   '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGX1R3wvKpQzQpQpQpQpQpQpQ8','product manager turned developer.',                       0, CURRENT_DATE - 8, false),
-  ('99999999-9999-9999-9999-999999999999','aisha',   'aisha@example.com',   '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGX1R3wvKpQzQpQpQpQpQpQpQ9','ai researcher. python all the way.',                      2, CURRENT_DATE - 2, false),
-  ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa','admin',   'admin@glinqx.io',     '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGX1R3wvKpQzQpQpQpQpQpQpQ0','site admin.',                                               0, NULL,             true);
+  ('11111111-1111-1111-1111-111111111111','priya',   'priya@example.com',   '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGX1R3wvKpQzQpQpQpQpQpQpQ1','full-stack dev. loves systems and open source.',           22, CURRENT_DATE - 1, 'user'),
+  ('22222222-2222-2222-2222-222222222222','kshetra', 'kshetra@example.com', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGX1R3wvKpQzQpQpQpQpQpQpQ2','rust & go enthusiast. building fast things.',              14, CURRENT_DATE - 1, 'user'),
+  ('33333333-3333-3333-3333-333333333333','arjun',   'arjun@example.com',   '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGX1R3wvKpQzQpQpQpQpQpQpQ3','building things on the internet. curious about systems, design, and the open web.', 7, CURRENT_DATE, 'user'),
+  ('44444444-4444-4444-4444-444444444444','meera',   'meera@example.com',   '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGX1R3wvKpQzQpQpQpQpQpQpQ4','data journalist. obsessed with dataviz.',                  3, CURRENT_DATE - 2, 'user'),
+  ('55555555-5555-5555-5555-555555555555','rahul',   'rahul@example.com',   '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGX1R3wvKpQzQpQpQpQpQpQpQ5','linux, security, and cli tools.',                         0, CURRENT_DATE - 5, 'user'),
+  ('66666666-6666-6666-6666-666666666666','ananya',  'ananya@example.com',  '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGX1R3wvKpQzQpQpQpQpQpQpQ6','ux designer + frontend dev.',                             5, CURRENT_DATE - 1, 'user'),
+  ('77777777-7777-7777-7777-777777777777','kunal',   'kunal@example.com',   '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGX1R3wvKpQzQpQpQpQpQpQpQ7','backend-first developer.',                                1, CURRENT_DATE - 3, 'user'),
+  ('88888888-8888-8888-8888-888888888888','tanvi',   'tanvi@example.com',   '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGX1R3wvKpQzQpQpQpQpQpQpQ8','product manager turned developer.',                       0, CURRENT_DATE - 8, 'user'),
+  ('99999999-9999-9999-9999-999999999999','aisha',   'aisha@example.com',   '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGX1R3wvKpQzQpQpQpQpQpQpQ9','ai researcher. python all the way.',                      2, CURRENT_DATE - 2, 'user'),
+  ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa','admin',   'admin@glinqx.io',     '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGX1R3wvKpQzQpQpQpQpQpQpQ0','site admin.',                                               0, NULL,             'admin');
 
 -- INTERESTS
 UPDATE users SET interests = ARRAY['engineering','debugging','webdev','javascript'] WHERE username = 'priya';

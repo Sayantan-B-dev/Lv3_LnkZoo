@@ -10,6 +10,10 @@ export async function middleware(req: NextRequest) {
   const isProtected = PROTECTED.some(p => pathname.startsWith(p));
   const isAdmin = ADMIN_ONLY.some(p => pathname.startsWith(p));
 
+  if (pathname.startsWith('/admin/forbidden')) {
+    return NextResponse.next();
+  }
+
   if (isProtected || isAdmin) {
     const session = await getSessionFromRequest(req);
     if (!session) {
@@ -18,8 +22,8 @@ export async function middleware(req: NextRequest) {
       loginUrl.searchParams.set('from', pathname);
       return NextResponse.redirect(loginUrl);
     }
-    if (isAdmin && !session.is_admin) {
-      return NextResponse.redirect(new URL('/', req.url));
+    if (isAdmin && session.role !== 'admin') {
+      return NextResponse.redirect(new URL('/admin/forbidden', req.url));
     }
   }
 

@@ -16,7 +16,7 @@ CREATE TABLE users (
   interests        TEXT[]       DEFAULT '{}',     -- tag names user cares about
   streak           INT          DEFAULT 0,
   last_post_date   DATE,
-  is_admin         BOOLEAN      DEFAULT false,
+  role             VARCHAR(20)  DEFAULT 'user',        -- 'user', 'prouser', 'admin'
   is_banned        BOOLEAN      DEFAULT false,
   created_at       TIMESTAMP    DEFAULT NOW(),
   updated_at       TIMESTAMP    DEFAULT NOW()

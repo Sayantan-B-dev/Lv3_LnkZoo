@@ -10,7 +10,7 @@ interface User {
   avatar_url?: string;
   bio?: string;
   streak: number;
-  is_admin: boolean;
+  role: string;
 }
 
 interface AuthContextType {
