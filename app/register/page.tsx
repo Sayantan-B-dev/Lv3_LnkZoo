@@ -4,18 +4,18 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
+import { useToast } from '@/context/ToastContext';
 
 export default function Register() {
   const router = useRouter();
   const { login } = useAuth();
+  const { addToast } = useToast();
   const [formData, setFormData] = useState({ username: '', email: '', password: '' });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
@@ -25,13 +25,14 @@ export default function Register() {
       if (res.ok) {
         const data = await res.json();
         login(data.user);
+        addToast('Account created! Welcome to Glinqx.', 'success');
         router.push('/');
       } else {
         const data = await res.json();
-        setError(data.error || 'Registration failed');
+        addToast(data.error || 'Registration failed', 'error');
       }
-    } catch (err) {
-      setError('An error occurred. Please try again.');
+    } catch {
+      addToast('An error occurred. Please try again.', 'error');
     } finally {
       setLoading(false);
     }
@@ -45,8 +46,6 @@ export default function Register() {
           <h1>Create an account</h1>
           <p>Join the community and start sharing</p>
         </div>
-
-        {error && <div className="auth-error">{error}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="input-group-v">

@@ -4,9 +4,11 @@ import React, { useState } from 'react';
 import Topbar from '@/components/common/Topbar';
 import NotificationPanel from '@/components/common/NotificationPanel';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/context/ToastContext';
 
 export default function Submit() {
   const router = useRouter();
+  const { addToast } = useToast();
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [metadata, setMetadata] = useState({ title: '', description: '', image: '', tags: '' });
@@ -25,9 +27,12 @@ export default function Submit() {
         const data = await res.json();
         setMetadata({ ...metadata, title: data.title, description: data.description, image: data.image });
         setStep(2);
+      } else {
+        addToast('Failed to parse URL — proceeding with raw link', 'info');
+        setStep(2);
       }
     } catch (err) {
-      console.error('Failed to parse URL', err);
+      addToast('Failed to parse URL — proceeding with raw link', 'info');
       setStep(2);
     } finally {
       setLoading(false);
@@ -51,10 +56,13 @@ export default function Submit() {
         }),
       });
       if (res.ok) {
+        addToast('Link posted to community!', 'success');
         router.push('/');
+      } else {
+        addToast('Failed to post link. Check your input.', 'error');
       }
     } catch (err) {
-      console.error('Failed to post link', err);
+      addToast('Failed to post link', 'error');
     } finally {
       setLoading(false);
     }

@@ -4,6 +4,8 @@ import { NotificationProvider } from '@/context/NotificationContext';
 import { UIProvider } from '@/context/UIContext';
 import AnimatedBg from '@/components/common/AnimatedBg';
 import { LoadingProvider } from '@/context/LoadingContext';
+import { ToastProvider } from '@/context/ToastContext';
+import ToastContainer from '@/components/common/ToastContainer';
 // @ts-ignore: CSS side-effect import
 import './globals.css';
 
@@ -37,8 +39,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <NotificationProvider>
             <UIProvider>
               <LoadingProvider>
-                <AnimatedBg />
-                {children}
+                <ToastProvider>
+                  <AnimatedBg />
+                  {children}
+                  <ToastContainer />
+                </ToastProvider>
               </LoadingProvider>
             </UIProvider>
           </NotificationProvider>

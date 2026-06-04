@@ -12,6 +12,7 @@ interface CommentThreadProps {
   onCommentSubmit: (e: React.FormEvent) => void;
   onCommentDelete: (id: string) => void;
   isAuthenticated: boolean;
+  postingComment?: boolean;
 }
 
 export default function CommentThread({
@@ -22,6 +23,7 @@ export default function CommentThread({
   onCommentSubmit,
   onCommentDelete,
   isAuthenticated,
+  postingComment = false,
 }: CommentThreadProps) {
   return (
     <div className="comments-section">
@@ -32,6 +34,7 @@ export default function CommentThread({
           value={commentValue}
           onChange={onCommentChange}
           onSubmit={onCommentSubmit}
+          loading={postingComment}
         />
       ) : (
         <div className="auth-prompt">Sign in to join the discussion.</div>

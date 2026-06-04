@@ -4,20 +4,20 @@ import React, { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
+import { useToast } from '@/context/ToastContext';
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login } = useAuth();
+  const { addToast } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
@@ -27,14 +27,15 @@ function LoginForm() {
       if (res.ok) {
         const data = await res.json();
         login(data.user);
+        addToast('Welcome back!', 'success');
         const from = searchParams.get('from') || '/';
         router.push(from);
       } else {
         const data = await res.json();
-        setError(data.error || 'Login failed');
+        addToast(data.error || 'Login failed', 'error');
       }
-    } catch (err) {
-      setError('An error occurred. Please try again.');
+    } catch {
+      addToast('An error occurred. Please try again.', 'error');
     } finally {
       setLoading(false);
     }
@@ -48,8 +49,6 @@ function LoginForm() {
           <h1>Welcome back</h1>
           <p>Enter your details to sign in</p>
         </div>
-
-        {error && <div className="auth-error">{error}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="input-group-v">

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
+import { useToast } from '@/context/ToastContext';
 
 interface AdminUser {
   id: string;
@@ -32,6 +33,7 @@ function StatCard({ label, value, color }: { label: string; value: string | numb
 
 export default function AdminUsers() {
   const [users, setUsers] = useState<AdminUser[]>([]);
+  const { addToast } = useToast();
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -67,7 +69,7 @@ export default function AdminUsers() {
       if (!res.ok) throw new Error('Failed');
       setUsers(prev => prev.map(u => u.id === userId ? { ...u, role } : u));
     } catch {
-      alert('Failed to update role');
+      addToast('Failed to update role', 'error');
     }
   };
 
@@ -80,8 +82,9 @@ export default function AdminUsers() {
       });
       if (!res.ok) throw new Error('Failed');
       setUsers(prev => prev.map(u => u.id === userId ? { ...u, is_banned: !current } : u));
+      addToast(current ? 'User unbanned' : 'User banned', 'success');
     } catch {
-      alert('Failed to update ban status');
+      addToast('Failed to update ban status', 'error');
     }
   };
 

@@ -4,6 +4,7 @@ import React, { useState, useRef } from 'react';
 import Topbar from '@/components/common/Topbar';
 import NotificationPanel from '@/components/common/NotificationPanel';
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
 import { useRouter } from 'next/navigation';
 import '../../../../styles/pages/submit-bulk.css';
 
@@ -18,6 +19,7 @@ interface UploadResult {
 export default function BulkUpload() {
   const router = useRouter();
   const { user } = useAuth();
+  const { addToast } = useToast();
   const [raw, setRaw] = useState('');
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -51,8 +53,14 @@ export default function BulkUpload() {
       setResults(data.results);
       setSummary({ total: data.total, succeeded: data.succeeded, failed: data.failed, limitApplied: data.limitApplied });
       setProgress(data.total);
+      if (data.failed === 0) {
+        addToast(`All ${data.succeeded} links uploaded successfully!`, 'success');
+      } else {
+        addToast(`${data.succeeded} uploaded, ${data.failed} failed`, data.failed === 0 ? 'success' : 'error');
+      }
     } catch {
       setSummary({ total: urls.length, succeeded: 0, failed: urls.length, limitApplied: false });
+      addToast('Upload failed', 'error');
     } finally {
       setLoading(false);
     }

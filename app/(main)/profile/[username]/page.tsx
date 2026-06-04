@@ -7,6 +7,7 @@ import NotificationPanel from '@/components/common/NotificationPanel';
 import LinkCard from '@/components/links/LinkCard';
 import LoadingGlobe from '@/components/common/LoadingGlobe';
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
 import Cropper from 'react-easy-crop';
 import { useRouter } from 'next/navigation';
 
@@ -27,6 +28,7 @@ export default function ProfilePage({ params }: { params: { username: string } }
   const { username } = params;
   const router = useRouter();
   const { user: currentUser, logout } = useAuth();
+  const { addToast } = useToast();
   const [profile, setProfile] = useState<any>(null);
   const [links, setLinks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -113,6 +115,9 @@ export default function ProfilePage({ params }: { params: { username: string } }
         if (cropState.type === 'avatar') setEditData({ ...editData, avatar_url: url });
         if (cropState.type === 'cover') setEditData({ ...editData, cover_url: url });
         setCropState({ imageSrc: null, crop: { x: 0, y: 0 }, zoom: 1, type: null });
+        addToast(`${cropState.type === 'avatar' ? 'Avatar' : 'Cover'} updated!`, 'success');
+      } else {
+        addToast('Failed to upload image', 'error');
       }
     } catch (err) {
       console.error(err);
@@ -154,6 +159,9 @@ export default function ProfilePage({ params }: { params: { username: string } }
         const data = await res.json();
         setProfile({ ...profile, ...data.user });
         setIsEditing(false);
+        addToast('Profile updated!', 'success');
+      } else {
+        addToast('Failed to update profile', 'error');
       }
     } catch (err) {
       console.error('Update failed', err);
@@ -174,9 +182,12 @@ export default function ProfilePage({ params }: { params: { username: string } }
           isFollowing: data.following,
           follower_count: data.following ? profile.follower_count + 1 : profile.follower_count - 1
         });
+        addToast(data.following ? `Followed @${cleanUsername}` : `Unfollowed @${cleanUsername}`, 'success');
+      } else {
+        addToast('Failed to update follow status', 'error');
       }
     } catch (err) {
-      console.error(err);
+      addToast('Failed to update follow status', 'error');
     }
   };
 

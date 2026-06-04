@@ -8,6 +8,7 @@ interface CommentFormProps {
   onSubmit: (e: React.FormEvent) => void;
   placeholder?: string;
   submitLabel?: string;
+  loading?: boolean;
 }
 
 export default function CommentForm({
@@ -16,6 +17,7 @@ export default function CommentForm({
   onSubmit,
   placeholder = 'What are your thoughts?',
   submitLabel = 'Post Comment',
+  loading = false,
 }: CommentFormProps) {
   return (
     <form onSubmit={onSubmit} className="comment-form">
@@ -24,8 +26,16 @@ export default function CommentForm({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="comment-input"
+        disabled={loading}
       />
-      <button type="submit" className="comment-btn">{submitLabel}</button>
+      <button type="submit" className="comment-btn" disabled={loading || !value.trim()}>
+        {loading ? (
+          <span className="comment-btn-loading">
+            <span className="comment-spinner" />
+            Posting...
+          </span>
+        ) : submitLabel}
+      </button>
     </form>
   );
 }

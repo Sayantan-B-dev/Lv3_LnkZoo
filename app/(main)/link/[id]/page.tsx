@@ -9,10 +9,12 @@ import CommentThread from '@/components/comments/CommentThread';
 import LoadingGlobe from '@/components/common/LoadingGlobe';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
 
 export default function LinkDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
   const router = useRouter();
+  const { addToast } = useToast();
   const { user } = useAuth();
   const [link, setLink] = useState<any>(null);
   const [comments, setComments] = useState([]);
@@ -32,6 +34,7 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
   const [showShortUrl, setShowShortUrl] = useState(false);
   const [shortUrl, setShortUrl] = useState('');
   const [copied, setCopied] = useState(false);
+  const [postingComment, setPostingComment] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -59,6 +62,18 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
     } finally {
       dataReady.current = true;
       setLoading(false);
+    }
+  };
+
+  const fetchComments = async () => {
+    try {
+      const res = await fetch(`/api/comments?link_id=${id}`);
+      if (res.ok) {
+        const data = await res.json();
+        setComments(data.comments);
+      }
+    } catch {
+      console.error('Failed to fetch comments');
     }
   };
 
@@ -97,8 +112,11 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
         body: JSON.stringify({ action: 'update', ...editLinkData }),
       });
       if (res.ok) {
+        addToast('Link updated', 'success');
         setLink({ ...link, ...editLinkData });
         setIsEditingLink(false);
+      } else {
+        addToast('Failed to update link', 'error');
       }
     } catch (err) {
       console.error('Link update failed', err);
@@ -110,7 +128,12 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
       closeConfirm();
       try {
         const res = await fetch(`/api/comments/${commentId}`, { method: 'DELETE' });
-        if (res.ok) setComments(comments.filter((c: any) => c.id !== commentId));
+        if (res.ok) {
+          setComments(comments.filter((c: any) => c.id !== commentId));
+          addToast('Comment deleted', 'success');
+        } else {
+          addToast('Failed to delete comment', 'error');
+        }
       } catch (err) {
         console.error('Comment delete failed', err);
       }
@@ -126,9 +149,10 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
     try {
       await navigator.clipboard.writeText(shortUrl);
       setCopied(true);
+      addToast('Short URL copied to clipboard', 'success');
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Copy failed', err);
+      addToast('Failed to copy short URL', 'error');
     }
   };
 
@@ -151,6 +175,7 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
   const handlePostComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !newComment.trim()) return;
+    setPostingComment(true);
     try {
       const res = await fetch('/api/comments', {
         method: 'POST',
@@ -158,11 +183,16 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
         body: JSON.stringify({ linkId: id, content: newComment }),
       });
       if (res.ok) {
+        addToast('Comment posted!', 'success');
         setNewComment('');
-        fetchData();
+        fetchComments();
+      } else {
+        addToast('Failed to post comment', 'error');
       }
     } catch (err) {
-      console.error('Failed to post comment', err);
+      addToast('Failed to post comment', 'error');
+    } finally {
+      setPostingComment(false);
     }
   };
 
@@ -270,8 +300,13 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
                 <button onClick={() => {
                   openConfirm('Delete this link? This cannot be undone.', async () => {
                     closeConfirm();
-                    await fetch(`/api/links/${id}`, { method: 'DELETE' });
-                    router.push('/');
+                    const res = await fetch(`/api/links/${id}`, { method: 'DELETE' });
+                    if (res.ok) {
+                      addToast('Link deleted', 'success');
+                      router.push('/');
+                    } else {
+                      addToast('Failed to delete link', 'error');
+                    }
                   });
                 }} className="delete-btn">Delete Link</button>
               )}
@@ -287,6 +322,7 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
           onCommentSubmit={handlePostComment}
           onCommentDelete={handleCommentDelete}
           isAuthenticated={!!user}
+          postingComment={postingComment}
         />
       </div>
       )}

@@ -3,12 +3,14 @@
 import React, { useState } from 'react';
 import Topbar from '@/components/common/Topbar';
 import NotificationPanel from '@/components/common/NotificationPanel';
+import { useToast } from '@/context/ToastContext';
 
 export default function Tools() {
   const [url, setUrl] = useState('');
   const [shortResult, setShortResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const { addToast } = useToast();
 
   const handleShorten = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,9 +23,12 @@ export default function Tools() {
       if (res.ok) {
         const data = await res.json();
         setShortResult(data);
+        addToast('Short URL created!', 'success');
+      } else {
+        addToast('Failed to shorten URL', 'error');
       }
     } catch (err) {
-      console.error('Shorten failed', err);
+      addToast('Failed to shorten URL', 'error');
     } finally {
       setLoading(false);
     }
@@ -63,9 +68,10 @@ export default function Tools() {
                     try {
                       await navigator.clipboard.writeText(shortResult.shortUrl);
                       setCopied(true);
+                      addToast('Short URL copied!', 'success');
                       setTimeout(() => setCopied(false), 2000);
                     } catch (err) {
-                      console.error('Copy failed', err);
+                      addToast('Failed to copy short URL', 'error');
                     }
                   }}>
                     {copied ? (
