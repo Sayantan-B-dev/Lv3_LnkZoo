@@ -1,0 +1,32 @@
+'use client';
+
+import React from 'react';
+import { useScrollReveal, getNextRevealIndex } from './hooks';
+
+export function Reveal({ children, className = '', disableExit }: { children: React.ReactNode; className?: string; disableExit?: boolean }) {
+  const idx = getNextRevealIndex();
+  const { ref, revealed, exiting, offset } = useScrollReveal(idx);
+  const style: React.CSSProperties = {
+    transitionDuration: offset.dur + 's',
+    transitionDelay: revealed ? offset.del + 's' : '0s',
+  };
+  let transform = 'translateY(30px)';
+  if (offset.dir === 'translateX') transform = 'translateX(' + offset.x + 'px)';
+  else if (offset.dir === 'scale') transform = 'scale(0.95)';
+  else transform = 'translateY(' + offset.y + 'px)';
+
+  return (
+    <div
+      ref={ref}
+      className={'reveal ' + (revealed ? 'revealed' : '') + (exiting && !disableExit ? ' exiting' : '') + (className ? ' ' + className : '')}
+      style={Object.assign({}, style, {
+        '--reveal-x': offset.x + 'px',
+        '--reveal-y': offset.y + 'px',
+        '--reveal-dir': offset.dir,
+        transform: revealed ? 'none' : transform,
+      } as React.CSSProperties)}
+    >
+      {children}
+    </div>
+  );
+}

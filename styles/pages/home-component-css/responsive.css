@@ -1,0 +1,23 @@
+/* ── Responsive ──────────────────────────── */
+@media (max-width: 768px) {
+  .hero-inner { flex-direction: column; text-align: center; }
+  .hero-actions { justify-content: center; }
+  .hero-stats { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+  .hero-stat-card { min-width: 100px; padding: 14px 18px; }
+  .about-grid { grid-template-columns: 1fr; }
+  .features-row.wide-left,
+  .features-row.wide-right,
+  .features-row.triple { grid-template-columns: 1fr; }
+  .faq-layout { grid-template-columns: 1fr; }
+  .faq-sticky { position: static; }
+  .metrics-section { grid-template-columns: repeat(2, 1fr); }
+  .footer-inner { grid-template-columns: 1fr 1fr; }
+  .about-ghost { font-size: 80px; }
+  .cta-section { margin: 0 auto 60px; border-radius: 12px; }
+}
+@media (max-width: 480px) {
+  .metrics-section { grid-template-columns: 1fr; }
+  .footer-inner { grid-template-columns: 1fr; }
+  .feed-container { padding: 20px 16px; }
+  .cta-section { margin: 0 auto 40px; border-radius: 10px; }
+}

@@ -1,12 +1,18 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
 import Topbar from '@/components/common/Topbar';
-import LinkCard from '@/components/links/LinkCard';
-import SortDropdown from '@/components/common/SortDropdown';
-
 import { useRouter } from 'next/navigation';
+import { useScrollProgress } from '@/home-components/hooks';
+import { HeroSection } from '@/home-components/HeroSection';
+import { MarqueeSection } from '@/home-components/MarqueeSection';
+import { AboutSection } from '@/home-components/AboutSection';
+import { FeaturesSection } from '@/home-components/FeaturesSection';
+import { MetricsSection } from '@/home-components/MetricsSection';
+import { FeedSection } from '@/home-components/FeedSection';
+import { FAQSection } from '@/home-components/FAQSection';
+import { CTASection } from '@/home-components/CTASection';
+import { FooterSection } from '@/home-components/FooterSection';
 
 export default function Home() {
   const router = useRouter();
@@ -15,112 +21,77 @@ export default function Home() {
   const [links, setLinks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [faqOpen, setFaqOpen] = useState<number | null>(null);
+  const [stats, setStats] = useState<any>(null);
 
-  const fetchLinks = async (query = '') => {
+  useEffect(() => {
+    fetch('/api/stats').then(function(r) { return r.ok && r.json(); }).then(function(d) { setStats(d); }).catch(function() {});
+  }, []);
+
+  function fetchLinks(query?: string) {
     setLoading(true);
-    try {
-      const url = query 
-        ? `/api/links?q=${encodeURIComponent(query)}`
-        : `/api/links?tab=${activeTab}&sort=${sortBy}`;
-      const res = await fetch(url);
+    var url = query
+      ? '/api/links?q=' + encodeURIComponent(query)
+      : '/api/links?tab=' + activeTab + '&sort=' + sortBy;
+    fetch(url).then(function(res) {
       if (res.ok) {
-        const data = await res.json();
-        setLinks(data.links);
+        res.json().then(function(data) { setLinks(data.links); });
       }
-    } catch (err) {
+    }).catch(function(err) {
       console.error('Failed to fetch links', err);
-    } finally {
+    }).finally(function() {
       setLoading(false);
-    }
-  };
+    });
+  }
 
-  useEffect(() => {
-    if (!searchQuery) {
-      fetchLinks();
-    }
-  }, [activeTab, sortBy, searchQuery]);
+  useEffect(function() {
+    if (!searchQuery) fetchLinks();
+  }, [activeTab, sortBy]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (searchQuery.trim()) {
-        fetchLinks(searchQuery);
-      }
+  useEffect(function() {
+    var timer = setTimeout(function() {
+      if (searchQuery.trim()) fetchLinks(searchQuery);
     }, 400);
-    return () => clearTimeout(timer);
+    return function() { clearTimeout(timer); };
   }, [searchQuery]);
 
-  const handleLike = async (id: string) => {
-    try {
-      const res = await fetch(`/api/links/${id}/like`, {
-        method: 'POST',
-      });
-      if (res.status === 401) {
-        router.push(`/login?from=/`);
-        return;
-      }
-      if (res.ok) {
-        fetchLinks(searchQuery);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  function handleLike(id: string) {
+    fetch('/api/links/' + id + '/like', { method: 'POST' }).then(function(res) {
+      if (res.status === 401) { router.push('/login?from=/'); return; }
+      if (res.ok) fetchLinks(searchQuery);
+    }).catch(function(err) { console.error(err); });
+  }
+
+  var scrollProgress = useScrollProgress();
 
   return (
     <>
+      <div className="progress-bar" style={{ transform: 'scaleX(' + scrollProgress + ')' }} />
       <Topbar title="Home" />
-      
-      <div id="content">
-        <div className="view active">
-          <div style={{ marginBottom: '24px' }}>
-            <div className="search-bar">
-              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
-              <input 
-                type="text" 
-                placeholder="Search the web..." 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{ background: 'none', border: 'none', outline: 'none', color: 'var(--text)', fontSize: '13px', width: '100%' }}
-              />
-            </div>
-          </div>
 
-          {!searchQuery && (
-            <div className="tabs-row">
-              <div className="tabs">
-                <button className={`tab ${activeTab === 'following' ? 'active' : ''}`} onClick={() => setActiveTab('following')}>following</button>
-                <button className={`tab ${activeTab === 'explore' ? 'active' : ''}`} onClick={() => setActiveTab('explore')}>explore</button>
-                <button className={`tab ${activeTab === 'recommended' ? 'active' : ''}`} onClick={() => setActiveTab('recommended')}>for you</button>
-              </div>
-              <SortDropdown value={sortBy} onChange={setSortBy} />
-            </div>
-          )}
-          
-          <div id="home-feed" className="fade-in">
-            {loading ? (
-              Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="link-card" style={{ height: '120px' }}>
-                  <div className="skel" style={{ width: '100%', height: '100%' }}></div>
-                </div>
-              ))
-            ) : links.length === 0 ? (
-              <div className="empty">No results found.</div>
-            ) : (
-              links.map((link: any) => (
-                <LinkCard
-                  key={link.id}
-                  link={link}
-                  variant="full"
-                  showPreview={true}
-                  onLike={handleLike}
-                  onClick={() => router.push(`/link/${link.id}`)}
-                  isClickable={true}
-                />
-              ))
-            )}
-          </div>
-        </div>
+      <div id="main-content" className="home-page">
+        <HeroSection stats={stats} onShareClick={function() { router.push('/submit'); }} />
+        <MarqueeSection />
+        <AboutSection stats={stats} />
+        <FeaturesSection />
+        <MetricsSection stats={stats} />
+        <FeedSection
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          links={links}
+          loading={loading}
+          handleLike={handleLike}
+          onLinkClick={function(id) { router.push('/link/' + id); }}
+        />
+        <FAQSection faqOpen={faqOpen} setFaqOpen={setFaqOpen} />
+        <CTASection onShareClick={function() { router.push('/submit'); }} />
       </div>
+
+      <FooterSection />
     </>
   );
 }

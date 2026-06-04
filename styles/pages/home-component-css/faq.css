@@ -1,0 +1,64 @@
+/* ── FAQ ─────────────────────────────────── */
+.faq-section {
+  padding: 100px 24px;
+  width: 90%;
+  
+  margin: 0 auto;
+}
+.faq-layout {
+  display: grid;
+  grid-template-columns: 0.45fr 0.55fr;
+  gap: 48px;
+  align-items: start;
+}
+.faq-sticky {
+  position: sticky;
+  top: 80px;
+}
+.faq-heading {
+  font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+  font-weight: 600;
+  line-height: 1.3;
+  margin-top: 6px;
+}
+.faq-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid var(--border);
+}
+.faq-item {
+  border-bottom: 1px solid var(--border);
+}
+.faq-question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 0;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.faq-question:hover { color: var(--text-2); }
+.faq-chevron {
+  flex-shrink: 0;
+  transition: transform 0.3s;
+}
+.faq-chevron.open { transform: rotate(180deg); }
+.faq-answer {
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(.22,1,.36,1);
+}
+.faq-answer p {
+  padding: 0 0 20px;
+  color: var(--text-3);
+  font-size: 14px;
+  line-height: 1.7;
+}

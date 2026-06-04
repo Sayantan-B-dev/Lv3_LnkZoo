@@ -1,15 +1,13 @@
-.search-bar {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 16px;
-    background: var(--bg-1);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    transition: all 0.2s;
-}
-
-.search-bar:focus-within {
-    border-color: var(--text-4);
-    background: var(--bg-2);
-}
+@import './home-component-css/progress.css';
+@import './home-component-css/reveal.css';
+@import './home-component-css/section-label.css';
+@import './home-component-css/hero.css';
+@import './home-component-css/marquee.css';
+@import './home-component-css/about.css';
+@import './home-component-css/features.css';
+@import './home-component-css/metrics.css';
+@import './home-component-css/feed.css';
+@import './home-component-css/faq.css';
+@import './home-component-css/cta.css';
+@import './home-component-css/footer.css';
+@import './home-component-css/responsive.css';

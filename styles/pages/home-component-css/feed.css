@@ -1,0 +1,41 @@
+/* ── Feed Container ──────────────────────── */
+.feed-section {
+  padding: 80px 24px;
+  width: 90%;
+  
+  margin: 0 auto;
+}
+.feed-container {
+  margin: 0 auto;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 32px;
+  backdrop-filter: blur(4px);
+}
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+.search-bar:focus-within {
+  border-color: var(--text-4);
+  background: var(--bg);
+}
+.feed-search-input {
+  flex: 1;
+  border: none;
+  background: none;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  font-family: inherit;
+}
+.feed-search-input::placeholder {
+  color: var(--text-4);
+}

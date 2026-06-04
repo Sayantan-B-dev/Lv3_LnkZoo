@@ -1,0 +1,36 @@
+/* ── Marquee ─────────────────────────────── */
+.marquee-section {
+  width: 100%;
+  background: var(--text);
+  color: var(--bg);
+  overflow: hidden;
+  padding: 14px 0;
+}
+.marquee-track {
+  width: 100%;
+  overflow: hidden;
+}
+.marquee-content {
+  display: flex;
+  gap: 40px;
+  width: max-content;
+  animation: marqueeScroll 30s linear infinite;
+}
+.marquee-section:hover .marquee-content {
+  animation-play-state: paused;
+}
+@keyframes marqueeScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.marquee-item {
+  color: var(--bg);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+.marquee-item:hover { opacity: 0.6; }

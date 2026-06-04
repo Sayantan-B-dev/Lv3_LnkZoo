@@ -1,0 +1,50 @@
+/* ── Features ────────────────────────────── */
+.features-section {
+  position: relative;
+  padding: 100px 24px;
+  width: 90%;
+  
+  margin: 0 auto;
+}
+.features-heading {
+  text-align: center;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  margin-bottom: 48px;
+  font-weight: 600;
+}
+.features-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  z-index: 1;
+}
+.features-row {
+  display: grid;
+  gap: 20px;
+}
+.features-row.wide-left { grid-template-columns: 1.3fr 0.7fr; }
+.features-row.wide-right { grid-template-columns: 0.7fr 1.3fr; }
+.features-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+.feature-card {
+  padding: 32px 28px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  transition: background 0.3s, border-color 0.3s;
+  cursor: default;
+  position: relative;
+  isolation: isolate;
+}
+.feature-card:hover {
+  background: rgba(0,0,0,0.04);
+  border-color: var(--text-4);
+  mix-blend-mode: difference;
+}
+.feature-card:hover p { opacity: 0.7; }
+.feature-icon { display: block; margin-bottom: 12px; }
+.feature-icon svg {
+  display: block;
+  color: var(--text);
+}
+.feature-card h4 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+.feature-card p { font-size: 14px; color: var(--text-3); line-height: 1.6; transition: opacity 0.3s; }
