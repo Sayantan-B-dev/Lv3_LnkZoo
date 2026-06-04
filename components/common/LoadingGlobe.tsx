@@ -19,11 +19,11 @@ export default function LoadingGlobe() {
     if (!ctx) return;
 
     let animId: number;
-    let angle = 0;
+    let angle = 45;
 
-    const NODES = 120;
-    const CONNECT_DIST = 2.2;
-    const ROTATION_SPEED = 0.004;
+    const NODES = 300;
+    const CONNECT_DIST = 0;
+    const ROTATION_SPEED = 0.05;
 
     let nodes: Point3D[] = [];
 
@@ -31,7 +31,7 @@ export default function LoadingGlobe() {
       const w = canvas.width = window.innerWidth;
       const h = canvas.height = window.innerHeight;
 
-      const radius = Math.min(w, h) * 0.3;
+      const radius = Math.min(w, h) * 0.09;
 
       nodes = [];
       for (let i = 0; i < NODES; i++) {
@@ -46,11 +46,11 @@ export default function LoadingGlobe() {
     };
 
     const project = (p: Point3D, cx: number, cy: number) => {
-      const scale = 600 / (600 + p.z);
+      const scale = 500 / (600 + p.z);
       return {
         x: cx + p.x * scale,
         y: cy + p.y * scale,
-        r: Math.max(0.5, 2 * scale),
+        r: Math.max(1, 2 * scale),
       };
     };
 
@@ -66,9 +66,10 @@ export default function LoadingGlobe() {
       const cosA = Math.cos(angle);
       const sinA = Math.sin(angle);
 
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      const nodeColor = isDark ? '255,255,255' : '200,200,200';
-      const lineColor = isDark ? '255,255,255' : '180,180,180';
+      const style = getComputedStyle(document.documentElement);
+      const textColor = style.getPropertyValue('--text').trim();
+      const text2Color = style.getPropertyValue('--text-2').trim();
+      const text3Color = style.getPropertyValue('--text-3').trim();
 
       const rotated = nodes.map((p) => ({
         x: p.x * cosA - p.z * sinA,
@@ -91,12 +92,12 @@ export default function LoadingGlobe() {
           const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
           if (dist < CONNECT_DIST * 100) {
-            const opacity = Math.max(0, 1 - dist / (CONNECT_DIST * 100)) * 0.35;
+            const opacity = Math.max(0, 1 - dist / (CONNECT_DIST * 100)) * 0.25;
             ctx.beginPath();
             ctx.moveTo(projected[i].px, projected[i].py);
             ctx.lineTo(projected[j].px, projected[j].py);
-            ctx.strokeStyle = `rgba(${lineColor},${opacity})`;
-            ctx.lineWidth = 0.6;
+            ctx.strokeStyle = `${text3Color}${Math.round(opacity * 255).toString(16).padStart(2, '0')}`;
+            ctx.lineWidth = 0.15;
             ctx.stroke();
           }
         }
@@ -104,12 +105,19 @@ export default function LoadingGlobe() {
 
       for (const p of projected) {
         const zFactor = 1 - (p.z + 200) / 400;
-        const alpha = Math.max(0.3, Math.min(1, zFactor));
+        const alpha = Math.max(0.4, Math.min(1, zFactor));
         ctx.beginPath();
-        ctx.arc(p.px, p.py, p.pr, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${nodeColor},${alpha})`;
+        ctx.arc(p.px, p.py, p.pr, 0, Math.PI * 1);
+        const hex = Math.round(alpha * 255).toString(16).padStart(2, '0');
+        ctx.fillStyle = `${textColor}${hex}`;
+        ctx.shadowColor = `${text2Color}${hex}`;
+        ctx.shadowBlur = 8;
         ctx.fill();
+        ctx.shadowBlur = 0;
       }
+
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
 
       animId = requestAnimationFrame(draw);
     };

@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import Topbar from '@/components/common/Topbar';
 import NotificationPanel from '@/components/common/NotificationPanel';
 import LinkCard from '@/components/links/LinkCard';
+import LoadingGlobe from '@/components/common/LoadingGlobe';
 import { useAuth } from '@/context/AuthContext';
 import Cropper from 'react-easy-crop';
 import { useRouter } from 'next/navigation';
@@ -29,6 +30,10 @@ export default function ProfilePage({ params }: { params: { username: string } }
   const [profile, setProfile] = useState<any>(null);
   const [links, setLinks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showGlobe, setShowGlobe] = useState(true);
+  const [fadeIn, setFadeIn] = useState(false);
+  const minTimer = useRef<ReturnType<typeof setTimeout>>();
+  const dataReady = useRef(false);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({ bio: '', avatar_url: '', cover_url: '', website: '' });
@@ -41,10 +46,18 @@ export default function ProfilePage({ params }: { params: { username: string } }
   const [popupUsers, setPopupUsers] = useState([]);
   const [popupLoading, setPopupLoading] = useState(false);
 
+  const revealContent = () => {
+    setShowGlobe(false);
+    setTimeout(() => setFadeIn(true), 120);
+  };
+
   const cleanUsername = username.replace(/^@/, '');
 
   const fetchProfile = async () => {
     setLoading(true);
+    setShowGlobe(true);
+    setFadeIn(false);
+    dataReady.current = false;
     try {
       const [profRes, linksRes] = await Promise.all([
         fetch(`/api/users/${cleanUsername}`, { cache: 'no-store' }),
@@ -65,6 +78,7 @@ export default function ProfilePage({ params }: { params: { username: string } }
     } catch (err) {
       console.error('Failed to fetch profile', err);
     } finally {
+      dataReady.current = true;
       setLoading(false);
     }
   };
@@ -109,7 +123,24 @@ export default function ProfilePage({ params }: { params: { username: string } }
 
   useEffect(() => {
     fetchProfile();
+
+    minTimer.current = setTimeout(() => {
+      if (dataReady.current) {
+        revealContent();
+      }
+    }, 4000);
+
+    return () => {
+      if (minTimer.current) clearTimeout(minTimer.current);
+    };
   }, [username]);
+
+  useEffect(() => {
+    if (!loading && minTimer.current && dataReady.current) {
+      clearTimeout(minTimer.current);
+      revealContent();
+    }
+  }, [loading]);
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -165,21 +196,28 @@ export default function ProfilePage({ params }: { params: { username: string } }
     }
   };
 
-  if (loading) return null;
-
-  if (!profile) return (
-    <>
-      <Topbar title="Not Found" />
-      <div id="content">User not found.</div>
-    </>
-  );
+  if (!profile) {
+    if (!showGlobe) {
+      return (
+        <>
+          <Topbar title="Not Found" />
+          <div id="content">User not found.</div>
+        </>
+      );
+    }
+    return <LoadingGlobe />;
+  }
 
   return (
     <>
-      <Topbar title={`@${profile.username}`} />
-      <NotificationPanel />
+      {showGlobe && <LoadingGlobe />}
+
+      {!showGlobe && <Topbar title={`@${profile.username}`} />}
+
+      {!showGlobe && <NotificationPanel />}
       
-      <div id="content" className="fade-in">
+      {fadeIn && (
+      <div id="content">
         {isEditing ? (
           <div className="profile-header editing">
             {editData.cover_url && <img src={editData.cover_url} className="cover-image-bg" alt="Cover" />}
@@ -287,6 +325,7 @@ export default function ProfilePage({ params }: { params: { username: string } }
           </div>
         </div>
       </div>
+      )}
 
       {showPopup && (
         <div className="popup-overlay" onClick={() => setShowPopup(null)}>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Topbar from '@/components/common/Topbar';
 import NotificationPanel from '@/components/common/NotificationPanel';
@@ -18,6 +18,10 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(true);
+  const [showGlobe, setShowGlobe] = useState(true);
+  const [fadeIn, setFadeIn] = useState(false);
+  const minTimer = useRef<ReturnType<typeof setTimeout>>();
+  const dataReady = useRef(false);
 
   const [confirm, setConfirm] = useState<{ message: string; onConfirm: () => void } | null>(null);
   const openConfirm = (message: string, onConfirm: () => void) => setConfirm({ message, onConfirm });
@@ -31,6 +35,10 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
 
   const fetchData = async () => {
     setLoading(true);
+    setShowGlobe(true);
+    setFadeIn(false);
+    dataReady.current = false;
+
     try {
       const [linkRes, commRes] = await Promise.all([
         fetch(`/api/links/${id}`),
@@ -49,13 +57,36 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
     } catch (err) {
       console.error('Failed to fetch link details', err);
     } finally {
+      dataReady.current = true;
       setLoading(false);
     }
   };
 
+  const revealContent = () => {
+    setShowGlobe(false);
+    setTimeout(() => setFadeIn(true), 120);
+  };
+
   useEffect(() => {
     fetchData();
+
+    minTimer.current = setTimeout(() => {
+      if (dataReady.current) {
+        revealContent();
+      }
+    }, 4000);
+
+    return () => {
+      if (minTimer.current) clearTimeout(minTimer.current);
+    };
   }, [id]);
+
+  useEffect(() => {
+    if (!loading && minTimer.current && dataReady.current) {
+      clearTimeout(minTimer.current);
+      revealContent();
+    }
+  }, [loading]);
 
   const handleUpdateLink = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -135,22 +166,26 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
     }
   };
 
-  if (loading) return <LoadingGlobe />;
   if (!link) {
-    return (
-      <>
-        <Topbar title="Not Found" />
-        <div id="content">Link not found.</div>
-      </>
-    );
+    if (!showGlobe) {
+      return (
+        <>
+          <Topbar title="Not Found" />
+          <div id="content">Link not found.</div>
+        </>
+      );
+    }
+    return <LoadingGlobe />;
   }
 
   return (
     <>
-      <Topbar title="Discussion" />
-      <NotificationPanel />
+      {showGlobe && <LoadingGlobe />}
 
-      <div id="content">
+      {!showGlobe && <Topbar title={link.title} />}
+
+      {fadeIn && (
+      <div id="content" className="link-page-content">
         <div className="link-card detail">
           <div className="card-body">
             <div className="card-meta">
@@ -254,6 +289,7 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
           isAuthenticated={!!user}
         />
       </div>
+      )}
 
       {confirm && (
         <ConfirmModal
