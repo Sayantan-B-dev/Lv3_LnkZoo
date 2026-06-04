@@ -18,6 +18,7 @@
 @import './ui/popup.css';
 @import './ui/comments.css';
 @import './ui/slider.css';
+@import './ui/loading-globe.css';
 
 @import './pages/home.css';
 @import './pages/explore.css';

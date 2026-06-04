@@ -1,0 +1,32 @@
+/* ── LOADING GLOBE ──────────────────────────────────── */
+.loading-globe-wrap {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  z-index: 9999;
+}
+
+.loading-globe-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.loading-globe-text {
+  position: absolute;
+  bottom: 15%;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: var(--text-4);
+  animation: loadingPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes loadingPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
