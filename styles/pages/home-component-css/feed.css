@@ -7,7 +7,7 @@
 }
 .feed-container {
   margin: 0 auto;
-  background: transparent;
+  background: var(--bg-4);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 32px;

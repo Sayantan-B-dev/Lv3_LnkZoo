@@ -53,6 +53,9 @@
   transition: all 0.3s;
   position: relative;
   isolation: isolate;
+  background: var(--bg-4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 .about-stat-card:hover {
   background: rgba(0,0,0,0.04);

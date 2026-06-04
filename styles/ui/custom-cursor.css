@@ -7,7 +7,6 @@
   z-index: 999999;
   transform: translate(-50%, -50%);
   mix-blend-mode: difference;
-    isolation: isolate;
 }
 
 /* Hide on mobile if NOT loading */
@@ -20,9 +19,9 @@
 .cursor-dot {
   width: 20px;
   height: 20px;
-  background-color: var(--cursor);
+  background-color: #fff;
   border-radius: 50%;
-  box-shadow: 0 0 15px var(--cursor);
+  box-shadow: 0 0 15px #fff;
 }
 
 .cursor-outline {
@@ -32,7 +31,7 @@
   transform: translate(-50%, -50%);
   width: 30px;
   height: 30px;
-  border: 3px solid var(--cursor);
+  border: 3px solid #fff;
   border-radius: 50%;
   transition: all 0.3s ease-out;
 }
@@ -40,8 +39,8 @@
 .custom-cursor-wrapper.pointer .cursor-outline {
   width: 50px;
   height: 50px;
-  background-color: rgba(0, 210, 255, 0.1);
-  border-color: var(--cursor2);
+  background-color: rgba(255,255,255,0.08);
+  border-color: #fff;
 }
 
 .custom-cursor-wrapper.pointer .cursor-dot {
@@ -58,16 +57,16 @@
   position: absolute;
   top: -25px;
   right: -25px;
-  color: var(--cursor);
+  color: #fff;
   animation: fadeIn 0.3s ease forwards;
 }
 
 .custom-cursor-wrapper.loading .cursor-outline {
   width: 44px;
   height: 44px;
-  border-color: var(--cursor);
+  border-color: #fff;
   border-width: 2px;
-  background: rgba(10, 8, 7, 0.4);
+  background: rgba(255,255,255,0.08);
   backdrop-filter: blur(4px);
 }
 
@@ -86,7 +85,7 @@
 }
 
 .cursor-loader circle {
-  stroke: var(--cursor);
+  stroke: #fff;
   stroke-linecap: round;
   animation: dash 1.5s ease-in-out infinite;
 }
