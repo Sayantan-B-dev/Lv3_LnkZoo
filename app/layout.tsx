@@ -19,6 +19,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" data-theme="light" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            try {
+              var t = localStorage.getItem('glinqx_theme');
+              if (t) document.documentElement.setAttribute('data-theme', t);
+            } catch(e) {}
+          `
+        }} />
         <link
           href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Geist+Mono:wght@300;400;500;600&display=swap"
           rel="stylesheet"

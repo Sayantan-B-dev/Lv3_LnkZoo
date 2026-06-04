@@ -14,7 +14,9 @@ export default function Topbar({ title }: TopbarProps) {
   const toggleTheme = () => {
     const html = document.documentElement;
     const current = html.getAttribute('data-theme');
-    html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+    const next = current === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('glinqx_theme', next);
   };
 
   return (
