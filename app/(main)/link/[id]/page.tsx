@@ -6,7 +6,7 @@ import Topbar from '@/components/common/Topbar';
 import NotificationPanel from '@/components/common/NotificationPanel';
 import ConfirmModal from '@/components/common/ConfirmModal';
 import CommentThread from '@/components/comments/CommentThread';
-import LoadingSpinner from '@/components/common/LoadingSpinner';
+import LoadingGlobe from '@/components/common/LoadingGlobe';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 
@@ -135,7 +135,7 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
     }
   };
 
-  if (loading) return <LoadingSpinner text="Loading link..." />;
+  if (loading) return <LoadingGlobe />;
   if (!link) {
     return (
       <>
