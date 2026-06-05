@@ -37,6 +37,7 @@
 @import './pages/link-detail.css';
 @import './pages/not-found.css';
 @import './pages/users.css';
+@import './pages/legal.css';
 
 @import './components/common.css';
 @import './pages/home-component-css/footer.css';

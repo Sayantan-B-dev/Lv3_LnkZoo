@@ -60,7 +60,6 @@
   color: var(--text-2);
   opacity: 1;
 }
-.footer-link.passive { opacity: 0.35; cursor: default; }
 .footer-bottom {
   border-top: 1px solid var(--border);
   padding: 20px 0;

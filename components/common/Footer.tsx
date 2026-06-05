@@ -29,9 +29,9 @@ export function Footer() {
         </div>
         <div className="footer-col links-col">
           <h5 className="footer-heading">Legal</h5>
-          <span className="footer-link passive">Privacy Policy</span>
-          <span className="footer-link passive">Terms of Service</span>
-          <span className="footer-link passive">Cookie Policy</span>
+          <Link href="/privacy" className="footer-link">Privacy Policy</Link>
+          <Link href="/terms" className="footer-link">Terms of Service</Link>
+          <Link href="/cookies" className="footer-link">Cookie Policy</Link>
         </div>
       </div>
       <div className="footer-bottom">
