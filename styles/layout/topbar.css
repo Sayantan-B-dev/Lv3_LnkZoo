@@ -6,12 +6,13 @@
   align-items: center;
   padding: 0 20px;
   gap: 12px;
-  background: color-mix(in srgb, var(--bg-1) 85%, transparent);
+  background: color-mix(in srgb, var(--bg-1) 90%, transparent);
   backdrop-filter: blur(12px);
   position: sticky;
   top: 0;
   z-index: 90;
   transition: background var(--t), border-color var(--t);
+  width: 100%;
 }
 
 .topbar-title {
@@ -20,7 +21,19 @@
   color: var(--text-2);
   flex: 1
 }
-
+.topbar-content{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+  border-left: 1px solid var(--border2);
+  background-color: var(--bg-3);
+  /* border-right: 1px solid var(--border2); */
+  /* border-bottom: 1px solid var(--border2); */
+  border-radius: var(--radius);
+  padding: 0 20px;
+}
 .topbar-right {
   display: flex;
   align-items: center;

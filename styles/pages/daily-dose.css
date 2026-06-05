@@ -37,3 +37,14 @@
     opacity: 0.3;
     padding-top: 10px;
 }
+
+@media (max-width: 768px) {
+  .dose-title { font-size: 22px; }
+  .dose-card { flex-direction: column; gap: 8px; }
+  .dose-number { font-size: 24px; padding-top: 0; }
+}
+
+@media (max-width: 480px) {
+  .dose-title { font-size: 18px; }
+  .dose-sub { font-size: 12px; }
+}

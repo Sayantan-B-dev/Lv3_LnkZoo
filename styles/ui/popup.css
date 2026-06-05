@@ -182,3 +182,15 @@
 .confirm-ok-btn:hover {
   opacity: .85;
 }
+
+@media (max-width: 768px) {
+  .popup-shell { width: 96vw; max-height: 92vh; border-radius: 10px; }
+  .popup-body { padding: 14px; }
+  .confirm-box { padding: 20px; width: min(90vw, 380px); }
+}
+
+@media (max-width: 480px) {
+  .popup-shell { width: 100vw; max-height: 100vh; border-radius: 0; }
+  .popup-nav { padding: 10px 12px; }
+  .popup-body { padding: 10px; }
+}

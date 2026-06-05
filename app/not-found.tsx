@@ -1,18 +1,20 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import Link from 'next/link';
 import Sidebar from '@/components/common/Sidebar';
 import Topbar from '@/components/common/Topbar';
 import CustomCursor from '@/components/common/CustomCursor';
 import AnimatedBg from '@/components/common/AnimatedBg';
+import { MobileMenuProvider, useMobileMenu } from '@/context/MobileMenuContext';
 
-export default function NotFound() {
+function NotFoundInner() {
+  const { isOpen, close } = useMobileMenu();
+
   return (
     <div id="app">
       <CustomCursor />
-
-      <Sidebar />
+      <Sidebar isOpen={isOpen} onClose={close} />
       <main id="main">
         <Topbar title="404 — Not Found" />
         <div id="content" className="fade-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '70vh', textAlign: 'center' }}>
@@ -27,7 +29,17 @@ export default function NotFound() {
           </Link>
         </div>
       </main>
-
+      {isOpen && (
+        <div id="mobile-overlay" className="show" onClick={close} />
+      )}
     </div>
+  );
+}
+
+export default function NotFound() {
+  return (
+    <MobileMenuProvider>
+      <NotFoundInner />
+    </MobileMenuProvider>
   );
 }

@@ -16,12 +16,21 @@ export function useScrollProgress() {
   return progress;
 }
 
+function seededRand(seed: number) {
+  let s = seed;
+  return () => {
+    s = (s * 16807 + 0) % 2147483647;
+    return (s - 1) / 2147483646;
+  };
+}
+
+const rng = seededRand(42);
 export const RANDOM_OFFSETS = Array.from({ length: 20 }, () => ({
-  x: (Math.random() - 0.5) * 40,
-  y: 20 + Math.random() * 40,
-  dur: 0.5 + Math.random() * 0.6,
-  del: Math.random() * 0.3,
-  dir: ['translateY', 'translateX', 'scale'][Math.floor(Math.random() * 3)] as 'translateY' | 'translateX' | 'scale',
+  x: (rng() - 0.5) * 40,
+  y: 20 + rng() * 40,
+  dur: 0.5 + rng() * 0.6,
+  del: rng() * 0.3,
+  dir: (['translateY', 'translateX', 'scale'] as const)[Math.floor(rng() * 3)] as 'translateY' | 'translateX' | 'scale',
 }));
 
 export function useScrollReveal(index: number) {

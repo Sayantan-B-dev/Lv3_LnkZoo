@@ -63,3 +63,9 @@
   flex-shrink: 0;
   scroll-snap-align: start;
 }
+
+@media (max-width: 768px) {
+  .slider-item { flex: 0 0 85%; }
+  .slider-track { gap: 8px; }
+  .slider-header { flex-wrap: wrap; gap: 8px; }
+}

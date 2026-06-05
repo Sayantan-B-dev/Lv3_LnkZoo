@@ -11,6 +11,7 @@
 @import './layout/topbar.css';
 @import './layout/tabs.css';
 @import './layout/responsive.css';
+@import './layout/mobile-menu.css';
 
 @import './ui/animated-bg.css';
 @import './ui/custom-cursor.css';

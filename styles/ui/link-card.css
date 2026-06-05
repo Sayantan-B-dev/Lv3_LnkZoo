@@ -429,3 +429,25 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+@media (max-width: 768px) {
+  .link-card { flex-direction: column; gap: 10px; padding: 12px; }
+  .vote-col { flex-direction: row; gap: 8px; padding-top: 0; }
+  .card-preview { width: 100%; height: auto; aspect-ratio: 16/9; }
+  .card-preview.right { width: 100%; height: auto; }
+  .card-footer { flex-wrap: wrap; gap: 8px; }
+  .short-url-result { flex-direction: column; align-items: stretch; gap: 8px; }
+  .short-copy-btn { width: 100%; justify-content: center; }
+  .link-preview { flex-direction: column; }
+  .preview-image { width: 100%; height: auto; aspect-ratio: 16/9; }
+}
+
+@media (max-width: 480px) {
+  .link-card { padding: 10px; }
+  .card-title { font-size: 12px; }
+  .card-desc { font-size: 10px; }
+  .card-meta { gap: 6px; }
+  .card-domain { font-size: 9px; }
+  .card-poster { font-size: 9px; }
+  .card-time { font-size: 9px; }
+}

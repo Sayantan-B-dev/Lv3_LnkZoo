@@ -6,7 +6,12 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useUI } from '@/context/UIContext';
 
-export default function Sidebar() {
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const pathname = usePathname();
@@ -18,7 +23,7 @@ export default function Sidebar() {
       { id: 'home', label: 'Home', href: '/', icon: <svg fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955a1.5 1.5 0 012.092 0l8.954 8.955M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg> },
       { id: 'explore', label: 'Explore', href: '/explore', icon: <svg fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253"/></svg> },
       { id: 'daily', label: 'Daily Dose', href: '/daily-dose', icon: <svg fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> },
-      { id: 'random', label: 'Random', href: '/random', icon: <svg fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3l-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 003.7 3.7 48.656 48.656 0 007.324 0 4.006 4.006 0 003.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3l-3 3"/></svg> },
+      { id: 'random', label: 'Random', href: '/random', icon: <svg fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3-3l-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 003.7 3.7 48.656 48.656 0 007.324 0 4.006 4.006 0 003.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3l-3 3"/></svg> },
     ]},
     { label: 'Discover', items: [
       { id: 'users', label: 'Users', href: '/users', icon: <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg> },
@@ -42,7 +47,7 @@ export default function Sidebar() {
   }
 
   return (
-    <nav id="sidebar" className={collapsed ? 'collapsed' : ''} style={{ height: '100vh', position: 'sticky', top: 0 }}>
+    <nav id="sidebar" className={`${collapsed ? 'collapsed' : ''}${isOpen ? ' mobile-open' : ''}`}>
       <div className="sidebar-logo" style={{ flexDirection: collapsed ? 'column' : 'row', height: collapsed ? 'auto' : 'var(--header-h)', padding: collapsed ? '12px 0' : '0 16px', gap: collapsed ? '12px' : '10px' }}>
         <Link href="/" className="sidebar-logo-link">
           <div className="logo-mark">gx</div>
@@ -57,19 +62,26 @@ export default function Sidebar() {
         </button>
       </div>
 
+      <div className="mobile-close-bar mobile-only">
+        <span className="sidebar-nav-label">Navigation</span>
+        <button className="mobile-close-btn" onClick={onClose}>
+          <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
       <div className="sidebar-nav">
         {navItems.map((section) => (
           <div key={section.label} className="nav-section">
             <div className="nav-label">{section.label}</div>
             {section.items.map((item) => (
-              <Link
-                key={item.id}
-                href={item.href}
-                className={`nav-item ${pathname === item.href ? 'active' : ''}`}
-              >
-                <span className="nav-icon">{item.icon}</span>
-                <span className="nav-text">{item.label}</span>
-              </Link>
+                <Link
+                  key={item.id}
+                  href={item.href}
+                  className={`nav-item ${pathname === item.href ? 'active' : ''}`}
+                  onClick={onClose}
+                >
+                  <span className="nav-icon">{item.icon}</span>
+                  <span className="nav-text">{item.label}</span>
+                </Link>
             ))}
           </div>
         ))}
@@ -153,7 +165,7 @@ export default function Sidebar() {
       </div>
 
       <div className="sidebar-bottom">
-        <Link href={user ? `/profile/${user.username}` : '/login'} className={`sidebar-user-link ${pathname.includes('/profile/') ? 'active' : ''}`}>
+        <Link href={user ? `/profile/${user.username}` : '/login'} className={`sidebar-user-link ${pathname.includes('/profile/') ? 'active' : ''}`} onClick={onClose}>
           <div className="sidebar-user">
             <div className="avatar">
               {user?.avatar_url ? <img src={user.avatar_url} alt={user.username} /> : (user ? user.username.slice(0, 2) : '?')}

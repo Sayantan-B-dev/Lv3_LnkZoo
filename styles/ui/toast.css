@@ -91,6 +91,11 @@
 }
 
 /* ── Responsive ── */
+@media (max-width: 768px) {
+  .toast { max-width: 100%; min-width: 0; }
+  .toast-container { left: 12px; right: 12px; transform: none; }
+}
+
 @media (max-width: 480px) {
   .toast-container {
     left: 12px;

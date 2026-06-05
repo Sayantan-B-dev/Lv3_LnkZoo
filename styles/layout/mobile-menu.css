@@ -1,0 +1,213 @@
+/* ── MOBILE MENU ──────────────────────────────────── */
+/* Show/hide helpers */
+.mobile-only { display: none; }
+.desktop-only { display: block; }
+
+@media (max-width: 768px) {
+  .mobile-only { display: flex; }
+  .desktop-only { display: none; }
+
+  /* ── Sidebar becomes full-page blanket overlay ── */
+  #sidebar {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 200;
+    border-right: none;
+    backdrop-filter: blur(20px);
+    background: color-mix(in srgb, var(--bg-1) 92%, transparent);
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 0.3s ease,
+                visibility 0s 0.35s;
+    pointer-events: none;
+    overflow-y: auto;
+  }
+
+  #sidebar.mobile-open {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 0.3s ease,
+                visibility 0s;
+  }
+
+  /* Remove collapsed behavior on mobile */
+  #sidebar.collapsed {
+    width: 100%;
+  }
+
+  #sidebar.collapsed .logo-text,
+  #sidebar.collapsed .nav-text,
+  #sidebar.collapsed .nav-label,
+  #sidebar.collapsed .user-info,
+  #sidebar.collapsed .nav-badge {
+    opacity: 1;
+    width: auto;
+    overflow: visible;
+  }
+
+  /* Touch-friendly nav sizing */
+  .sidebar-nav { padding: 12px 0; }
+  .nav-item { padding: 12px 24px; font-size: 14px; gap: 14px; }
+  .nav-icon { width: 20px; height: 20px; }
+  .nav-label { padding: 14px 24px 6px; font-size: 10px; }
+  .sidebar-logo { display: none; }
+  .collapse-toggle-top { display: none; }
+
+  /* ── Overlay backdrop ── */
+  #mobile-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 199;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  #mobile-overlay.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* ── Content ── */
+  #main { margin-left: 0; }
+  #content { padding: 12px; max-width: 100%; }
+
+  /* ── Topbar ── */
+  #topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 0 12px;
+    gap: 8px;
+  }
+
+  #main {
+    padding-top: var(--header-h);
+  }
+
+  #topbar .topbar-title { font-size: 12px; flex: 0 1 auto; }
+  #topbar .post-btn { display: flex; padding: 5px 10px; font-size: 10px; gap: 4px; }
+  #topbar .post-btn svg { width: 10px; height: 10px; }
+  .topbar-right { gap: 4px; }
+}
+
+@media (max-width: 480px) {
+  #content { padding: 10px; }
+  #topbar { padding: 0 8px; gap: 6px; }
+}
+
+/* ── ANIMATED BURGER ICON ─────────────────────────── */
+.burger-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: background var(--t);
+  border: none;
+  background: none;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.burger-btn:hover { background: var(--bg-2); }
+
+.burger-line {
+  width: 18px;
+  height: 2px;
+  background: var(--text-3);
+  border-radius: 1px;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.2s ease;
+  transform-origin: center;
+}
+
+.burger-btn.open .burger-line:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.burger-btn.open .burger-line:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.burger-btn.open .burger-line:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ── MOBILE CLOSE BAR ──────────────────────────── */
+.mobile-close-bar {
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.sidebar-nav-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-4);
+}
+
+.mobile-close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+  transition: color var(--t), background var(--t);
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.mobile-close-btn:hover {
+  color: var(--text);
+  background: var(--bg-2);
+}
+
+/* ── MOBILE LOGO ──────────────────────────────────── */
+.mobile-logo {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  color: var(--text);
+  text-decoration: none;
+  padding: 0 4px;
+  flex-shrink: 0;
+}
+
+.mobile-logo .logo-mark {
+  width: 28px;
+  height: 28px;
+  font-size: 13px;
+}
+
+@media (max-width: 768px) {
+  .mobile-logo { display: flex; }
+}

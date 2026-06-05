@@ -69,3 +69,8 @@
     border-color: var(--text-4);
     color: var(--text);
 }
+
+@media (max-width: 768px) {
+  .action-btn { width: 100%; min-width: 0; }
+  .visit-btn { width: 100%; text-align: center; display: block; }
+}

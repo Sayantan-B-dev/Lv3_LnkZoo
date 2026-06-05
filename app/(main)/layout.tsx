@@ -1,14 +1,31 @@
+'use client';
+
+import React from 'react';
 import Sidebar from '@/components/common/Sidebar';
 import CustomCursor from '@/components/common/CustomCursor';
+import { MobileMenuProvider, useMobileMenu } from '@/context/MobileMenuContext';
 
-export default function MainLayout({ children }: { children: React.ReactNode }) {
+function LayoutInner({ children }: { children: React.ReactNode }) {
+  const { isOpen, close } = useMobileMenu();
+
   return (
     <div id="app">
       <CustomCursor />
-      <Sidebar />
+      <Sidebar isOpen={isOpen} onClose={close} />
       <main id="main">
         {children}
       </main>
+      {isOpen && (
+        <div id="mobile-overlay" className="show" onClick={close} />
+      )}
     </div>
+  );
+}
+
+export default function MainLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <MobileMenuProvider>
+      <LayoutInner>{children}</LayoutInner>
+    </MobileMenuProvider>
   );
 }

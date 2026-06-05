@@ -1,14 +1,29 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
-const DEFAULTS = {
+const DESKTOP = {
   frequency: 150,
   visibility: 0.5,
   size: 1.5,
   speed: 2.5,
-  repulsion: 120, // Default deflection radius
+  repulsion: 120,
 };
+
+const MOBILE = {
+  frequency: 50,
+  visibility: 0.5,
+  size: 1.5,
+  speed: 1.5,
+  repulsion: 120,
+};
+
+function getDefaults() {
+  if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+    return MOBILE;
+  }
+  return DESKTOP;
+}
 
 interface UIContextType {
   bgSettings: {
@@ -26,19 +41,20 @@ interface UIContextType {
 const UIContext = createContext<UIContextType | undefined>(undefined);
 
 export function UIProvider({ children }: { children: React.ReactNode }) {
-  const [bgSettings, setBgSettings] = useState(DEFAULTS);
+  const [bgSettings, setBgSettings] = useState(getDefaults);
 
   useEffect(() => {
     const saved = localStorage.getItem('glinqx_bg_settings');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
+        const defs = getDefaults();
         setBgSettings({
-          frequency: parsed.frequency ?? DEFAULTS.frequency,
-          visibility: parsed.visibility ?? DEFAULTS.visibility,
-          size: parsed.size ?? DEFAULTS.size,
-          speed: parsed.speed ?? DEFAULTS.speed,
-          repulsion: parsed.repulsion ?? DEFAULTS.repulsion,
+          frequency: parsed.frequency ?? defs.frequency,
+          visibility: parsed.visibility ?? defs.visibility,
+          size: parsed.size ?? defs.size,
+          speed: parsed.speed ?? defs.speed,
+          repulsion: parsed.repulsion ?? defs.repulsion,
         });
       } catch (e) {
         console.error('Failed to load bg settings', e);
@@ -50,13 +66,13 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
     setBgSettings(prev => ({ ...prev, ...newSettings }));
   };
 
-  const saveSettings = () => {
+  const saveSettings = useCallback(() => {
     localStorage.setItem('glinqx_bg_settings', JSON.stringify(bgSettings));
-  };
+  }, [bgSettings]);
 
-  const resetToDefaults = () => {
-    setBgSettings(DEFAULTS);
-  };
+  const resetToDefaults = useCallback(() => {
+    setBgSettings(getDefaults());
+  }, []);
 
   return (
     <UIContext.Provider value={{ bgSettings, setBgSettings: updateSettings, saveSettings, resetToDefaults }}>

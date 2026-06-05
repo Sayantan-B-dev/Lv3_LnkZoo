@@ -77,3 +77,14 @@
     letter-spacing: 0.1em;
     color: var(--text-4);
 }
+
+@media (max-width: 768px) {
+  .tag-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+  .tag-large { padding: 14px; }
+  .tag-name { font-size: 14px; }
+}
+
+@media (max-width: 480px) {
+  .tag-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; }
+  .tag-large { padding: 12px; }
+}

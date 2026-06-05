@@ -304,6 +304,22 @@
     color: var(--text-4);
 }
 
+@media (max-width: 768px) {
+  .profile-header { padding: 20px; margin: 10px; }
+  .profile-top { flex-direction: column; gap: 16px; align-items: center; text-align: center; }
+  .avatar.large { width: 72px; height: 72px; font-size: 24px; }
+  .profile-name { font-size: 20px; }
+  .profile-stats { justify-content: center; flex-wrap: wrap; gap: 16px; }
+  .profile-bio { max-width: 100%; }
+  .edit-form { max-width: 100%; }
+  .profile-feed { padding: 20px; }
+}
+
+@media (max-width: 480px) {
+  .profile-header { padding: 16px; margin: 6px; }
+  .profile-name { font-size: 18px; }
+}
+
 @keyframes slideUp {
     from {
         transform: translateY(20px);

@@ -133,3 +133,15 @@
         transform: translateY(0);
     }
 }
+
+@media (max-width: 768px) {
+  .link-card.detail { padding: 20px; flex-direction: column; gap: 14px; }
+  .link-card.detail .vote-col { flex-direction: row; gap: 8px; }
+  .visit-btn, .edit-link-btn, .like-btn, .save-btn { width: 100%; justify-content: center; }
+  .link-card.detail .card-footer { flex-wrap: wrap; gap: 8px; }
+  .link-card.detail .card-footer button { flex: 1; min-width: 0; }
+}
+
+@media (max-width: 480px) {
+  .link-card.detail { padding: 14px; }
+}

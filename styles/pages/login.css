@@ -149,3 +149,10 @@
     color: var(--text-2);
     font-weight: 500;
 }
+
+@media (max-width: 480px) {
+  .auth-card { padding: 24px 20px; }
+  .auth-header h1 { font-size: 18px; }
+  .auth-header p { font-size: 13px; }
+  .auth-input { padding: 10px; font-size: 13px; }
+}
