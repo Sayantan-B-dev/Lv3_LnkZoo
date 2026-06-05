@@ -59,6 +59,9 @@ export const GET = apiHandler(async (req: NextRequest) => {
         [user] = await sql`
           INSERT INTO users (username, email, google_id, avatar_url)
           VALUES (${username}, ${email}, ${googleId}, ${avatar})
+          ON CONFLICT (email) DO UPDATE
+            SET google_id = EXCLUDED.google_id,
+                avatar_url = EXCLUDED.avatar_url
           RETURNING id, username, role
         `;
       }
