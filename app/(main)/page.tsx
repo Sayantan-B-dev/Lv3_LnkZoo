@@ -12,7 +12,6 @@ import { MetricsSection } from './home-components/MetricsSection';
 import { FeedSection } from './home-components/FeedSection';
 import { FAQSection } from './home-components/FAQSection';
 import { CTASection } from './home-components/CTASection';
-import { FooterSection } from './home-components/FooterSection';
 
 export default function Home() {
   const router = useRouter();
@@ -91,7 +90,6 @@ export default function Home() {
         <CTASection onShareClick={function() { router.push('/submit'); }} />
       </div>
 
-      <FooterSection />
     </>
   );
 }
