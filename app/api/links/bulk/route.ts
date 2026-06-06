@@ -3,6 +3,7 @@ import sql from '@/lib/db';
 import { getSessionFromRequest } from '@/lib/auth';
 import { generateShortCode } from '@/lib/shortCode';
 import { gamificationService } from '@/services/gamification.service';
+import { suggestTags } from '@/services/autoTag.service';
 import { apiHandler } from '@/lib/api-utils';
 
 const CONCURRENCY = 5;
@@ -43,7 +44,7 @@ async function createLink(
   url: string,
   userId: string
 ): Promise<
-  { success: true; id: string; shortCode: string; title: string }
+  { success: true; id: string; shortCode: string; title: string; tags: string[] }
   | { success: false; error: string }
 > {
   try {
@@ -59,7 +60,26 @@ async function createLink(
       RETURNING id, short_code
     `;
 
-    return { success: true, id: link.id, shortCode: link.short_code, title: meta.title };
+    const tagNames = (await suggestTags(meta.title, meta.description || ''))
+      .map(t => t.name.toLowerCase().replace(/^#/, ''))
+      .filter(Boolean)
+      .slice(0, 5);
+
+    for (const name of tagNames) {
+      const [tag] = await sql`
+        INSERT INTO tags (name, normalized_name, usage_count)
+        VALUES (${name}, ${name}, 1)
+        ON CONFLICT (normalized_name) DO UPDATE
+          SET usage_count = tags.usage_count + 1
+        RETURNING id
+      `;
+      await sql`
+        INSERT INTO link_tags (link_id, tag_id) VALUES (${link.id}, ${tag.id})
+        ON CONFLICT DO NOTHING
+      `;
+    }
+
+    return { success: true, id: link.id, shortCode: link.short_code, title: meta.title, tags: tagNames };
   } catch (err) {
     console.error('[bulk] failed:', url, err);
     return { success: false, error: 'Failed to create link' };
@@ -80,33 +100,41 @@ export const POST = apiHandler(async (req: NextRequest) => {
   const maxUrls = isAdmin ? urls.length : Math.min(urls.length, 10);
   const batch = urls.slice(0, maxUrls);
 
-  const results: Array<{
-    url: string;
-    success: boolean;
-    title?: string;
-    shortCode?: string;
-    error?: string;
-  }> = new Array(batch.length);
-  const queue = batch.map((url, i) => ({ url, i }));
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    async start(controller) {
+      const results: Array<{ url: string; success: boolean; title?: string; shortCode?: string; error?: string }> = new Array(batch.length);
+      const queue = batch.map((url, i) => ({ url, i }));
+      let completed = 0;
 
-  async function worker() {
-    while (queue.length > 0) {
-      const { url, i } = queue.shift()!;
-      const result = await createLink(url, userId);
-      results[i] = { url, ...result };
-    }
-  }
+      async function worker() {
+        while (queue.length > 0) {
+          const { url, i } = queue.shift()!;
+          const result = await createLink(url, userId);
+          results[i] = { url, ...result };
+          completed++;
+          controller.enqueue(encoder.encode(JSON.stringify({ type: 'progress', processed: completed, total: batch.length }) + '\n'));
+        }
+      }
 
-  await Promise.all(Array.from({ length: CONCURRENCY }, () => worker()));
+      await Promise.all(Array.from({ length: CONCURRENCY }, () => worker()));
 
-  // Update streak once for the whole batch
-  await gamificationService.updateStreak(userId);
+      await gamificationService.updateStreak(userId);
 
-  return NextResponse.json({
-    total: batch.length,
-    succeeded: results.filter((r) => r.success).length,
-    failed: results.filter((r) => !r.success).length,
-    limitApplied: !isAdmin && urls.length > 10,
-    results,
+      const valid = results.filter(Boolean);
+      controller.enqueue(encoder.encode(JSON.stringify({
+        type: 'done',
+        results: valid,
+        total: batch.length,
+        succeeded: valid.filter(r => r.success).length,
+        failed: valid.filter(r => !r.success).length,
+        limitApplied: !isAdmin && urls.length > 10,
+      }) + '\n'));
+      controller.close();
+    },
+  });
+
+  return new Response(stream, {
+    headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache' },
   });
 });

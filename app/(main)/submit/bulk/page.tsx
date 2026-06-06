@@ -49,14 +49,48 @@ export default function BulkUpload() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ urls }),
       });
-      const data = await res.json();
-      setResults(data.results);
-      setSummary({ total: data.total, succeeded: data.succeeded, failed: data.failed, limitApplied: data.limitApplied });
-      setProgress(data.total);
-      if (data.failed === 0) {
-        addToast(`All ${data.succeeded} links uploaded successfully!`, 'success');
-      } else {
-        addToast(`${data.succeeded} uploaded, ${data.failed} failed`, data.failed === 0 ? 'success' : 'error');
+
+      if (!res.ok) {
+        addToast('Upload failed — server error', 'error');
+        setSummary({ total: urls.length, succeeded: 0, failed: urls.length, limitApplied: false });
+        setLoading(false);
+        return;
+      }
+
+      const reader = res.body!.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          try {
+            const data = JSON.parse(line);
+            if (data.type === 'progress') {
+              setProgress(data.processed);
+            } else if (data.type === 'done') {
+              setResults(data.results);
+              setSummary({
+                total: data.total,
+                succeeded: data.succeeded,
+                failed: data.failed,
+                limitApplied: data.limitApplied,
+              });
+              if (data.failed === 0) {
+                addToast(`All ${data.succeeded} links uploaded successfully!`, 'success');
+              } else {
+                addToast(`${data.succeeded} uploaded, ${data.failed} failed`, 'error');
+              }
+            }
+          } catch { /* skip malformed lines */ }
+        }
       }
     } catch {
       setSummary({ total: urls.length, succeeded: 0, failed: urls.length, limitApplied: false });
