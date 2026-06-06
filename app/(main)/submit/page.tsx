@@ -1,22 +1,77 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Topbar from '@/components/common/Topbar';
 import NotificationPanel from '@/components/common/NotificationPanel';
+import ConfirmModal from '@/components/common/ConfirmModal';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/context/ToastContext';
+
+interface Metadata {
+  title: string;
+  description: string;
+  image: string;
+  tags: string;
+}
+
+interface SuggestedTag {
+  name: string;
+  exists: boolean;
+}
 
 export default function Submit() {
   const router = useRouter();
   const { addToast } = useToast();
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
-  const [metadata, setMetadata] = useState({ title: '', description: '', image: '', tags: '' });
+  const [parsing, setParsing] = useState(false);
+  const [metadata, setMetadata] = useState<Metadata>({ title: '', description: '', image: '', tags: '' });
   const [step, setStep] = useState(1);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const pendingUrlRef = useRef<string | null>(null);
+
+  const hasUnsavedData = step === 2 && (!!metadata.title || !!metadata.description || !!metadata.tags);
+
+  useEffect(() => {
+    if (!hasUnsavedData) return;
+    const handler = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = ''; };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [hasUnsavedData]);
+
+  useEffect(() => {
+    if (!hasUnsavedData) return;
+    const handler = (e: MouseEvent) => {
+      const link = (e.target as HTMLElement).closest('a');
+      if (!link || !link.href) return;
+
+      try {
+        const url = new URL(link.href);
+        if (url.origin !== window.location.origin) return;
+        if (url.pathname === window.location.pathname) return;
+      } catch { return; }
+
+      e.preventDefault();
+      e.stopPropagation();
+      pendingUrlRef.current = link.href;
+      setShowExitConfirm(true);
+    };
+    document.addEventListener('click', handler, true);
+    return () => document.removeEventListener('click', handler, true);
+  }, [hasUnsavedData]);
+
+  const handleConfirmExit = () => {
+    if (pendingUrlRef.current) {
+      window.location.href = pendingUrlRef.current;
+    }
+    setShowExitConfirm(false);
+    pendingUrlRef.current = null;
+  };
 
   const handleUrlSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!url) return;
+    setParsing(true);
     setLoading(true);
     try {
       const res = await fetch('/api/tools/parse', {
@@ -25,16 +80,25 @@ export default function Submit() {
       });
       if (res.ok) {
         const data = await res.json();
-        setMetadata({ ...metadata, title: data.title, description: data.description, image: data.image });
+        const suggestedTags = (data.suggestedTags as SuggestedTag[] ?? [])
+          .map(t => t.name)
+          .join(', ');
+        setMetadata({
+          title: data.title,
+          description: data.description,
+          image: data.image,
+          tags: suggestedTags,
+        });
         setStep(2);
       } else {
         addToast('Failed to parse URL — proceeding with raw link', 'info');
         setStep(2);
       }
-    } catch (err) {
+    } catch {
       addToast('Failed to parse URL — proceeding with raw link', 'info');
       setStep(2);
     } finally {
+      setParsing(false);
       setLoading(false);
     }
   };
@@ -61,7 +125,7 @@ export default function Submit() {
       } else {
         addToast('Failed to post link. Check your input.', 'error');
       }
-    } catch (err) {
+    } catch {
       addToast('Failed to post link', 'error');
     } finally {
       setLoading(false);
@@ -72,7 +136,7 @@ export default function Submit() {
     <>
       <Topbar title="Post Link" />
       <NotificationPanel />
-      
+
       <div id="content">
         <div className="submit-card">
           {step === 1 ? (
@@ -80,26 +144,31 @@ export default function Submit() {
               <h1 className="form-title">Share something interesting</h1>
               <p className="form-sub">Drop a URL and we'll handle the rest.</p>
               <div className="input-group">
-                <input 
-                  type="url" 
-                  placeholder="https://..." 
+                <input
+                  type="url"
+                  placeholder="https://..."
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
                   required
                   className="main-input"
                   autoFocus
                 />
-                <button type="submit" className="submit-btn" disabled={loading}>
-                  {loading ? 'fetching...' : 'Next →'}
+                <button type="submit" className="submit-btn" disabled={parsing}>
+                  {parsing ? 'parsing...' : 'Next \u2192'}
                 </button>
               </div>
             </form>
           ) : (
             <form onSubmit={handleFinalSubmit} className="submit-form">
+              {metadata.image && (
+                <div className="submit-preview">
+                  <img src={metadata.image} alt="Preview" className="submit-preview-img" />
+                </div>
+              )}
               <div className="input-group-v">
                 <label>Title</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={metadata.title}
                   onChange={(e) => setMetadata({ ...metadata, title: e.target.value })}
                   required
@@ -108,7 +177,7 @@ export default function Submit() {
               </div>
               <div className="input-group-v">
                 <label>Description</label>
-                <textarea 
+                <textarea
                   value={metadata.description}
                   onChange={(e) => setMetadata({ ...metadata, description: e.target.value })}
                   className="sub-input textarea"
@@ -116,9 +185,9 @@ export default function Submit() {
               </div>
               <div className="input-group-v">
                 <label>Tags (comma separated)</label>
-                <input 
-                  type="text" 
-                  placeholder="webdev, javascript, design"
+                <input
+                  type="text"
+                  placeholder="tag1, tag2, tag3"
                   value={metadata.tags}
                   onChange={(e) => setMetadata({ ...metadata, tags: e.target.value })}
                   className="sub-input"
@@ -134,6 +203,16 @@ export default function Submit() {
           )}
         </div>
       </div>
+
+      {showExitConfirm && (
+        <ConfirmModal
+          message="You haven&#39;t posted yet. Are you sure you want to leave? Your data will be lost."
+          confirmLabel="Leave"
+          danger
+          onConfirm={handleConfirmExit}
+          onCancel={() => { setShowExitConfirm(false); pendingUrlRef.current = null; }}
+        />
+      )}
     </>
   );
 }

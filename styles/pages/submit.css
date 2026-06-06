@@ -78,6 +78,21 @@
     resize: vertical;
 }
 
+.submit-preview {
+  margin-bottom: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+}
+
+.submit-preview-img {
+  width: 100%;
+  max-height: 240px;
+  object-fit: cover;
+  display: block;
+}
+
 .form-actions {
     display: flex;
     justify-content: space-between;
