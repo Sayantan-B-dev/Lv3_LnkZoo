@@ -78,7 +78,4 @@ export function useCountUp(target: number, start: boolean) {
   return count;
 }
 
-let _revealCounter = 0;
-export function getNextRevealIndex() {
-  return _revealCounter++;
-}
+

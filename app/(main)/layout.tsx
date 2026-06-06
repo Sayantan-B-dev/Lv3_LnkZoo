@@ -4,6 +4,7 @@ import React from 'react';
 import Sidebar from '@/components/common/Sidebar';
 import CustomCursor from '@/components/common/CustomCursor';
 import { Footer } from '@/components/common/Footer';
+import { SignInPrompt } from '@/components/common/SignInPrompt';
 import { MobileMenuProvider, useMobileMenu } from '@/context/MobileMenuContext';
 
 function LayoutInner({ children }: { children: React.ReactNode }) {
@@ -12,6 +13,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   return (
     <div id="app">
       <CustomCursor />
+      <SignInPrompt />
       <Sidebar isOpen={isOpen} onClose={close} />
       <main id="main">
         {children}

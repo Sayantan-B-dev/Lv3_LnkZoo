@@ -89,3 +89,84 @@
   border-color: var(--text-4);
 }
 
+/* ── SIGN IN PROMPT ────────────────────────────── */
+.signin-prompt {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  width: 52px;
+  height: 52px;
+  background: var(--bg-1);
+  border: none;
+  border-radius: 50%;
+  text-decoration: none;
+  color: var(--text-2);
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  transition: box-shadow 0.2s, transform 0.2s;
+  text-align: center;
+}
+.signin-prompt:hover {
+  box-shadow: 0 6px 28px rgba(0,0,0,0.35);
+  transform: translateY(-2px);
+}
+.signin-prompt-ring {
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: var(--text);
+  border-right-color: var(--text-3);
+  animation: promptSpin 1.2s linear infinite;
+  pointer-events: none;
+}
+.signin-prompt-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.signin-prompt-icon {
+  position: absolute;
+  color: var(--text-2);
+  animation: fadeIcon 4.5s ease-in-out infinite;
+}
+.signin-prompt-text {
+  position: absolute;
+  margin: 0;
+  font-size: 9px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--text-2);
+  animation: fadeText 4.5s ease-in-out infinite;
+}
+
+@keyframes promptSpin {
+  to { transform: rotate(360deg); }
+}
+@keyframes fadeIcon {
+  0%, 40% { opacity: 1; }
+  50%, 90% { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes fadeText {
+  0%, 40% { opacity: 0; }
+  50%, 90% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@media (max-width: 768px) {
+  .signin-prompt {
+    bottom: 30px;
+    right: 30px;
+    width: 46px;
+    height: 46px;
+  }
+}
+

@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
-import { useScrollReveal, getNextRevealIndex } from './hooks';
+import React, { useId } from 'react';
+import { useScrollReveal } from './hooks';
 
 export function Reveal({ children, className = '', disableExit }: { children: React.ReactNode; className?: string; disableExit?: boolean }) {
-  const idx = getNextRevealIndex();
+  const id = useId();
+  const idx = id.split(':').reduce((acc, s) => acc + [...s].reduce((a, c) => a + c.charCodeAt(0), 0), 0);
   const { ref, revealed, exiting, offset } = useScrollReveal(idx);
   const style: React.CSSProperties = {
     transitionDuration: offset.dur + 's',
