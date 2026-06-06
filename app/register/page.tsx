@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import { useToast } from '@/context/ToastContext';
+import PasswordInput from '@/components/common/PasswordInput';
 
 export default function Register() {
   const router = useRouter();
@@ -73,11 +74,9 @@ export default function Register() {
           </div>
           <div className="input-group-v">
             <label>Password</label>
-            <input 
-              type="password" 
+            <PasswordInput 
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              required
               className="auth-input"
               placeholder="••••••••"
             />

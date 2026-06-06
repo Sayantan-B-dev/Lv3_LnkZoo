@@ -44,6 +44,7 @@ export default function LinkCard({
   const { addToast } = useToast();
   const [likeCount, setLikeCount] = React.useState(link.like_count ?? 0);
   const [likedByUser, setLikedByUser] = React.useState(!!link.liked_by_user);
+  const [bookmarked, setBookmarked] = React.useState(!!link.bookmarked_by_user);
   const [menuOpen, setMenuOpen] = useState(false);
   const [currentVisibility, setCurrentVisibility] = useState(link.visibility || 'public');
   const menuRef = useRef<HTMLDivElement>(null);
@@ -97,7 +98,8 @@ export default function LinkCard({
   React.useEffect(() => {
     setLikeCount(link.like_count ?? 0);
     setLikedByUser(!!link.liked_by_user);
-  }, [link.like_count, link.liked_by_user]);
+    setBookmarked(!!link.bookmarked_by_user);
+  }, [link.like_count, link.liked_by_user, link.bookmarked_by_user]);
 
   const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -119,6 +121,37 @@ export default function LinkCard({
       }
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleBookmark = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      const res = await fetch('/api/auth/me');
+      if (!res.ok) { router.push(`/login?from=${window.location.pathname}`); return; }
+      const method = bookmarked ? 'DELETE' : 'POST';
+      const bmRes = await fetch(`/api/links/${link.id}/bookmark`, { method });
+      if (bmRes.ok) {
+        setBookmarked(!bookmarked);
+        addToast(bookmarked ? 'Removed bookmark' : 'Bookmarked', 'success');
+      }
+    } catch {
+      addToast('Failed', 'error');
+    }
+  };
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const shareUrl = `${window.location.origin}/link/${link.id}`;
+    if (navigator.share) {
+      try { await navigator.share({ title: link.title, url: shareUrl }); } catch { /* user cancelled */ }
+    } else {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        addToast('Link copied to clipboard', 'success');
+      } catch {
+        addToast('Failed to copy', 'error');
+      }
     }
   };
 
@@ -154,6 +187,16 @@ export default function LinkCard({
           <span>{link.comment_count ?? 0}</span>
         </span>
       )}
+      <button className={`card-stat ${bookmarked ? 'active' : ''}`} onClick={handleBookmark} type="button" title={bookmarked ? 'Remove bookmark' : 'Bookmark'}>
+        <svg width="14" height="14" fill={bookmarked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
+        </svg>
+      </button>
+      <button className="card-stat" onClick={handleShare} type="button" title="Share">
+        <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
+        </svg>
+      </button>
     </div>
   );
 

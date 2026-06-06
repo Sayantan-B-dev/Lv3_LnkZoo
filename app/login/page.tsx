@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import { useToast } from '@/context/ToastContext';
+import PasswordInput from '@/components/common/PasswordInput';
 
 function LoginForm() {
   const router = useRouter();
@@ -65,11 +66,9 @@ function LoginForm() {
           </div>
           <div className="input-group-v">
             <label>Password</label>
-            <input 
-              type="password" 
+            <PasswordInput 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
               className="auth-input"
             />
           </div>

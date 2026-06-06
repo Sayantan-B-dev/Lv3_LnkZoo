@@ -64,8 +64,8 @@
 }
 
 .like-btn.active svg {
-    color: #ff3b30;
-    fill: #ff3b30;
+    color: var(--text);
+    fill: var(--text);
 }
 
 .save-btn {

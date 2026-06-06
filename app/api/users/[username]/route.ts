@@ -21,15 +21,20 @@ export const GET = apiHandler(async (req: NextRequest, { params }: { params: { u
 
   if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
-  // Check if current viewer follows this user
+  // Check relationships with current viewer
   const session = await getSessionFromRequest(req);
   let isFollowing = false;
+  let isBlocked = false;
   if (session && session.user_id !== user.id) {
     const [f] = await sql`
       SELECT 1 FROM follows WHERE follower_id = ${session.user_id} AND followee_id = ${user.id}
     `;
     isFollowing = !!f;
+    const [b] = await sql`
+      SELECT 1 FROM blocks WHERE blocker_id = ${session.user_id} AND blocked_id = ${user.id}
+    `;
+    isBlocked = !!b;
   }
 
-  return NextResponse.json({ user: { ...user, isFollowing } });
+  return NextResponse.json({ user: { ...user, isFollowing, isBlocked } });
 });

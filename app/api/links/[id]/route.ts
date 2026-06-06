@@ -49,7 +49,7 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }: { params: {
   const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { title, description, visibility } = await req.json();
+  const { title, description, visibility, tags } = await req.json();
   const [link] = await sql`SELECT user_id FROM links WHERE id = ${params.id}`;
   if (!link) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   if (link.user_id !== session.user_id) {
@@ -65,6 +65,29 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }: { params: {
     WHERE id = ${params.id}
     RETURNING id, title, description, visibility
   `;
+
+  if (Array.isArray(tags)) {
+    await sql`DELETE FROM link_tags WHERE link_id = ${params.id}`;
+
+    for (const name of tags) {
+      const tagName = name.toLowerCase().replace(/^#/, '').trim();
+      if (!tagName) continue;
+      const [tag] = await sql`
+        INSERT INTO tags (name, normalized_name, usage_count)
+        VALUES (${tagName}, ${tagName}, 1)
+        ON CONFLICT (normalized_name) DO NOTHING
+        RETURNING id
+      `;
+
+      const tagId = tag?.id ?? (await sql`
+        SELECT id FROM tags WHERE normalized_name = ${tagName} LIMIT 1
+      `)[0]?.id;
+
+      if (tagId) {
+        await sql`INSERT INTO link_tags (link_id, tag_id) VALUES (${params.id}, ${tagId}) ON CONFLICT DO NOTHING`;
+      }
+    }
+  }
 
   return NextResponse.json({ link: updated });
 });

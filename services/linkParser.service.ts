@@ -5,6 +5,22 @@ export interface ParseResult {
   domain: string;
 }
 
+function extractMetaAttribute(html: string, property: string, attr: string): string {
+  const propPattern = new RegExp(`(?:property|name)=["']${property}["']`, 'i');
+  const attrPattern = new RegExp(`${attr}=["']([^"']+)["']`, 'i');
+
+  const metaRegex = /<meta[\s>][^>]*>/gi;
+  let match: RegExpExecArray | null;
+  while ((match = metaRegex.exec(html)) !== null) {
+    const tag = match[0];
+    const propMatch = tag.match(propPattern);
+    if (!propMatch) continue;
+    const valMatch = tag.match(attrPattern);
+    if (valMatch) return valMatch[1];
+  }
+  return '';
+}
+
 export async function parseOGMetadata(url: string): Promise<ParseResult> {
   const res = await fetch(url, {
     headers: { 'User-Agent': 'lnkzoo-bot/1.0 (+https://lnkzoo.vercel.app)' },
@@ -13,18 +29,24 @@ export async function parseOGMetadata(url: string): Promise<ParseResult> {
 
   const html = await res.text();
 
-  const getMeta = (prop: string): string => {
-    const ogMatch = html.match(new RegExp(`<meta[^>]+property=["']og:${prop}["'][^>]+content=["']([^"']+)["']`, 'i'));
-    if (ogMatch) return ogMatch[1];
-    const nameMatch = html.match(new RegExp(`<meta[^>]+name=["']${prop}["'][^>]+content=["']([^"']+)["']`, 'i'));
-    return nameMatch ? nameMatch[1] : '';
-  };
+  const title =
+    extractMetaAttribute(html, 'og:title', 'content') ||
+    extractMetaAttribute(html, 'twitter:title', 'content') ||
+    extractMetaAttribute(html, 'title', 'content') ||
+    html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim() ||
+    '';
 
-  const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+  const description =
+    extractMetaAttribute(html, 'og:description', 'content') ||
+    extractMetaAttribute(html, 'twitter:description', 'content') ||
+    extractMetaAttribute(html, 'description', 'content') ||
+    '';
 
-  const title = getMeta('title') || (titleMatch ? titleMatch[1].trim() : '');
-  const description = getMeta('description');
-  const image = getMeta('image');
+  const image =
+    extractMetaAttribute(html, 'og:image', 'content') ||
+    extractMetaAttribute(html, 'twitter:image', 'content') ||
+    '';
+
   const domain = new URL(url).hostname;
 
   return { title, description, image, domain };

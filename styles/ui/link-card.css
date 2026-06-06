@@ -193,6 +193,10 @@
   color: var(--text);
 }
 
+.card-stat.active {
+  color: var(--accent);
+}
+
 .card-stat svg {
   width: 12px;
   height: 12px

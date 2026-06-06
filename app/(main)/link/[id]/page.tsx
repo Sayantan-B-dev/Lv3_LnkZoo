@@ -31,6 +31,8 @@ export default function LinkDetailPage({ params }: { params: Promise<{ id: strin
 
   const [isEditingLink, setIsEditingLink] = useState(false);
   const [editLinkData, setEditLinkData] = useState({ title: '', description: '' });
+  const [editTags, setEditTags] = useState('');
+  const [bookmarked, setBookmarked] = useState(false);
   const [showShortUrl, setShowShortUrl] = useState(false);
   const [shortUrl, setShortUrl] = useState('');
   const [copied, setCopied] = useState(false);
@@ -45,9 +47,10 @@ export default function LinkDetailPage({ params }: { params: Promise<{ id: strin
     dataReady.current = false;
 
     try {
-      const [linkRes, commRes] = await Promise.all([
+      const [linkRes, commRes, bmRes] = await Promise.all([
         fetch(`/api/links/${id}`),
-        fetch(`/api/comments?link_id=${id}`)
+        fetch(`/api/comments?link_id=${id}`),
+        user ? fetch(`/api/user/bookmarks`) : Promise.resolve(null),
       ]);
       if (linkRes.ok && commRes.ok) {
         const linkData = await linkRes.json();
@@ -58,6 +61,11 @@ export default function LinkDetailPage({ params }: { params: Promise<{ id: strin
           title: linkData.link.title,
           description: linkData.link.description || ''
         });
+        setEditTags((linkData.link.tags ?? []).join(', '));
+        if (bmRes && bmRes.ok) {
+          const bmData = await bmRes.json();
+          setBookmarked(bmData.bookmarks?.some((b: any) => b.id === id) ?? false);
+        }
       }
     } catch (err) {
       console.error('Failed to fetch link details', err);
@@ -111,12 +119,17 @@ export default function LinkDetailPage({ params }: { params: Promise<{ id: strin
       const res = await fetch(`/api/links/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'update', ...editLinkData }),
+        body: JSON.stringify({
+          title: editLinkData.title,
+          description: editLinkData.description,
+          tags: editTags.split(',').map((t: string) => t.trim()).filter(Boolean),
+        }),
       });
       if (res.ok) {
         addToast('Link updated', 'success');
-        setLink({ ...link, ...editLinkData });
+        setLink({ ...link, ...editLinkData, tags: editTags.split(',').map((t: string) => t.trim()).filter(Boolean) });
         setIsEditingLink(false);
+        fetchData();
       } else {
         addToast('Failed to update link', 'error');
       }
@@ -155,6 +168,30 @@ export default function LinkDetailPage({ params }: { params: Promise<{ id: strin
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       addToast('Failed to copy short URL', 'error');
+    }
+  };
+
+  const handleBookmark = async () => {
+    if (!user) { router.push(`/login?from=/link/${id}`); return; }
+    try {
+      const method = bookmarked ? 'DELETE' : 'POST';
+      const res = await fetch(`/api/links/${id}/bookmark`, { method });
+      if (res.ok) {
+        setBookmarked(!bookmarked);
+        addToast(bookmarked ? 'Removed bookmark' : 'Bookmarked', 'success');
+      }
+    } catch { addToast('Failed', 'error'); }
+  };
+
+  const handleShare = async () => {
+    const shareUrl = `${window.location.origin}/link/${id}`;
+    if (navigator.share) {
+      try { await navigator.share({ title: link.title, url: shareUrl }); } catch { /* */ }
+    } else {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        addToast('Link copied to clipboard', 'success');
+      } catch { addToast('Failed to copy', 'error'); }
     }
   };
 
@@ -258,6 +295,7 @@ export default function LinkDetailPage({ params }: { params: Promise<{ id: strin
               <form onSubmit={handleUpdateLink} className="edit-link-form">
                 <input value={editLinkData.title} onChange={e => setEditLinkData({ ...editLinkData, title: e.target.value })} className="auth-input" style={{ width: '100%', marginBottom: '10px' }} />
                 <textarea value={editLinkData.description} onChange={e => setEditLinkData({ ...editLinkData, description: e.target.value })} className="auth-input" style={{ width: '100%', minHeight: '80px', marginBottom: '10px' }} />
+                <input value={editTags} onChange={e => setEditTags(e.target.value)} className="auth-input" style={{ width: '100%', marginBottom: '10px' }} placeholder="Tags (comma separated)" />
                 <div style={{ display: 'flex', gap: '10px' }}>
                   <button type="submit" className="save-btn">Save</button>
                   <button type="button" onClick={() => setIsEditingLink(false)} className="cancel-btn">Cancel</button>
@@ -315,12 +353,22 @@ export default function LinkDetailPage({ params }: { params: Promise<{ id: strin
 
             <div className="card-footer" style={{ marginTop: '20px', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', gap: '12px' }}>
-                <a href={link.original_url} target="_blank" rel="noopener" className="visit-btn">Open Link ↗</a>
+                <a href={link.original_url} target="_blank" rel="noopener noreferrer" className="visit-btn">Open Link ↗</a>
                 <button onClick={handleLike} className={`like-btn ${link.liked_by_user ? 'active' : ''}`}>
                   <svg width="14" height="14" fill={link.liked_by_user ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.35-1.92-4.25-4.29-4.25-1.69 0-3.15.97-3.85 2.38A4.32 4.32 0 008.86 4C6.48 4 4.5 5.9 4.5 8.25c0 6.03 7.5 10.75 7.5 10.75s9-4.72 9-10.75z" />
                   </svg>
                   {link.like_count ?? 0}
+                </button>
+                <button onClick={handleBookmark} className={`like-btn ${bookmarked ? 'active' : ''}`} title={bookmarked ? 'Remove bookmark' : 'Bookmark'}>
+                  <svg width="14" height="14" fill={bookmarked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
+                  </svg>
+                </button>
+                <button onClick={handleShare} className="like-btn" title="Share">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
+                  </svg>
                 </button>
                 {user?.username === link.username && !isEditingLink && (
                   <button onClick={() => setIsEditingLink(true)} className="edit-link-btn">Edit</button>

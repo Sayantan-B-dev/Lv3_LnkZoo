@@ -307,9 +307,28 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                     <button onClick={async () => { await logout(); }} className="logout-btn">Logout</button>
                   </div>
                 ) : (
-                  <button onClick={handleFollow} className={`follow-btn ${profile.isFollowing ? 'active' : ''}`}>
-                    {profile.isFollowing ? 'Following' : 'Follow'}
-                  </button>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button onClick={handleFollow} className={`follow-btn ${profile.isFollowing ? 'active' : ''}`}>
+                      {profile.isFollowing ? 'Following' : 'Follow'}
+                    </button>
+                    <button onClick={async () => {
+                      const method = profile.isBlocked ? 'DELETE' : 'POST';
+                      const res = await fetch(`/api/users/${profile.username}/block`, { method });
+                      if (res.ok) {
+                        const d = await res.json();
+                        addToast(d.blocked ? 'User blocked' : 'User unblocked', 'success');
+                        fetchProfile();
+                      } else {
+                        const d = await res.json();
+                        addToast(d.error || 'Failed', 'error');
+                      }
+                    }} className="edit-btn" style={{
+                      color: profile.isBlocked ? 'var(--text)' : '#ef4444',
+                      borderColor: profile.isBlocked ? 'var(--border)' : 'color-mix(in srgb, #ef4444 30%, var(--border))',
+                    }}>
+                      {profile.isBlocked ? 'Unblock' : 'Block'}
+                    </button>
+                  </div>
                 )}
               </div>
             </div>

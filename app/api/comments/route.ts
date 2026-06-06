@@ -90,7 +90,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
       user_id: link.user_id,
       actor_id: session.user_id,
       type: 'reply',
-      entity_id: comment.id,
+      entity_id: linkId,
       message: `commented on your link "${link.title.slice(0, 60)}"`,
     });
   }
@@ -102,7 +102,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
         user_id: parent.user_id,
         actor_id: session.user_id,
         type: 'reply',
-        entity_id: comment.id,
+        entity_id: linkId,
         message: `replied to your comment`,
       });
     }

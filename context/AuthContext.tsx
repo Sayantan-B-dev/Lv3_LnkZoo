@@ -28,19 +28,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const refreshUser = async () => {
+  const refreshUser = async (attempt = 1) => {
     try {
       const res = await fetch('/api/auth/me');
       if (res.ok) {
         const data = await res.json();
         setUser(data.user);
+        setLoading(false);
+      } else if (res.status === 401 || res.status === 404) {
+        setUser(null);
+        setLoading(false);
+      } else if (attempt < 3) {
+        await new Promise(r => setTimeout(r, attempt * 1000));
+        return refreshUser(attempt + 1);
       } else {
         setUser(null);
+        setLoading(false);
       }
     } catch (err) {
       console.error('Auth refresh failed', err);
+      if (attempt < 3) {
+        await new Promise(r => setTimeout(r, attempt * 1000));
+        return refreshUser(attempt + 1);
+      }
       setUser(null);
-    } finally {
       setLoading(false);
     }
   };
