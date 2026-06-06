@@ -1,6 +1,6 @@
-# Glinqx 🌌
+# Linkzoo 🌌
 
-Glinqx is a modern, high-performance community platform designed for sharing, discussing, and discovering the best links on the web. Built with cutting-edge web technologies, it features a premium glassmorphism UI and a highly interactive, customizable particle physics engine.
+Linkzoo is a modern, high-performance community platform designed for sharing, discussing, and discovering the best links on the web. Built with cutting-edge web technologies, it features a premium glassmorphism UI and a highly interactive, customizable particle physics engine.
 
 ## 🚀 Key Features
 
@@ -13,7 +13,7 @@ Glinqx is a modern, high-performance community platform designed for sharing, di
 
 ## 🛠️ Tech Stack
 
-* **Frontend**: Next.js 13+ (App Router), React 18, Custom HTML5 Canvas (Physics Engine)
+* **Frontend**: Next.js 16 (App Router), React 19, Custom HTML5 Canvas (Physics Engine)
 * **Styling**: Vanilla CSS with modern variables and Glassmorphism techniques
 * **Backend**: Next.js API Routes (Serverless)
 * **Database**: PostgreSQL (Neon Serverless)
@@ -24,8 +24,8 @@ Glinqx is a modern, high-performance community platform designed for sharing, di
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/glinqx.git
-   cd glinqx
+   git clone https://github.com/yourusername/linkzoo.git
+   cd linkzoo
    ```
 
 2. **Install dependencies**:

@@ -8,7 +8,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
     if (!url) return NextResponse.json({ error: 'url required' }, { status: 400 });
 
     const res = await fetch(url, {
-      headers: { 'User-Agent': 'glinqx-bot/1.0 (+https://glinqx.io)' },
+      headers: { 'User-Agent': 'linkzoo-bot/1.0 (+https://lnkzoo.vercel.app)' },
       signal: AbortSignal.timeout(6000),
     });
 

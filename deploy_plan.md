@@ -1,4 +1,4 @@
-# Deploy Plan — Glinqx → Vercel
+# Deploy Plan — Linkzoo → Vercel
 
 ## 1. Push to GitHub
 

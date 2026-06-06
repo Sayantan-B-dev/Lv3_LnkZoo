@@ -18,13 +18,13 @@ export default function Topbar({ title }: TopbarProps) {
     const current = html.getAttribute('data-theme');
     const next = current === 'dark' ? 'light' : 'dark';
     html.setAttribute('data-theme', next);
-    localStorage.setItem('glinqx_theme', next);
+    localStorage.setItem('linkzoo_theme', next);
   };
 
   return (
     <div id="topbar">
       <Link href="/" className="mobile-logo mobile-only">
-        <div className="logo-mark">gx</div>
+        <div className="logo-mark">lz</div>
       </Link>
       <div className='topbar-content'>
         <span className="topbar-title">{title}</span>

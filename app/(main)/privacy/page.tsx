@@ -13,12 +13,12 @@ export default function PrivacyPage() {
 
         <section>
           <h2>Information We Collect</h2>
-          <p>When you use Glinqx, we collect information you provide directly, such as your email address and username when creating an account, and any links you submit or save. We also collect usage data including pages visited and interactions with content.</p>
+          <p>When you use Linkzoo, we collect information you provide directly, such as your email address and username when creating an account, and any links you submit or save. We also collect usage data including pages visited and interactions with content.</p>
         </section>
 
         <section>
           <h2>How We Use Your Information</h2>
-          <p>Your information is used to operate and improve Glinqx, personalize your experience, communicate with you about service updates, and enforce our terms. We never sell your personal data to third parties.</p>
+          <p>Your information is used to operate and improve Linkzoo, personalize your experience, communicate with you about service updates, and enforce our terms. We never sell your personal data to third parties.</p>
         </section>
 
         <section>
@@ -33,7 +33,7 @@ export default function PrivacyPage() {
 
         <section>
           <h2>Third-Party Services</h2>
-          <p>Glinqx may contain links to external websites. We are not responsible for the privacy practices of these third parties. We encourage you to review their policies before providing any personal information.</p>
+          <p>Linkzoo may contain links to external websites. We are not responsible for the privacy practices of these third parties. We encourage you to review their policies before providing any personal information.</p>
         </section>
 
         <section>

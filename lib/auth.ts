@@ -3,7 +3,7 @@ import { NextRequest } from 'next/server';
 import * as jose from 'jose';
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
-const COOKIE_NAME = 'glinqx_token';
+const COOKIE_NAME = 'linkzoo_token';
 const MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 
 export interface JWTPayload {

@@ -13,7 +13,7 @@ export function Footer() {
       <div className="footer-bg" />
       <div className={`footer-inner${expanded ? ' expanded' : ''}`}>
         <div className="footer-col brand">
-          <div className="footer-logo">gx</div>
+          <div className="footer-logo">lz</div>
           <p className="footer-desc">A community for sharing and discovering the best links on the web.</p>
         </div>
         <button className="footer-expand-btn mobile-only" onClick={() => setExpanded(!expanded)}>
@@ -40,7 +40,7 @@ export function Footer() {
         </div>
       </div>
       <div className="footer-bottom">
-        <span>&copy; {new Date().getFullYear()} Glinqx. All rights reserved.</span>
+        <span>&copy; {new Date().getFullYear()} Linkzoo. All rights reserved.</span>
       </div>
     </footer>
   );

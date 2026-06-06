@@ -10,7 +10,7 @@ import ToastContainer from '@/components/common/ToastContainer';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Glinqx — share links, find the web',
+  title: 'Linkzoo — share links, find the web',
   description: 'A community for sharing and discovering the best links on the web.',
   icons: {
     icon: '/icon.svg',
@@ -24,7 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{
           __html: `
             try {
-              var t = localStorage.getItem('glinqx_theme');
+              var t = localStorage.getItem('linkzoo_theme');
               if (t) document.documentElement.setAttribute('data-theme', t);
             } catch(e) {}
           `

@@ -50,8 +50,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     <nav id="sidebar" className={`${collapsed ? 'collapsed' : ''}${isOpen ? ' mobile-open' : ''}`}>
       <div className="sidebar-logo" style={{ flexDirection: collapsed ? 'column' : 'row', height: collapsed ? 'auto' : 'var(--header-h)', padding: collapsed ? '12px 0' : '0 16px', gap: collapsed ? '12px' : '10px' }}>
         <Link href="/" className="sidebar-logo-link">
-          <div className="logo-mark">gx</div>
-          {!collapsed && <span className="logo-text">glinqx</span>}
+          <div className="logo-mark">lz</div>
+          {!collapsed && <span className="logo-text">linkzoo</span>}
         </Link>
         <button className="collapse-toggle-top" onClick={() => setCollapsed(!collapsed)} title={collapsed ? "Expand" : "Collapse"} style={{ 
           marginLeft: collapsed ? '0' : 'auto',

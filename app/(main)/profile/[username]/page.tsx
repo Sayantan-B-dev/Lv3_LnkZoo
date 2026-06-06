@@ -110,7 +110,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
       const res = await fetch('/api/upload', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: base64Image, folder: `glinx_${cropState.type}s` })
+        body: JSON.stringify({ image: base64Image, folder: `linkzoo_${cropState.type}s` })
       });
       if (res.ok) {
         const { url } = await res.json();

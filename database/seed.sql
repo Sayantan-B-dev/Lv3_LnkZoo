@@ -14,7 +14,7 @@ VALUES
   ('77777777-7777-7777-7777-777777777777','kunal',   'kunal@example.com',   '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGX1R3wvKpQzQpQpQpQpQpQpQ7','backend-first developer.',                                NULL, 1, CURRENT_DATE - 3, 'user', false),
   ('88888888-8888-8888-8888-888888888888','tanvi',   'tanvi@example.com',   '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGX1R3wvKpQzQpQpQpQpQpQpQ8','product manager turned developer.',                       NULL, 0, CURRENT_DATE - 8, 'user', false),
   ('99999999-9999-9999-9999-999999999999','aisha',   'aisha@example.com',   '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGX1R3wvKpQzQpQpQpQpQpQpQ9','ai researcher. python all the way.',                      NULL, 2, CURRENT_DATE - 2, 'user', false),
-  ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa','admin',   'admin@glinqx.io',     '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGX1R3wvKpQzQpQpQpQpQpQpQ0','site admin.',                                               NULL, 0, NULL,             'admin', false);
+  ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa','admin',   'admin@linkzoo.io',     '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGX1R3wvKpQzQpQpQpQpQpQpQ0','site admin.',                                               NULL, 0, NULL,             'admin', false);
 
 -- INTERESTS
 UPDATE users SET interests = ARRAY['engineering','debugging','webdev','javascript'] WHERE username = 'priya';
@@ -283,7 +283,7 @@ VALUES
   ('cccccccc-0001-0001-0001-000000000001',
    'aaaaaaaa-0001-0001-0001-000000000001',
    '11111111-1111-1111-1111-111111111111',
-   'This is exactly the kind of content I come to glinqx for. Bookmarked.',
+   'This is exactly the kind of content I come to linkzoo for. Bookmarked.',
    NOW() - INTERVAL '2 hours 30 minutes'),
 
   ('cccccccc-0002-0002-0002-000000000002',
@@ -361,10 +361,10 @@ VALUES
    NULL,
    'like',
    'aaaaaaaa-0019-0019-0019-000000000019',
-   'Welcome to Glinqx! You posted your first link.',
+   'Welcome to Linkzoo! You posted your first link.',
    true, NOW() - INTERVAL '1 day');
 
 -- SHORTENED LINKS (tool samples)
 INSERT INTO shortened_links (short_code, original_url, user_id, click_count) VALUES
-  ('demo01','https://github.com/Sayantan-B-dev/Lv3_Glinqx', '33333333-3333-3333-3333-333333333333', 12),
+  ('demo01','https://github.com/Sayantan-B-dev/Lv3_Linkzoo', '33333333-3333-3333-3333-333333333333', 12),
   ('demo02','https://nextjs.org/docs', NULL, 5);

@@ -9,7 +9,7 @@ export function FeaturesSection() {
     <Reveal>
       <section className="features-section">
         <div className="about-ghost" style={{ right: '0', left: 'auto' }}>02</div>
-        <h2 className="section-label" style={{ textAlign: 'center', marginBottom: '8px' }}>Why Glinqx</h2>
+        <h2 className="section-label" style={{ textAlign: 'center', marginBottom: '8px' }}>Why Linkzoo</h2>
         <h3 className="features-heading">Everything you need to <br />share and discover links.</h3>
         <div className="features-grid">
           <div className="features-row wide-left">

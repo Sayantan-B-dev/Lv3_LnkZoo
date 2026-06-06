@@ -25,7 +25,7 @@ export default function Register() {
       if (res.ok) {
         const data = await res.json();
         login(data.user);
-        addToast('Account created! Welcome to Glinqx.', 'success');
+        addToast('Account created! Welcome to Linkzoo.', 'success');
         router.push('/');
       } else {
         const data = await res.json();
@@ -42,7 +42,7 @@ export default function Register() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-header">
-          <div className="logo-mark">gx</div>
+          <div className="logo-mark">lz</div>
           <h1>Create an account</h1>
           <p>Join the community and start sharing</p>
         </div>

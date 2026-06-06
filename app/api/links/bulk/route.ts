@@ -16,7 +16,7 @@ interface ParseResult {
 async function parseUrl(url: string): Promise<ParseResult> {
   try {
     const res = await fetch(url, {
-      headers: { 'User-Agent': 'glinqx-bot/1.0 (+https://glinqx.io)' },
+      headers: { 'User-Agent': 'linkzoo-bot/1.0 (+https://lnkzoo.vercel.app)' },
       signal: AbortSignal.timeout(6000),
     });
     const html = await res.text();

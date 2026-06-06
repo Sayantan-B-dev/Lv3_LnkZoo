@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://glinqx.io';
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://lnkzoo.vercel.app';
 
   return {
     rules: [

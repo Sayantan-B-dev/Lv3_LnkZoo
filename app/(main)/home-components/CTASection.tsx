@@ -6,7 +6,7 @@ export function CTASection({ onShareClick }: { onShareClick: () => void }) {
   return (
     <Reveal disableExit>
       <section className="cta-section">
-        <div className="cta-ghost">GLINQX</div>
+        <div className="cta-ghost">LINKZOO</div>
         <div className="cta-content">
           <h2 className="cta-heading">Ready to start sharing?</h2>
           <p className="cta-desc">Join a growing community of curators, explorers, and link lovers.</p>
