@@ -1,16 +1,15 @@
-import { MetadataRoute } from 'next';
+import { MetadataRoute } from 'next'
 
 export default function robots(): MetadataRoute.Robots {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://lnkzoo.vercel.app';
-
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://lnkzoo.vercel.app'
   return {
     rules: [
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/api/', '/admin/', '/login', '/register', '/s/'],
+        disallow: ['/api/', '/admin/', '/login', '/register', '/settings', '/notifications', '/bookmarks', '/manage/'],
       },
     ],
-    sitemap: `${appUrl}/sitemap.xml`,
-  };
+    sitemap: `${baseUrl}/sitemap.xml`,
+  }
 }

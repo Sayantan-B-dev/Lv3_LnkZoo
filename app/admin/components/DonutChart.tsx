@@ -49,6 +49,11 @@ export default function DonutChart({ data, title }: { data: { role: string; coun
       row.append('span').attr('class', 'adm-legend-label').text(d.role.charAt(0).toUpperCase() + d.role.slice(1));
       row.append('span').attr('class', 'adm-legend-count').text(d.count.toLocaleString());
     });
+
+    return () => {
+      d3.select(el).select('svg').remove();
+      if (legendRef.current) d3.select(legendRef.current).selectAll('*').remove();
+    };
   }, [data, width]);
 
   return (

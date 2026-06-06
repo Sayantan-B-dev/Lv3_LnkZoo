@@ -80,6 +80,8 @@ export default function DualTrendChart({ data, title }: { data: { date: string; 
         tooltipRef.current.innerHTML = `<strong>${d3.timeFormat('%b %d')(p.date)}</strong><br/>Posts: ${p.posts} · Comments: ${p.comments}`;
       }
     }).on('mouseleave', () => { guide.attr('opacity', 0); dotsP.attr('opacity', 0); dotsC.attr('opacity', 0); if (tooltipRef.current) tooltipRef.current.style.display = 'none'; });
+
+    return () => { d3.select(el).select('svg').remove(); };
   }, [data, width, height]);
 
   return (

@@ -47,7 +47,7 @@ export default async function ShortCodePage({ params }: { params: Promise<{ code
     await sql`UPDATE links SET click_count = click_count + 1 WHERE short_code = ${code}`.catch(() => {});
   }
 
-  const origin = 'https://lnkzoo.vercel.app';
+  const origin = process.env.NEXT_PUBLIC_BASE_URL || 'https://lnkzoo.vercel.app';
 
   return (
     <html>

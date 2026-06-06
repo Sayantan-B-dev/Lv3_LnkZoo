@@ -18,6 +18,7 @@ export default function TrendChart({ data, title, color, height = 260 }: { data:
     if (!ref.current || data.length < 2 || !width) return;
     const el = ref.current;
     d3.select(el).select('svg').remove();
+    let cancelled = false;
 
     const margin = { top: 24, right: 20, bottom: 28, left: 44 };
     const iw = width - margin.left - margin.right;
@@ -71,6 +72,8 @@ export default function TrendChart({ data, title, color, height = 260 }: { data:
       guide.attr('opacity', 0); dots.attr('opacity', 0);
       if (tooltipRef.current) tooltipRef.current.style.display = 'none';
     });
+
+    return () => { d3.select(el).select('svg').remove(); };
   }, [data, color, height, width, title]);
 
   return (

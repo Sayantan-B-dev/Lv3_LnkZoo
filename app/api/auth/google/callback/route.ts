@@ -5,7 +5,12 @@ import { apiHandler } from '@/lib/api-utils';
 
 export const GET = apiHandler(async (req: NextRequest) => {
   const code = req.nextUrl.searchParams.get('code');
+  const returnedState = req.nextUrl.searchParams.get('state');
+  const savedState = req.cookies.get('oauth_state')?.value;
   if (!code) return NextResponse.redirect(new URL('/login?error=no_code', req.url));
+  if (!returnedState || returnedState !== savedState) {
+    return NextResponse.redirect(new URL('/login?error=state_mismatch', req.url));
+  }
 
   try {
     // Exchange code for tokens

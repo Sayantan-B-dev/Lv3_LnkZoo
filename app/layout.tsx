@@ -9,11 +9,30 @@ import ToastContainer from '@/components/common/ToastContainer';
 // @ts-ignore: CSS side-effect import
 import './globals.css';
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://lnkzoo.vercel.app'
+
 export const metadata: Metadata = {
-  title: 'LnkZoo — share links, find the web',
+  title: { default: 'LnkZoo — share links, find the web', template: '%s | LnkZoo' },
   description: 'A community for sharing and discovering the best links on the web.',
-  icons: {
-    icon: '/icon.svg',
+  metadataBase: new URL(baseUrl),
+  icons: { icon: '/icon.svg' },
+  openGraph: {
+    type: 'website',
+    siteName: 'LnkZoo',
+    title: 'LnkZoo — share links, find the web',
+    description: 'A community for sharing and discovering the best links on the web.',
+    url: baseUrl,
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'LnkZoo — share links, find the web',
+    description: 'A community for sharing and discovering the best links on the web.',
+  },
+  robots: { index: true, follow: true },
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION,
+    yandex: process.env.YANDEX_SITE_VERIFICATION,
   },
 };
 
