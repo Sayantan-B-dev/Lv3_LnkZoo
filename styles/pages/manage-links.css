@@ -1,0 +1,436 @@
+/* ── Manage Links Dashboard ── */
+.ml-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  animation: fadeIn 0.3s ease;
+}
+
+/* ── Stats Cards ── */
+.ml-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.ml-stat-card {
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ml-stat-value {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.ml-stat-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-4);
+}
+
+.ml-stat-public .ml-stat-value { color: #10b981; }
+.ml-stat-followers .ml-stat-value { color: #3b82f6; }
+.ml-stat-private .ml-stat-value { color: #f59e0b; }
+
+/* ── Toolbar ── */
+.ml-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.ml-search {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px 14px;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+}
+
+.ml-search:focus {
+  border-color: var(--text-4);
+}
+
+.ml-search::placeholder {
+  color: var(--text-4);
+}
+
+/* ── Table ── */
+.ml-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-1);
+}
+
+.ml-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.ml-table th {
+  text-align: left;
+  padding: 12px 14px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-4);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.ml-table th.ml-sortable {
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.ml-table th.ml-sortable:hover {
+  color: var(--text-2);
+}
+
+.ml-table th .ml-sort-icon {
+  margin-left: 4px;
+  font-size: 9px;
+}
+
+.ml-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.ml-table tr:last-child td {
+  border-bottom: none;
+}
+
+.ml-table tr:hover {
+  background: color-mix(in srgb, var(--bg-2) 50%, transparent);
+}
+
+.ml-table tr.ml-selected {
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+
+.ml-checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.ml-title-cell {
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ml-title-cell:hover {
+  color: var(--accent);
+}
+
+.ml-vis-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+}
+
+.ml-tag-list {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.ml-tag {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  color: var(--text-3);
+}
+
+.ml-tag-more {
+  font-size: 10px;
+  color: var(--text-4);
+}
+
+/* ── Bulk Action Bar ── */
+.ml-bulk-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 10px;
+  margin-bottom: 16px;
+  animation: fadeSlideIn 0.25s ease;
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ml-bulk-count {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-3);
+  margin-right: auto;
+  white-space: nowrap;
+}
+
+.ml-bulk-count-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 5px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ml-bulk-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ml-bulk-segmented {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.ml-bulk-seg-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-3);
+  background: var(--bg);
+  border: none;
+  border-right: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+
+.ml-bulk-seg-btn:last-child {
+  border-right: none;
+}
+
+.ml-bulk-seg-btn:hover {
+  background: var(--bg-2);
+  color: var(--text);
+}
+
+.ml-bulk-seg-btn:active {
+  background: var(--bg-3);
+}
+
+.ml-bulk-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s, box-shadow 0.12s;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-3);
+}
+
+.ml-bulk-btn:hover {
+  background: var(--bg-2);
+  color: var(--text);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.ml-bulk-btn:active {
+  transform: scale(0.97);
+}
+
+.ml-bulk-btn-danger {
+  color: #ef4444;
+  border-color: color-mix(in srgb, #ef4444 25%, var(--border));
+}
+
+.ml-bulk-btn-danger:hover {
+  background: color-mix(in srgb, #ef4444 7%, var(--bg));
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+/* ── Pagination ── */
+.ml-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 20px;
+}
+
+.ml-page-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-3);
+}
+
+.ml-page-btn:hover:not(:disabled) {
+  background: var(--bg-2);
+  color: var(--text);
+}
+
+.ml-page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ml-page-btn.active {
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+}
+
+.ml-page-info {
+  font-size: 12px;
+  color: var(--text-4);
+  margin-left: 8px;
+}
+
+/* ── Modal ── */
+.ml-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.15s ease;
+}
+
+.ml-modal-box {
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+}
+
+.ml-modal-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+.ml-modal-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-4);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.ml-modal-input {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+  margin-bottom: 16px;
+}
+
+.ml-modal-input:focus {
+  border-color: var(--text-4);
+}
+
+.ml-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+/* ── Empty State ── */
+.ml-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-4);
+  font-size: 14px;
+}
+
+/* ── Loading State ── */
+.ml-loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-4);
+  font-size: 14px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .ml-stats { grid-template-columns: repeat(2, 1fr); }
+  .ml-toolbar { flex-direction: column; }
+  .ml-search { width: 100%; }
+  .ml-bulk-bar { flex-wrap: wrap; flex-direction: column; align-items: stretch; gap: 10px; }
+  .ml-bulk-count { margin-right: 0; }
+  .ml-bulk-actions { flex-wrap: wrap; gap: 6px; }
+  .ml-bulk-segmented { width: 100%; }
+  .ml-bulk-seg-btn { flex: 1; justify-content: center; font-size: 11px; padding: 7px 8px; }
+  .ml-bulk-btn { flex: 1; justify-content: center; }
+}
