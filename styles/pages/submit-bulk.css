@@ -221,6 +221,16 @@
   display: flex; gap: 10px; margin-top: 20px;
 }
 
+.bulk-dl-btn {
+  padding: 9px 20px; border-radius: 8px;
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  border: 1px solid var(--border); background: var(--bg);
+  color: var(--text-2); margin-left: auto;
+}
+
+.bulk-dl-btn:hover { background: var(--bg-1); color: var(--text); }
+
 .bulk-back-btn, .bulk-home-btn {
   padding: 9px 20px; border-radius: 8px;
   font-size: 13px; font-weight: 500; cursor: pointer;

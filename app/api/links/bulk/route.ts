@@ -60,23 +60,29 @@ async function createLink(
       RETURNING id, short_code
     `;
 
-    const tagNames = (await suggestTags(meta.title, meta.description || ''))
-      .map(t => t.name.toLowerCase().replace(/^#/, ''))
-      .filter(Boolean)
-      .slice(0, 5);
+    let tagNames: string[] = [];
+    try {
+      const suggested = await suggestTags(meta.title, meta.description || '');
+      tagNames = suggested
+        .map(t => t.name.toLowerCase().replace(/^#/, ''))
+        .filter(Boolean)
+        .slice(0, 5);
 
-    for (const name of tagNames) {
-      const [tag] = await sql`
-        INSERT INTO tags (name, normalized_name, usage_count)
-        VALUES (${name}, ${name}, 1)
-        ON CONFLICT (normalized_name) DO UPDATE
-          SET usage_count = tags.usage_count + 1
-        RETURNING id
-      `;
-      await sql`
-        INSERT INTO link_tags (link_id, tag_id) VALUES (${link.id}, ${tag.id})
-        ON CONFLICT DO NOTHING
-      `;
+      for (const name of tagNames) {
+        const [tag] = await sql`
+          INSERT INTO tags (name, normalized_name, usage_count)
+          VALUES (${name}, ${name}, 1)
+          ON CONFLICT (normalized_name) DO UPDATE
+            SET usage_count = tags.usage_count + 1
+          RETURNING id
+        `;
+        await sql`
+          INSERT INTO link_tags (link_id, tag_id) VALUES (${link.id}, ${tag.id})
+          ON CONFLICT DO NOTHING
+        `;
+      }
+    } catch (err) {
+      console.error('[bulk] tag suggestion failed for:', url, err);
     }
 
     return { success: true, id: link.id, shortCode: link.short_code, title: meta.title, tags: tagNames };

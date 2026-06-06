@@ -36,6 +36,35 @@ export default function BulkUpload() {
 
   const exceeded = urls.length > maxUrls;
 
+  const downloadReport = () => {
+    if (!results || !summary) return;
+    const ts = new Date().toLocaleString();
+    const lines = [
+      'Bulk Upload Report',
+      '==================',
+      `Date: ${ts}`,
+      `Total: ${summary.total}`,
+      `Succeeded: ${summary.succeeded}`,
+      `Failed: ${summary.failed}`,
+      '',
+      'Results:',
+      '--------',
+      ...results.map((r, i) => {
+        const status = r.success ? 'OK' : 'FAIL';
+        const code = r.success && r.shortCode ? `https://lnkzoo.vercel.app/s/${r.shortCode}` : '-';
+        const title = r.title || '-';
+        return `${i + 1}. [${status}] ${title}  ${code}  ${r.url}`;
+      }),
+    ].join('\n');
+
+    const blob = new Blob([lines], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `bulk-upload-${Date.now()}.txt`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  };
+
   const handleSubmit = async () => {
     if (urls.length === 0 || exceeded) return;
     setLoading(true);
@@ -240,6 +269,9 @@ export default function BulkUpload() {
               <div className="bulk-actions">
                 <button className="bulk-back-btn" onClick={() => { setResults(null); setRaw(''); setSummary(null); }}>
                   Upload More
+                </button>
+                <button className="bulk-dl-btn" onClick={downloadReport}>
+                  Download Report
                 </button>
                 <button className="bulk-home-btn" onClick={() => router.push('/')}>
                   Go Home
