@@ -7,7 +7,7 @@ export interface ParseResult {
 
 export async function parseOGMetadata(url: string): Promise<ParseResult> {
   const res = await fetch(url, {
-    headers: { 'User-Agent': 'linkzoo-bot/1.0 (+https://lnkzoo.vercel.app)' },
+    headers: { 'User-Agent': 'lnkzoo-bot/1.0 (+https://lnkzoo.vercel.app)' },
     signal: AbortSignal.timeout(6000),
   });
 

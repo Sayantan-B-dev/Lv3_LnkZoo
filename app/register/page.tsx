@@ -25,7 +25,7 @@ export default function Register() {
       if (res.ok) {
         const data = await res.json();
         login(data.user);
-        addToast('Account created! Welcome to Linkzoo.', 'success');
+        addToast('Account created! Welcome to LnkZoo.', 'success');
         router.push('/');
       } else {
         const data = await res.json();

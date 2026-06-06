@@ -14,7 +14,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    const { image, folder = 'linkzoo_profiles' } = await req.json();
+    const { image, folder = 'lnkzoo_profiles' } = await req.json();
 
     if (!image) {
       return NextResponse.json({ error: 'No image provided' }, { status: 400 });

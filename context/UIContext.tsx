@@ -44,7 +44,7 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
   const [bgSettings, setBgSettings] = useState(getDefaults);
 
   useEffect(() => {
-    const saved = localStorage.getItem('linkzoo_bg_settings');
+    const saved = localStorage.getItem('lnkzoo_bg_settings');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -67,7 +67,7 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
   };
 
   const saveSettings = useCallback(() => {
-    localStorage.setItem('linkzoo_bg_settings', JSON.stringify(bgSettings));
+    localStorage.setItem('lnkzoo_bg_settings', JSON.stringify(bgSettings));
   }, [bgSettings]);
 
   const resetToDefaults = useCallback(() => {

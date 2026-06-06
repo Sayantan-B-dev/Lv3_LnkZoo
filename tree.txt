@@ -1,4 +1,4 @@
-Linkzoo
+LnkZoo
 ├── app
 │   ├── (main)
 │   │   ├── daily-dose

@@ -13,7 +13,7 @@ export default function TermsPage() {
 
         <section>
           <h2>Acceptance of Terms</h2>
-          <p>By accessing or using Linkzoo, you agree to be bound by these Terms of Service. If you do not agree, please do not use the platform.</p>
+          <p>By accessing or using LnkZoo, you agree to be bound by these Terms of Service. If you do not agree, please do not use the platform.</p>
         </section>
 
         <section>
@@ -23,12 +23,12 @@ export default function TermsPage() {
 
         <section>
           <h2>Content Ownership</h2>
-          <p>You retain ownership of any links and content you submit to Linkzoo. By submitting content, you grant Linkzoo a non-exclusive, royalty-free license to display and distribute your content on the platform.</p>
+          <p>You retain ownership of any links and content you submit to LnkZoo. By submitting content, you grant LnkZoo a non-exclusive, royalty-free license to display and distribute your content on the platform.</p>
         </section>
 
         <section>
           <h2>Limitation of Liability</h2>
-          <p>Linkzoo is provided &quot;as is&quot; without warranties of any kind. We are not liable for any damages arising from your use of the service, including but not limited to loss of data or interruption of service.</p>
+          <p>LnkZoo is provided &quot;as is&quot; without warranties of any kind. We are not liable for any damages arising from your use of the service, including but not limited to loss of data or interruption of service.</p>
         </section>
 
         <section>
@@ -38,7 +38,7 @@ export default function TermsPage() {
 
         <section>
           <h2>Changes to Terms</h2>
-          <p>We may update these terms from time to time. Continued use of Linkzoo after changes constitutes acceptance of the new terms.</p>
+          <p>We may update these terms from time to time. Continued use of LnkZoo after changes constitutes acceptance of the new terms.</p>
         </section>
       </div>
     </>

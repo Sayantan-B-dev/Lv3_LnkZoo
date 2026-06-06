@@ -32,7 +32,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="admin-root">
       <aside className="admin-sidebar">
         <div className="admin-logo">
-          <Link href="/">linkzoo</Link>
+          <Link href="/">lnkzoo</Link>
           <span className="admin-badge">Admin</span>
         </div>
         <nav className="admin-nav">

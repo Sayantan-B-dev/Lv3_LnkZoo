@@ -16,7 +16,7 @@ export const FEATURES_DATA = [
 ];
 
 export const FAQ_DATA = [
-  { q: 'What is Linkzoo?', a: 'Linkzoo is a community-driven link sharing platform. Share interesting links, discover content curated by others, and build your reputation through quality sharing.' },
+  { q: 'What is LnkZoo?', a: 'LnkZoo is a community-driven link sharing platform. Share interesting links, discover content curated by others, and build your reputation through quality sharing.' },
   { q: 'How do I get started?', a: 'Create an account, then start sharing links! You can organize them with tags, follow other users, and build your daily posting streak.' },
   { q: 'What are streaks?', a: 'Streaks track how many consecutive days you have shared a link. The longer your streak, the higher you climb on the leaderboard.' },
   { q: 'Can I edit or delete my links?', a: 'Yes. You can edit the title and description of any link you have posted, or delete it entirely. Comments can also be deleted.' },

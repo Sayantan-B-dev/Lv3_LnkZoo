@@ -1,4 +1,4 @@
-# Deploy Plan — Linkzoo → Vercel
+# Deploy Plan — LnkZoo → Vercel
 
 ## 1. Push to GitHub
 

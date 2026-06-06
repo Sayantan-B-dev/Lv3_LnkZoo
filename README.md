@@ -1,6 +1,6 @@
-# Linkzoo 🌌
+# LnkZoo 🌌
 
-Linkzoo is a modern, high-performance community platform designed for sharing, discussing, and discovering the best links on the web. Built with cutting-edge web technologies, it features a premium glassmorphism UI and a highly interactive, customizable particle physics engine.
+LnkZoo is a modern, high-performance community platform designed for sharing, discussing, and discovering the best links on the web. Built with cutting-edge web technologies, it features a premium glassmorphism UI and a highly interactive, customizable particle physics engine.
 
 ## 🚀 Key Features
 
@@ -24,8 +24,8 @@ Linkzoo is a modern, high-performance community platform designed for sharing, d
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/linkzoo.git
-   cd linkzoo
+   git clone https://github.com/yourusername/lnkzoo.git
+   cd lnkzoo
    ```
 
 2. **Install dependencies**:

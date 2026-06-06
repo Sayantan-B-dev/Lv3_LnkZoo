@@ -22,7 +22,7 @@ interaction pattern, held together by a consistent design language.
 - Data fetched from `/api/links?sort=top&limit=20` or similar
 - Click any item → navigates to that link
 
-### 3. What Is Linkzoo — Two-Column
+### 3. What Is LnkZoo — Two-Column
 - Left: oversized number (`01`) as ghost watermark, then heading + description
 - Right: hover-invert stat grid (4 mini-cards: links shared today, active users,
   communities built, upvotes given)
@@ -54,7 +54,7 @@ interaction pattern, held together by a consistent design language.
 - Active item has left accent bar, others are dimmed
 
 ### 8. CTA — Full-Bleed Black
-- Giant ghost text watermark ("LINKZOO") behind the content
+- Giant ghost text watermark ("LNKZOO") behind the content
 - Center-aligned: tagline + "Join the Community" button
 - Subtle grain texture overlay (CSS `filter: contrast(1.2)`)
 
@@ -93,7 +93,7 @@ interaction pattern, held together by a consistent design language.
 
 1. Hero section + floating stats
 2. Marquee ticker
-3. What Is Linkzoo + Features grid
+3. What Is LnkZoo + Features grid
 4. Metrics counters (IntersectionObserver)
 5. FAQ accordion
 6. CTA section

@@ -18,7 +18,7 @@ export default function Topbar({ title }: TopbarProps) {
     const current = html.getAttribute('data-theme');
     const next = current === 'dark' ? 'light' : 'dark';
     html.setAttribute('data-theme', next);
-    localStorage.setItem('linkzoo_theme', next);
+    localStorage.setItem('lnkzoo_theme', next);
   };
 
   return (

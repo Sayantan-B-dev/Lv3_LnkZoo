@@ -40,7 +40,7 @@ export function Footer() {
         </div>
       </div>
       <div className="footer-bottom">
-        <span>&copy; {new Date().getFullYear()} Linkzoo. All rights reserved.</span>
+        <span>&copy; {new Date().getFullYear()} LnkZoo. All rights reserved.</span>
       </div>
     </footer>
   );

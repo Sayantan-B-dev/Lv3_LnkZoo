@@ -18,7 +18,7 @@ export default function CookiesPage() {
 
         <section>
           <h2>How We Use Cookies</h2>
-          <p>Linkzoo uses essential cookies for authentication and security — these are necessary for the platform to function. We also use preference cookies to remember your theme and layout settings.</p>
+          <p>LnkZoo uses essential cookies for authentication and security — these are necessary for the platform to function. We also use preference cookies to remember your theme and layout settings.</p>
         </section>
 
         <section>
@@ -33,7 +33,7 @@ export default function CookiesPage() {
 
         <section>
           <h2>Managing Cookies</h2>
-          <p>You can control cookies through your browser settings. Disabling certain cookies may affect the functionality of Linkzoo, particularly authentication and theme preferences.</p>
+          <p>You can control cookies through your browser settings. Disabling certain cookies may affect the functionality of LnkZoo, particularly authentication and theme preferences.</p>
         </section>
 
         <section>
