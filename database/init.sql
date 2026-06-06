@@ -59,8 +59,7 @@ CREATE TABLE links (
   title                 VARCHAR(500) NOT NULL,
   description           TEXT,
   preview_image         TEXT,                      -- OG image scraped from URL
-  is_private            BOOLEAN DEFAULT false,
-  private_allowed_users UUID[]  DEFAULT '{}',      -- user IDs who can see private link
+  visibility            TEXT DEFAULT 'public' NOT NULL CHECK (visibility IN ('public','followers','private')),
   is_anonymous          BOOLEAN DEFAULT false,     -- hide poster identity
   is_promoted           BOOLEAN DEFAULT false,
   flagged_count         INT     DEFAULT 0,

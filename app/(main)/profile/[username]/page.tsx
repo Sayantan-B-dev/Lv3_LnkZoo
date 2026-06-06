@@ -335,6 +335,8 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                   showComments={true}
                   onClick={() => router.push(`/link/${link.id}`)}
                   isClickable={true}
+                  isOwner={!!currentUser && currentUser.id === link.user_id}
+                  onVisibilityChange={() => { /* parent feed will re-fetch if needed */ }}
                 />
               ))
             )}

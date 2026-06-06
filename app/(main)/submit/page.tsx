@@ -27,6 +27,7 @@ export default function Submit() {
   const [parsing, setParsing] = useState(false);
   const [metadata, setMetadata] = useState<Metadata>({ title: '', description: '', image: '', tags: '' });
   const [step, setStep] = useState(1);
+  const [visibility, setVisibility] = useState('public');
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const pendingUrlRef = useRef<string | null>(null);
 
@@ -116,7 +117,7 @@ export default function Submit() {
           previewImage: metadata.image,
           tags: metadata.tags.split(',').map(t => t.trim()).filter(Boolean),
           isAnonymous: false,
-          isPrivate: false,
+          visibility,
         }),
       });
       if (res.ok) {
@@ -192,6 +193,18 @@ export default function Submit() {
                   onChange={(e) => setMetadata({ ...metadata, tags: e.target.value })}
                   className="sub-input"
                 />
+              </div>
+              <div className="input-group-v">
+                <label>Visibility</label>
+                <select
+                  value={visibility}
+                  onChange={(e) => setVisibility(e.target.value)}
+                  className="sub-input"
+                >
+                  <option value="public">Public</option>
+                  <option value="followers">Followers Only</option>
+                  <option value="private">Private</option>
+                </select>
               </div>
               <div className="form-actions">
                 <button type="button" onClick={() => setStep(1)} className="back-btn">Back</button>

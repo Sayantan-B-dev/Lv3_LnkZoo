@@ -25,6 +25,7 @@ export default function BulkUpload() {
   const [progress, setProgress] = useState(0);
   const [results, setResults] = useState<UploadResult[] | null>(null);
   const [summary, setSummary] = useState<{ total: number; succeeded: number; failed: number; limitApplied: boolean } | null>(null);
+  const [visibility, setVisibility] = useState('public');
   const textRef = useRef<HTMLTextAreaElement>(null);
 
   const isAdmin = user?.role === 'admin';
@@ -76,7 +77,7 @@ export default function BulkUpload() {
       const res = await fetch('/api/links/bulk', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ urls }),
+        body: JSON.stringify({ urls, visibility }),
       });
 
       if (!res.ok) {
@@ -154,6 +155,14 @@ export default function BulkUpload() {
 
           {!results && (
             <>
+              <div className="bulk-visibility">
+                <label>Visibility for all URLs:</label>
+                <select value={visibility} onChange={(e) => setVisibility(e.target.value)} className="bulk-vis-select">
+                  <option value="public">Public</option>
+                  <option value="followers">Followers Only</option>
+                  <option value="private">Private</option>
+                </select>
+              </div>
               <div className="bulk-input-area">
                 <textarea
                   ref={textRef}

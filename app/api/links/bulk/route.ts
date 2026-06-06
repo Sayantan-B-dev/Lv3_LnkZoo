@@ -42,7 +42,8 @@ async function parseUrl(url: string): Promise<ParseResult> {
 
 async function createLink(
   url: string,
-  userId: string
+  userId: string,
+  visibility: string = 'public'
 ): Promise<
   { success: true; id: string; shortCode: string; title: string; tags: string[] }
   | { success: false; error: string }
@@ -55,8 +56,8 @@ async function createLink(
     if (existing.length) shortCode = generateShortCode(7);
 
     const [link] = await sql`
-      INSERT INTO links (user_id, original_url, short_code, title, description, preview_image)
-      VALUES (${userId}, ${url}, ${shortCode}, ${meta.title}, ${meta.description}, ${meta.image})
+      INSERT INTO links (user_id, original_url, short_code, title, description, preview_image, visibility)
+      VALUES (${userId}, ${url}, ${shortCode}, ${meta.title}, ${meta.description}, ${meta.image}, ${visibility})
       RETURNING id, short_code
     `;
 
@@ -96,7 +97,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
   const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { urls } = await req.json();
+  const { urls, visibility } = await req.json();
   if (!Array.isArray(urls) || urls.length === 0) {
     return NextResponse.json({ error: 'Provide at least one URL' }, { status: 400 });
   }
@@ -116,7 +117,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
       async function worker() {
         while (queue.length > 0) {
           const { url, i } = queue.shift()!;
-          const result = await createLink(url, userId);
+          const result = await createLink(url, userId, visibility || 'public');
           results[i] = { url, ...result };
           completed++;
           controller.enqueue(encoder.encode(JSON.stringify({ type: 'progress', processed: completed, total: batch.length }) + '\n'));

@@ -40,6 +40,38 @@
   color: #3b82f6;
 }
 
+/* ── Visibility Selector ── */
+.bulk-visibility {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.bulk-visibility label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-4);
+  white-space: nowrap;
+}
+
+.bulk-vis-select {
+  padding: 10px 14px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  min-width: 150px;
+}
+
+.bulk-vis-select:focus {
+  border-color: var(--text-4);
+}
+
 /* ── Input ── */
 .bulk-input-area {
   margin-bottom: 16px;

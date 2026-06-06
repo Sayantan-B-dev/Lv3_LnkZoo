@@ -8,7 +8,7 @@ export const GET = apiHandler(async (req: NextRequest, { params }: { params: { u
   try {
     const rows = await sql`
       SELECT u.id, u.username, u.avatar_url,
-             (SELECT COUNT(*)::int FROM links WHERE user_id = u.id AND is_private = false) AS link_count
+             (SELECT COUNT(*)::int FROM links WHERE user_id = u.id AND visibility = 'public') AS link_count
       FROM follows f
       JOIN users u ON f.follower_id = u.id
       JOIN users target ON f.followee_id = target.id

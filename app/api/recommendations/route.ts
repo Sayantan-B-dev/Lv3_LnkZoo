@@ -3,14 +3,14 @@ import sql from '@/lib/db';
 import { getSessionFromRequest } from '@/lib/auth';
 import { apiHandler } from '@/lib/api-utils';
 
-// GET /api/recommendations — personalised "for you" feed
 export const GET = apiHandler(async (req: NextRequest) => {
   const session = await getSessionFromRequest(req);
+  const uid = session?.user_id ?? null;
+
   if (!session) {
-    // Unauthenticated: just return hot feed
     const rows = await sql`
       SELECT l.id, l.title, l.description, l.original_url, l.short_code,
-             l.preview_image, l.is_anonymous, l.like_count,
+             l.preview_image, l.is_anonymous, l.like_count, l.visibility,
              l.comment_count, l.view_count, l.created_at,
              u.username, u.avatar_url,
              ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) AS tags
@@ -18,7 +18,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
       JOIN users u ON l.user_id = u.id
       LEFT JOIN link_tags lt ON lt.link_id = l.id
       LEFT JOIN tags t ON t.id = lt.tag_id
-      WHERE l.is_private = false
+      WHERE l.visibility = 'public'
       GROUP BY l.id, u.username, u.avatar_url
       ORDER BY l.like_count DESC
       LIMIT 20
@@ -26,14 +26,13 @@ export const GET = apiHandler(async (req: NextRequest) => {
     return NextResponse.json({ links: rows });
   }
 
-  // Fetch user interests
   const [user] = await sql`SELECT interests FROM users WHERE id = ${session.user_id}`;
   const interests: string[] = user?.interests ?? [];
 
   if (interests.length === 0) {
     const rows = await sql`
       SELECT l.id, l.title, l.description, l.original_url, l.short_code,
-             l.preview_image, l.is_anonymous, l.like_count,
+             l.preview_image, l.is_anonymous, l.like_count, l.visibility,
              l.comment_count, l.view_count, l.created_at,
              u.username, u.avatar_url,
              ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) AS tags
@@ -41,7 +40,9 @@ export const GET = apiHandler(async (req: NextRequest) => {
       JOIN users u ON l.user_id = u.id
       LEFT JOIN link_tags lt ON lt.link_id = l.id
       LEFT JOIN tags t ON t.id = lt.tag_id
-      WHERE l.is_private = false
+      WHERE (l.visibility = 'public'
+          OR (l.visibility = 'followers' AND EXISTS (SELECT 1 FROM follows WHERE follower_id = ${uid} AND followee_id = l.user_id))
+          OR (l.visibility = 'private' AND l.user_id = ${uid}))
       GROUP BY l.id, u.username, u.avatar_url
       ORDER BY l.like_count DESC
       LIMIT 20
@@ -49,10 +50,9 @@ export const GET = apiHandler(async (req: NextRequest) => {
     return NextResponse.json({ links: rows });
   }
 
-  // Personalised: boost links tagged with user's interests
   const rows = await sql`
     SELECT l.id, l.title, l.description, l.original_url, l.short_code,
-           l.preview_image, l.is_anonymous, l.like_count,
+           l.preview_image, l.is_anonymous, l.like_count, l.visibility,
            l.comment_count, l.view_count, l.created_at,
            u.username, u.avatar_url,
            ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) AS tags,
@@ -61,7 +61,9 @@ export const GET = apiHandler(async (req: NextRequest) => {
     JOIN users u ON l.user_id = u.id
     LEFT JOIN link_tags lt ON lt.link_id = l.id
     LEFT JOIN tags t ON t.id = lt.tag_id
-    WHERE l.is_private = false
+    WHERE (l.visibility = 'public'
+        OR (l.visibility = 'followers' AND EXISTS (SELECT 1 FROM follows WHERE follower_id = ${uid} AND followee_id = l.user_id))
+        OR (l.visibility = 'private' AND l.user_id = ${uid}))
     GROUP BY l.id, u.username, u.avatar_url
     ORDER BY interest_match DESC, l.like_count DESC
     LIMIT 20

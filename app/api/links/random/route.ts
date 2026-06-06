@@ -8,39 +8,39 @@ export const dynamic = 'force-dynamic';
 export const GET = apiHandler(async (req: NextRequest) => {
   const session = await getSessionFromRequest(req);
   const excludeId = req.nextUrl.searchParams.get('exclude') || null;
+  const uid = session?.user_id ?? null;
 
   try {
     const rows = await sql`
       SELECT l.*, u.username, u.avatar_url,
              EXISTS (
                SELECT 1 FROM link_likes ll
-               WHERE ll.link_id = l.id AND ll.user_id = ${session?.user_id ?? null}
+               WHERE ll.link_id = l.id AND ll.user_id = ${uid}
              ) AS liked_by_user,
              (SELECT ARRAY_AGG(t.name) FROM link_tags lt JOIN tags t ON lt.tag_id = t.id WHERE lt.link_id = l.id) as tags
       FROM links l
       JOIN users u ON l.user_id = u.id
-      WHERE l.is_private = false
+      WHERE l.visibility = 'public'
       AND ((${excludeId}::text) IS NULL OR l.id::text != (${excludeId}::text))
       ORDER BY RANDOM()
       LIMIT 1
     `;
 
     if (!rows.length) {
-      // If no result (could happen if we exclude the only link), fetch ANY link
       const fallback = await sql`
         SELECT l.*, u.username, u.avatar_url,
                EXISTS (
                  SELECT 1 FROM link_likes ll
-                 WHERE ll.link_id = l.id AND ll.user_id = ${session?.user_id ?? null}
+                 WHERE ll.link_id = l.id AND ll.user_id = ${uid}
                ) AS liked_by_user,
                (SELECT ARRAY_AGG(t.name) FROM link_tags lt JOIN tags t ON lt.tag_id = t.id WHERE lt.link_id = l.id) as tags
         FROM links l
         JOIN users u ON l.user_id = u.id
-        WHERE l.is_private = false
+        WHERE l.visibility = 'public'
         ORDER BY RANDOM()
         LIMIT 1
       `;
-      
+
       if (!fallback.length) {
         return NextResponse.json({ error: 'No links found' }, { status: 404 });
       }

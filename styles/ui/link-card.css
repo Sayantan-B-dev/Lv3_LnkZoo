@@ -229,6 +229,82 @@
   opacity: .3
 }
 
+/* ── VISIBILITY BADGE ──────────────────────────────── */
+.vis-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  cursor: default;
+}
+
+.vis-public { opacity: 0.5; }
+.vis-followers { opacity: 0.7; }
+.vis-private { opacity: 0.8; }
+
+/* ── CARD EDIT MENU ────────────────────────────────── */
+.card-menu-wrap {
+  position: relative;
+  margin-left: auto;
+}
+
+.card-menu-btn {
+  background: none;
+  border: none;
+  color: var(--text-4);
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  transition: color var(--t), background var(--t);
+}
+
+.card-menu-btn:hover {
+  color: var(--text);
+  background: var(--bg-3);
+}
+
+.card-menu-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 100;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px;
+  min-width: 140px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+.card-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--text-2);
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: left;
+  transition: color var(--t), background var(--t);
+}
+
+.card-menu-item:hover {
+  color: var(--text);
+  background: var(--bg-3);
+}
+
+.card-menu-item.active {
+  color: var(--text);
+  background: var(--bg-3);
+  font-weight: 500;
+}
+
 /* ── SHORT URL SECTION ─────────────────────────────── */
 .short-url-section {
   margin-top: 14px;

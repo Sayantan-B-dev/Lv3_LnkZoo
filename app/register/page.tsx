@@ -41,6 +41,7 @@ export default function Register() {
   return (
     <div className="auth-page">
       <div className="auth-card">
+        <Link href="/" className="auth-home-link">&larr; Home</Link>
         <div className="auth-header">
           <div className="logo-mark">lz</div>
           <h1>Create an account</h1>

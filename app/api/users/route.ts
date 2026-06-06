@@ -32,7 +32,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
          COUNT(*)::int AS link_count,
          COALESCE(SUM(like_count), 0)::int AS like_count
        FROM links
-       WHERE is_private = false
+       WHERE visibility = 'public'
        GROUP BY user_id
      ) lc ON lc.user_id = u.id
      ${whereClause}

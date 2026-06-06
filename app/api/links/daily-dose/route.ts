@@ -4,12 +4,10 @@ import { apiHandler } from '@/lib/api-utils';
 
 export const dynamic = 'force-dynamic';
 
-// GET /api/links/daily-dose
 export const GET = apiHandler(async (_req: NextRequest) => {
-  // Top 5 links posted in the last 24h by likes
   const rows = await sql`
     SELECT l.id, l.title, l.description, l.original_url, l.short_code,
-           l.preview_image, l.is_anonymous, l.like_count,
+           l.preview_image, l.is_anonymous, l.like_count, l.visibility,
            l.comment_count, l.view_count, l.created_at,
            u.username, u.avatar_url,
            ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) AS tags
@@ -17,7 +15,7 @@ export const GET = apiHandler(async (_req: NextRequest) => {
     JOIN users u ON l.user_id = u.id
     LEFT JOIN link_tags lt ON lt.link_id = l.id
     LEFT JOIN tags t ON t.id = lt.tag_id
-    WHERE l.is_private = false
+    WHERE l.visibility = 'public'
       AND l.created_at >= NOW() - INTERVAL '24 hours'
     GROUP BY l.id, u.username, u.avatar_url
     ORDER BY l.like_count DESC

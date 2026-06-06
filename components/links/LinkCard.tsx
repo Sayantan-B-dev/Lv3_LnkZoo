@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/context/ToastContext';
 
 interface LinkCardProps {
   link: any;
@@ -18,6 +19,8 @@ interface LinkCardProps {
   onLike?: (linkId: string) => Promise<void>;
   onClick?: () => void;
   isClickable?: boolean;
+  isOwner?: boolean;
+  onVisibilityChange?: (linkId: string, visibility: string) => void;
 }
 
 export default function LinkCard({
@@ -34,10 +37,62 @@ export default function LinkCard({
   onLike,
   onClick,
   isClickable = true,
+  isOwner = false,
+  onVisibilityChange,
 }: LinkCardProps) {
   const router = useRouter();
+  const { addToast } = useToast();
   const [likeCount, setLikeCount] = React.useState(link.like_count ?? 0);
   const [likedByUser, setLikedByUser] = React.useState(!!link.liked_by_user);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [currentVisibility, setCurrentVisibility] = useState(link.visibility || 'public');
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setCurrentVisibility(link.visibility || 'public');
+  }, [link.visibility]);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const changeVisibility = async (v: string) => {
+    try {
+      const res = await fetch(`/api/links/${link.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ visibility: v }),
+      });
+      if (res.ok) {
+        setCurrentVisibility(v);
+        addToast(`Visibility changed to ${v}`, 'success');
+        onVisibilityChange?.(link.id, v);
+      } else {
+        addToast('Failed to change visibility', 'error');
+      }
+    } catch {
+      addToast('Failed to change visibility', 'error');
+    }
+    setMenuOpen(false);
+  };
+
+  const visibilityLabel = (v: string) => {
+    if (v === 'public') return 'Public';
+    if (v === 'followers') return 'Followers';
+    return 'Private';
+  };
+
+  const visibilityIcon = (v: string) => {
+    if (v === 'public') return '\uD83C\uDF10';
+    if (v === 'followers') return '\uD83D\uDC65';
+    return '\uD83D\uDD12';
+  };
 
   React.useEffect(() => {
     setLikeCount(link.like_count ?? 0);
@@ -129,6 +184,9 @@ export default function LinkCard({
         <div className="card-body">
           <div className="card-meta">
             <span className="card-domain">{domain}</span>
+            <span className={`vis-badge vis-${currentVisibility}`} title={visibilityLabel(currentVisibility)}>
+              {visibilityIcon(currentVisibility)}
+            </span>
             {showPoster && (
               <span className="card-poster" onClick={(e) => e.stopPropagation()}>
                 {link.is_anonymous ? (
@@ -139,6 +197,28 @@ export default function LinkCard({
               </span>
             )}
             <span className="card-time">{date}</span>
+            {isOwner && (
+              <div className="card-menu-wrap" ref={menuRef} onClick={(e) => e.stopPropagation()}>
+                <button className="card-menu-btn" onClick={() => setMenuOpen(!menuOpen)}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
+                  </svg>
+                </button>
+                {menuOpen && (
+                  <div className="card-menu-dropdown">
+                    {['public', 'followers', 'private'].map(v => (
+                      <button
+                        key={v}
+                        className={`card-menu-item ${currentVisibility === v ? 'active' : ''}`}
+                        onClick={() => changeVisibility(v)}
+                      >
+                        {visibilityIcon(v)} {visibilityLabel(v)}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="card-title" style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text)', marginBottom: '5px' }}>
@@ -175,6 +255,9 @@ export default function LinkCard({
         <div className="card-body">
           <div className="card-meta">
             <span className="card-domain">{domain}</span>
+            <span className={`vis-badge vis-${currentVisibility}`} title={visibilityLabel(currentVisibility)}>
+              {visibilityIcon(currentVisibility)}
+            </span>
             {showPoster && (
               <span className="card-poster" onClick={(e) => e.stopPropagation()}>
                 {link.is_anonymous ? (
@@ -185,6 +268,28 @@ export default function LinkCard({
               </span>
             )}
             <span className="card-time">{date}</span>
+            {isOwner && (
+              <div className="card-menu-wrap" ref={menuRef} onClick={(e) => e.stopPropagation()}>
+                <button className="card-menu-btn" onClick={() => setMenuOpen(!menuOpen)}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
+                  </svg>
+                </button>
+                {menuOpen && (
+                  <div className="card-menu-dropdown">
+                    {['public', 'followers', 'private'].map(v => (
+                      <button
+                        key={v}
+                        className={`card-menu-item ${currentVisibility === v ? 'active' : ''}`}
+                        onClick={() => changeVisibility(v)}
+                      >
+                        {visibilityIcon(v)} {visibilityLabel(v)}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
           <Link href={`/link/${link.id}`} className="card-title" style={{ fontSize: '15px', fontWeight: '500', color: 'var(--text)', marginBottom: '5px', display: 'block' }} onClick={(e) => e.preventDefault()}>
               {link.title}
@@ -214,24 +319,49 @@ export default function LinkCard({
   // Profile variant - simplified card
   if (variant === 'profile') {
     return (
-      <Link href={`/link/${link.id}`} className="link-card" onClick={(e) => e.preventDefault()}>
+      <div className="link-card" onClick={() => router.push(`/link/${link.id}`)} style={{ cursor: 'pointer' }}>
         <div className="card-body">
                     <div className="card-meta">
             <span className="card-domain">{domain}</span>
+            <span className={`vis-badge vis-${currentVisibility}`} title={visibilityLabel(currentVisibility)}>
+              {visibilityIcon(currentVisibility)}
+            </span>
             {showPoster && (
               <span className="card-poster" onClick={(e) => e.stopPropagation()}>
                 {link.is_anonymous ? (
                   <span className="anon-badge">anon</span>
                 ) : (
-                  <Link href={`/profile/${link.username}`}>@{link.username}</Link>
+                  <span onClick={(e) => { e.stopPropagation(); router.push(`/profile/${link.username}`); }} style={{ cursor: 'pointer' }}>@{link.username}</span>
                 )}
               </span>
             )}
             <span className="card-time">{date}</span>
+            {isOwner && (
+              <div className="card-menu-wrap" ref={menuRef} onClick={(e) => e.stopPropagation()}>
+                <button className="card-menu-btn" onClick={() => setMenuOpen(!menuOpen)}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
+                  </svg>
+                </button>
+                {menuOpen && (
+                  <div className="card-menu-dropdown">
+                    {['public', 'followers', 'private'].map(v => (
+                      <button
+                        key={v}
+                        className={`card-menu-item ${currentVisibility === v ? 'active' : ''}`}
+                        onClick={() => changeVisibility(v)}
+                      >
+                        {visibilityIcon(v)} {visibilityLabel(v)}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-          <Link href={`/link/${link.id}`} className="card-title" style={{ fontSize: '15px', fontWeight: '500', color: 'var(--text)', marginBottom: '5px', display: 'block' }}>
+          <div className="card-title" style={{ fontSize: '15px', fontWeight: '500', color: 'var(--text)', marginBottom: '5px', display: 'block' }}>
               {link.title}
-            </Link>
+            </div>
           {showDescription && <div className="card-desc">{link.description}</div>}
           {showTags && link.tags && link.tags.length > 0 && (
             <div className="card-tags" onClick={(e) => e.stopPropagation()}>
@@ -249,7 +379,7 @@ export default function LinkCard({
             <img src={link.preview_image} alt={link.title} />
           </div>
         )}
-      </Link>
+      </div>
     );
   }
 
@@ -262,6 +392,9 @@ export default function LinkCard({
           <div className="card-body">
           <div className="card-meta">
             <span className="card-domain">{domain}</span>
+            <span className={`vis-badge vis-${currentVisibility}`} title={visibilityLabel(currentVisibility)}>
+              {visibilityIcon(currentVisibility)}
+            </span>
             {showPoster && (
               <span className="card-poster" onClick={(e) => e.stopPropagation()}>
                 {link.is_anonymous ? (
@@ -272,6 +405,28 @@ export default function LinkCard({
               </span>
             )}
             <span className="card-time">{date}</span>
+            {isOwner && (
+              <div className="card-menu-wrap" ref={menuRef} onClick={(e) => e.stopPropagation()}>
+                <button className="card-menu-btn" onClick={() => setMenuOpen(!menuOpen)}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
+                  </svg>
+                </button>
+                {menuOpen && (
+                  <div className="card-menu-dropdown">
+                    {['public', 'followers', 'private'].map(v => (
+                      <button
+                        key={v}
+                        className={`card-menu-item ${currentVisibility === v ? 'active' : ''}`}
+                        onClick={() => changeVisibility(v)}
+                      >
+                        {visibilityIcon(v)} {visibilityLabel(v)}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
             <Link href={`/link/${link.id}`} className="card-title" style={{ fontSize: '15px', fontWeight: '500', color: 'var(--text)', marginBottom: '5px', display: 'block' }}>
               {link.title}
