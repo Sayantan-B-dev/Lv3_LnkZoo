@@ -1,19 +1,24 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 export function Footer() {
   const isHome = usePathname() === '/';
+  const [expanded, setExpanded] = useState(false);
+
   return (
     <footer className="home-footer" data-home={isHome}>
       <div className="footer-bg" />
-      <div className="footer-inner">
+      <div className={`footer-inner${expanded ? ' expanded' : ''}`}>
         <div className="footer-col brand">
           <div className="footer-logo">gx</div>
           <p className="footer-desc">A community for sharing and discovering the best links on the web.</p>
         </div>
+        <button className="footer-expand-btn mobile-only" onClick={() => setExpanded(!expanded)}>
+          {expanded ? 'Show Less ▴' : 'More ▾'}
+        </button>
         <div className="footer-col links-col">
           <h5 className="footer-heading">Resources</h5>
           <Link href="/explore" className="footer-link">Explore</Link>
