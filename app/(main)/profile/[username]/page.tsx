@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, use } from 'react';
 import Link from 'next/link';
 import Topbar from '@/components/common/Topbar';
 import NotificationPanel from '@/components/common/NotificationPanel';
@@ -25,8 +25,8 @@ const getCroppedImg = async (imageSrc: string, pixelCrop: any): Promise<string> 
   return canvas.toDataURL('image/jpeg', 0.9);
 };
 
-export default function ProfilePage({ params }: { params: { username: string } }) {
-  const { username } = params;
+export default function ProfilePage({ params }: { params: Promise<{ username: string }> }) {
+  const { username } = use(params);
   const router = useRouter();
   const { user: currentUser, logout } = useAuth();
   const { addToast } = useToast();
@@ -36,7 +36,7 @@ export default function ProfilePage({ params }: { params: { username: string } }
   const [loading, setLoading] = useState(true);
   const [showGlobe, setShowGlobe] = useState(true);
   const [fadeIn, setFadeIn] = useState(false);
-  const minTimer = useRef<ReturnType<typeof setTimeout>>();
+  const minTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const dataReady = useRef(false);
 
   const [isEditing, setIsEditing] = useState(false);

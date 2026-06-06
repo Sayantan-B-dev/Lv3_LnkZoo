@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
 
 // GET /s/[code] — short link redirect
-export async function GET(req: NextRequest, { params }: { params: { code: string } }) {
-  const code = params.code;
+export async function GET(req: NextRequest, { params }: { params: Promise<{ code: string }> }) {
+  const { code } = await params;
 
   // Check standalone shortened_links first
   const [short] = await sql`

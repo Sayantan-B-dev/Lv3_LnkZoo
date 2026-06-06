@@ -43,7 +43,8 @@ export async function getSessionFromRequest(req: NextRequest): Promise<JWTPayloa
 
 /** Get auth from server component cookies (App Router) */
 export async function getSessionFromCookies(): Promise<JWTPayload | null> {
-  const token = cookies().get(COOKIE_NAME)?.value;
+  const cookieStore = await cookies();
+  const token = cookieStore.get(COOKIE_NAME)?.value;
   if (!token) return null;
   return await verifyToken(token);
 }

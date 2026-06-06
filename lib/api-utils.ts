@@ -4,10 +4,11 @@ import { logger } from './logger';
 export function apiHandler(
   handler: (req: NextRequest, params?: any) => Promise<Response>
 ) {
-  return async (req: NextRequest, params?: any) => {
+  return async (req: NextRequest, context: { params: Promise<any> }) => {
+    const resolvedParams = context.params ? await context.params : undefined;
     const requestId = crypto.randomUUID();
     try {
-      const response = await handler(req, params);
+      const response = await handler(req, { params: resolvedParams });
       if (response && typeof response === 'object' && 'headers' in response) {
         try {
           response.headers.set('X-Request-Id', requestId);

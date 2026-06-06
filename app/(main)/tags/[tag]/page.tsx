@@ -1,14 +1,14 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import Topbar from '@/components/common/Topbar';
 import NotificationPanel from '@/components/common/NotificationPanel';
 import Link from 'next/link';
 import LinkCard from '@/components/links/LinkCard';
 import { useRouter } from 'next/navigation';
 
-export default function TagPage({ params }: { params: { tag: string } }) {
-  const { tag } = params;
+export default function TagPage({ params }: { params: Promise<{ tag: string }> }) {
+  const { tag } = use(params);
   const router = useRouter();
   const [links, setLinks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

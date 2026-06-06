@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, use } from 'react';
 import Link from 'next/link';
 import Topbar from '@/components/common/Topbar';
 import NotificationPanel from '@/components/common/NotificationPanel';
@@ -11,8 +11,8 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 
-export default function LinkDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function LinkDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const router = useRouter();
   const { addToast } = useToast();
   const { user } = useAuth();
@@ -22,7 +22,7 @@ export default function LinkDetailPage({ params }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true);
   const [showGlobe, setShowGlobe] = useState(true);
   const [fadeIn, setFadeIn] = useState(false);
-  const minTimer = useRef<ReturnType<typeof setTimeout>>();
+  const minTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const dataReady = useRef(false);
 
   const [confirm, setConfirm] = useState<{ message: string; onConfirm: () => void } | null>(null);
