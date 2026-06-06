@@ -100,54 +100,53 @@
   #topbar .post-btn { display: flex; padding: 5px 10px; font-size: 10px; gap: 4px; }
   #topbar .post-btn svg { width: 10px; height: 10px; }
   .topbar-right { gap: 4px; }
+
+  .burger-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: background var(--t);
+    border: none;
+    background: none;
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  .burger-btn:hover { background: var(--bg-2); }
+
+  .burger-line {
+    width: 18px;
+    height: 2px;
+    background: var(--text-3);
+    border-radius: 1px;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+                opacity 0.2s ease;
+    transform-origin: center;
+  }
+
+  .burger-btn.open .burger-line:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .burger-btn.open .burger-line:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+
+  .burger-btn.open .burger-line:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
 }
 
 @media (max-width: 480px) {
   #content { padding: 10px; }
   #topbar { padding: 0 8px; gap: 6px; }
-}
-
-/* ── ANIMATED BURGER ICON ─────────────────────────── */
-.burger-btn {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  cursor: pointer;
-  border-radius: var(--radius);
-  transition: background var(--t);
-  border: none;
-  background: none;
-  padding: 0;
-  flex-shrink: 0;
-}
-
-.burger-btn:hover { background: var(--bg-2); }
-
-.burger-line {
-  width: 18px;
-  height: 2px;
-  background: var(--text-3);
-  border-radius: 1px;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
-              opacity 0.2s ease;
-  transform-origin: center;
-}
-
-.burger-btn.open .burger-line:nth-child(1) {
-  transform: translateY(7px) rotate(45deg);
-}
-
-.burger-btn.open .burger-line:nth-child(2) {
-  opacity: 0;
-  transform: scaleX(0);
-}
-
-.burger-btn.open .burger-line:nth-child(3) {
-  transform: translateY(-7px) rotate(-45deg);
 }
 
 /* ── MOBILE CLOSE BAR ──────────────────────────── */
