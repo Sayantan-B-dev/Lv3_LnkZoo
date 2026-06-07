@@ -4,11 +4,23 @@ import { getSessionFromRequest } from '@/lib/auth';
 import { generateShortCode } from '@/lib/shortCode';
 import { apiHandler } from '@/lib/api-utils';
 
+const SHORT_CODE_PATTERN = /\/s\/[a-zA-Z0-9]+/;
+
 // POST /api/tools/shorten
 export const POST = apiHandler(async (req: NextRequest) => {
   try {
     const { url } = await req.json();
     if (!url) return NextResponse.json({ error: 'url required' }, { status: 400 });
+
+    // Prevent nested short links (e.g. /s/ABC pointing to /s/DEF)
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
+    const appHost = new URL(appUrl).hostname;
+    try {
+      const inputHost = new URL(url).hostname;
+      if (inputHost === appHost && SHORT_CODE_PATTERN.test(new URL(url).pathname)) {
+        return NextResponse.json({ error: 'Cannot shorten a short link' }, { status: 400 });
+      }
+    } catch {} // invalid URL, will fail later
 
     const session = await getSessionFromRequest(req);
 
@@ -20,7 +32,6 @@ export const POST = apiHandler(async (req: NextRequest) => {
       ORDER BY created_at DESC LIMIT 1
     `;
     if (existing) {
-      const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
       return NextResponse.json({
         shortCode: existing.short_code,
         shortUrl: `${appUrl}/s/${existing.short_code}`,
@@ -36,7 +47,6 @@ export const POST = apiHandler(async (req: NextRequest) => {
       RETURNING short_code
     `;
     if (expired) {
-      const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
       return NextResponse.json({
         shortCode: expired.short_code,
         shortUrl: `${appUrl}/s/${expired.short_code}`,
@@ -54,7 +64,6 @@ export const POST = apiHandler(async (req: NextRequest) => {
       RETURNING short_code
     `;
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
     return NextResponse.json({
       shortCode: row.short_code,
       shortUrl: `${appUrl}/s/${row.short_code}`,

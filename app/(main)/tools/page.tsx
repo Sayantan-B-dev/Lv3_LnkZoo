@@ -25,7 +25,8 @@ export default function Tools() {
         setShortResult(data);
         addToast('Short URL created!', 'success');
       } else {
-        addToast('Failed to shorten URL', 'error');
+        const data = await res.json().catch(() => ({}));
+        addToast(data.error || 'Failed to shorten URL', 'error');
       }
     } catch (err) {
       addToast('Failed to shorten URL', 'error');
