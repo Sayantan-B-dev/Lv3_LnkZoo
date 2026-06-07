@@ -29,6 +29,7 @@ export default function BulkUpload() {
   const textRef = useRef<HTMLTextAreaElement>(null);
 
   const isAdmin = user?.role === 'admin';
+  const concurrency = isAdmin ? 10 : 5;
   const maxUrls = isAdmin ? Infinity : 10;
   const urls = raw
     .split('\n')
@@ -52,7 +53,7 @@ export default function BulkUpload() {
       '--------',
       ...results.map((r, i) => {
         const status = r.success ? 'OK' : 'FAIL';
-        const code = r.success && r.shortCode ? `https://lnkzoo.vercel.app/s/${r.shortCode}` : '-';
+        const code = r.success && r.shortCode ? `${window.location.origin}/s/${r.shortCode}` : '-';
         const title = r.title || '-';
         return `${i + 1}. [${status}] ${title}  ${code}  ${r.url}`;
       }),
@@ -143,7 +144,7 @@ export default function BulkUpload() {
               <p className="bulk-sub">
                 Paste URLs, one per line.{' '}
                 {isAdmin
-                  ? 'Unlimited uploads — 5 concurrent threads.'
+                  ? `Unlimited uploads — ${concurrency} concurrent threads.`
                   : `Max 10 URLs at once.`}
               </p>
             </div>
@@ -202,7 +203,7 @@ export default function BulkUpload() {
               </div>
               <div className="bulk-progress-text">
                 <div className="bulk-progress-spinner" />
-                Processing {progress}/{urls.length} URLs with 5 concurrent threads...
+                Processing {progress}/{urls.length} URLs with {concurrency} concurrent threads...
               </div>
             </div>
           )}

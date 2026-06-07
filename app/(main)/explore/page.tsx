@@ -109,7 +109,7 @@ export default function Explore() {
           </section>
         ) : (
           <>
-            <section className="explore-section">
+            {/* <section className="explore-section">
               <h2 className="section-title">Popular Tags</h2>
               <div className="tag-cloud">
                 {loading ? (
@@ -125,7 +125,7 @@ export default function Explore() {
                   ))
                 )}
               </div>
-            </section>
+            </section> */}
 
             <section className="explore-section">
               <div className="section-header-row">

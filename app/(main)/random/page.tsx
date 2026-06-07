@@ -87,7 +87,7 @@ export default function RandomPage() {
             </div>
           ) : link ? (
             <div className="link-card detail fade-in" style={{ padding: '32px', border: '2px solid var(--border)', background: 'var(--bg-1)' }}>
-              <div className="card-body">
+              <div className="card-body" style={{ overflowWrap: 'break-word', wordBreak: 'break-word' }}>
                 <div className="card-meta" style={{ marginBottom: '16px' }}>
                   <span className="card-domain" style={{ background: 'var(--bg-2)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: '600' }}>
                     {new URL(link.original_url).hostname}

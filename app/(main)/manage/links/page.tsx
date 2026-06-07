@@ -21,7 +21,7 @@ export default function ManageLinks() {
   const [stats, setStats] = useState<any>(null);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [limit] = useState(20);
+  const [limit, setLimit] = useState(20);
   const [sort, setSort] = useState('created_at');
   const [order, setOrder] = useState('desc');
   const [q, setQ] = useState('');
@@ -57,6 +57,11 @@ export default function ManageLinks() {
       setLoading(false);
     }
   }, [page, limit, sort, order, q, addToast]);
+
+  const handleLimitChange = (newLimit: number) => {
+    setLimit(newLimit);
+    setPage(1);
+  };
 
   useEffect(() => {
     fetchLinks();
@@ -194,7 +199,18 @@ export default function ManageLinks() {
                 order={order}
                 onSort={handleSort}
               />
-              <Pagination page={page} limit={limit} total={total} onPageChange={setPage} />
+              <div className="ml-pagination-wrap">
+                <Pagination page={page} limit={limit} total={total} onPageChange={setPage} />
+                <select
+                  className="ml-limit-select"
+                  value={limit}
+                  onChange={e => handleLimitChange(Number(e.target.value))}
+                >
+                  <option value={20}>20 / page</option>
+                  <option value={50}>50 / page</option>
+                  <option value={100}>100 / page</option>
+                </select>
+              </div>
             </>
           )}
         </div>

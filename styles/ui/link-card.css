@@ -202,6 +202,24 @@
   height: 12px
 }
 
+.card-open-original {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  background: var(--text);
+  color: var(--bg);
+  transition: background var(--t), color var(--t);
+}
+
+.card-open-original:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
 .card-preview {
   width: 72px;
   height: 52px;

@@ -13,14 +13,49 @@ export const GET = apiHandler(async (req: NextRequest) => {
   const limit  = Math.min(50, parseInt(sp.get('limit') ?? '20'));
   const offset = (page - 1) * limit;
   const tag    = sp.get('tag');
+  const domain = sp.get('domain');
   const sort   = sp.get('sort') ?? 'hot';
   const query  = sp.get('q')?.toLowerCase();
 
   const uid = session?.user_id ?? null;
 
   let rows: any[];
+  let total = 0;
 
-  if (query) {
+  if (domain) {
+    const [{ count }] = await sql`
+      SELECT COUNT(*)::int AS count
+      FROM links l
+      JOIN users u ON l.user_id = u.id
+      WHERE (l.original_url LIKE ${'%//' + domain + '.%'} OR l.original_url LIKE ${'%//%.' + domain + '.%'})
+        AND (l.visibility = 'public'
+          OR (l.visibility = 'followers' AND EXISTS (SELECT 1 FROM follows WHERE follower_id = ${uid} AND followee_id = l.user_id))
+          OR (l.visibility = 'private' AND l.user_id = ${uid}))
+    `;
+    total = count;
+
+    rows = await sql`
+      SELECT l.id, l.title, l.description, l.original_url, l.short_code,
+             l.preview_image, l.is_anonymous, l.like_count, l.visibility,
+             EXISTS (
+               SELECT 1 FROM link_likes ll WHERE ll.link_id = l.id AND ll.user_id = ${uid}
+             ) AS liked_by_user,
+             l.comment_count, l.view_count, l.created_at,
+             u.username, u.avatar_url,
+             ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) AS tags
+      FROM links l
+      JOIN users u ON l.user_id = u.id
+      LEFT JOIN link_tags lt ON lt.link_id = l.id
+      LEFT JOIN tags t ON t.id = lt.tag_id
+      WHERE (l.original_url LIKE ${'%//' + domain + '.%'} OR l.original_url LIKE ${'%//%.' + domain + '.%'})
+        AND (l.visibility = 'public'
+          OR (l.visibility = 'followers' AND EXISTS (SELECT 1 FROM follows WHERE follower_id = ${uid} AND followee_id = l.user_id))
+          OR (l.visibility = 'private' AND l.user_id = ${uid}))
+      GROUP BY l.id, u.username, u.avatar_url
+      ORDER BY l.created_at DESC
+      LIMIT ${limit} OFFSET ${offset}
+    `;
+  } else if (query) {
     rows = await sql`
       SELECT l.id, l.title, l.description, l.original_url, l.short_code,
              l.preview_image, l.is_anonymous, l.like_count, l.visibility,
@@ -173,7 +208,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
     `;
   }
 
-  return NextResponse.json({ links: rows, page, limit });
+  return NextResponse.json({ links: rows, total, page, limit });
 });
 
 // ── POST /api/links ─────────────────────────────────────────

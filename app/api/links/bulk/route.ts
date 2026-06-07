@@ -3,8 +3,8 @@ import sql from '@/lib/db';
 import { getSessionFromRequest } from '@/lib/auth';
 import { generateShortCode } from '@/lib/shortCode';
 import { gamificationService } from '@/services/gamification.service';
-import { suggestTags } from '@/services/autoTag.service';
 import { apiHandler } from '@/lib/api-utils';
+import { decodeHtmlEntities } from '@/lib/html';
 
 const CONCURRENCY = 5;
 
@@ -17,21 +17,34 @@ interface ParseResult {
 async function parseUrl(url: string): Promise<ParseResult> {
   try {
     const res = await fetch(url, {
-      headers: { 'User-Agent': 'lnkzoo-bot/1.0 (+https://lnkzoo.vercel.app)' },
-      signal: AbortSignal.timeout(6000),
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36' },
+      signal: AbortSignal.timeout(8000),
     });
-    const html = await res.text();
+    if (!res.ok) return { title: url, description: null, image: null };
+    const text = await res.text();
+    const html = text.slice(0, 50000);
+
+    const extractAttr = (tag: string, attr: string): string => {
+      const m = tag.match(new RegExp(`${attr}=(["'])(.*?)\\1`, 'i'));
+      return m ? m[2] : '';
+    };
 
     const getMeta = (prop: string): string => {
-      const og = html.match(new RegExp(`<meta[^>]+property=["']og:${prop}["'][^>]+content=["']([^"']+)["']`, 'i'));
-      if (og) return og[1];
-      const name = html.match(new RegExp(`<meta[^>]+name=["']${prop}["'][^>]+content=["']([^"']+)["']`, 'i'));
-      return name ? name[1] : '';
+      const metaRegex = /<meta[\s>][^>]*>/gi;
+      let m: RegExpExecArray | null;
+      while ((m = metaRegex.exec(html)) !== null) {
+        const tag = m[0];
+        const p = extractAttr(tag, 'property') || extractAttr(tag, 'name');
+        if (p.toLowerCase() !== prop.toLowerCase()) continue;
+        const val = extractAttr(tag, 'content');
+        if (val) return val;
+      }
+      return '';
     };
 
     const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
-    const title = getMeta('title') || (titleMatch ? titleMatch[1].trim() : url);
-    const description = getMeta('description') || null;
+    const title = decodeHtmlEntities(getMeta('title') || (titleMatch ? titleMatch[1].trim() : url));
+    const description = getMeta('description') ? decodeHtmlEntities(getMeta('description')) : null;
     const image = getMeta('image') || null;
 
     return { title, description, image };
@@ -45,7 +58,7 @@ async function createLink(
   userId: string,
   visibility: string = 'public'
 ): Promise<
-  { success: true; id: string; shortCode: string; title: string; tags: string[] }
+  { success: true; id: string; shortCode: string; title: string }
   | { success: false; error: string }
 > {
   try {
@@ -61,32 +74,7 @@ async function createLink(
       RETURNING id, short_code
     `;
 
-    let tagNames: string[] = [];
-    try {
-      const suggested = await suggestTags(meta.title, meta.description || '');
-      tagNames = suggested
-        .map(t => t.name.toLowerCase().replace(/^#/, ''))
-        .filter(Boolean)
-        .slice(0, 5);
-
-      for (const name of tagNames) {
-        const [tag] = await sql`
-          INSERT INTO tags (name, normalized_name, usage_count)
-          VALUES (${name}, ${name}, 1)
-          ON CONFLICT (normalized_name) DO UPDATE
-            SET usage_count = tags.usage_count + 1
-          RETURNING id
-        `;
-        await sql`
-          INSERT INTO link_tags (link_id, tag_id) VALUES (${link.id}, ${tag.id})
-          ON CONFLICT DO NOTHING
-        `;
-      }
-    } catch (err) {
-      console.error('[bulk] tag suggestion failed for:', url, err);
-    }
-
-    return { success: true, id: link.id, shortCode: link.short_code, title: meta.title, tags: tagNames };
+    return { success: true, id: link.id, shortCode: link.short_code, title: meta.title };
   } catch (err) {
     console.error('[bulk] failed:', url, err);
     return { success: false, error: 'Failed to create link' };
@@ -105,6 +93,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
   const userId = session.user_id;
   const isAdmin = session.role === 'admin';
   const maxUrls = isAdmin ? urls.length : Math.min(urls.length, 10);
+  const concurrency = isAdmin ? 10 : CONCURRENCY;
   const batch = urls.slice(0, maxUrls);
 
   const encoder = new TextEncoder();
@@ -124,7 +113,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
         }
       }
 
-      await Promise.all(Array.from({ length: CONCURRENCY }, () => worker()));
+      await Promise.all(Array.from({ length: concurrency }, () => worker()));
 
       await gamificationService.updateStreak(userId);
 
