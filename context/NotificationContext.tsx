@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import { useAuth } from './AuthContext';
 
 interface Notification {
@@ -75,7 +75,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
   return (
     <NotificationContext.Provider
-      value={{
+      value={useMemo(() => ({
         notifications,
         unreadCount,
         loading,
@@ -83,7 +83,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         setIsOpen,
         fetchNotifications,
         markAllRead,
-      }}
+      }), [notifications, unreadCount, loading, isOpen, setIsOpen, fetchNotifications, markAllRead])}
     >
       {children}
     </NotificationContext.Provider>

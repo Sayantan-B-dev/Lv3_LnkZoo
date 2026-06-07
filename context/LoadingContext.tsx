@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, Suspense } from "react";
+import React, { createContext, useContext, useState, useEffect, Suspense, useMemo } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
 interface LoadingContextType {
@@ -63,7 +63,7 @@ export function LoadingProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <LoadingContext.Provider value={{ isLoading, setIsLoading }}>
+    <LoadingContext.Provider value={useMemo(() => ({ isLoading, setIsLoading }), [isLoading, setIsLoading])}>
       <Suspense fallback={null}>
         <NavigationListener />
       </Suspense>

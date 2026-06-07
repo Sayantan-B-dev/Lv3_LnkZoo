@@ -22,7 +22,7 @@ async function parseUrl(url: string): Promise<ParseResult> {
     });
     if (!res.ok) return { title: url, description: null, image: null };
     const text = await res.text();
-    const html = text.slice(0, 50000);
+    const html = text.slice(0, 700000);
 
     const extractAttr = (tag: string, attr: string): string => {
       const m = tag.match(new RegExp(`${attr}=(["'])(.*?)\\1`, 'i'));
@@ -43,11 +43,38 @@ async function parseUrl(url: string): Promise<ParseResult> {
     };
 
     const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
-    const title = decodeHtmlEntities(getMeta('title') || (titleMatch ? titleMatch[1].trim() : url));
-    const description = getMeta('description') ? decodeHtmlEntities(getMeta('description')) : null;
-    const image = getMeta('image') || null;
+    let title = getMeta('title') || (titleMatch ? titleMatch[1].trim() : '');
+    let description: string | null = getMeta('description') || '';
+    const image = getMeta('image') || '';
 
-    return { title, description, image };
+    // Fallback: JSON-LD structured data
+    if (!title) {
+      const jsonMatch = html.match(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/i);
+      if (jsonMatch) {
+        try {
+          const ld = JSON.parse(jsonMatch[1]);
+          title = ld.name || ld.headline || ld.title || '';
+          description = description || ld.description || '';
+        } catch {}
+      }
+    }
+
+    // Fallback: YouTube ytInitialPlayerResponse
+    if (!title) {
+      const ytMatch = html.match(/ytInitialPlayerResponse\s*=\s*({.*?});/);
+      if (ytMatch) {
+        try {
+          const yt = JSON.parse(ytMatch[1]);
+          title = yt.videoDetails?.title || '';
+          description = description || yt.videoDetails?.shortDescription || '';
+        } catch {}
+      }
+    }
+
+    title = title ? decodeHtmlEntities(title) : url;
+    description = description ? decodeHtmlEntities(description) : null;
+
+    return { title, description, image: image || null };
   } catch {
     return { title: url, description: null, image: null };
   }

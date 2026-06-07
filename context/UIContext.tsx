@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 
 const DESKTOP = {
   frequency: 150,
@@ -75,7 +75,7 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <UIContext.Provider value={{ bgSettings, setBgSettings: updateSettings, saveSettings, resetToDefaults }}>
+    <UIContext.Provider value={useMemo(() => ({ bgSettings, setBgSettings: updateSettings, saveSettings, resetToDefaults }), [bgSettings, updateSettings, saveSettings, resetToDefaults])}>
       {children}
     </UIContext.Provider>
   );

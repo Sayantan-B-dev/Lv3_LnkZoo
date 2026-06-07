@@ -37,31 +37,53 @@ export async function parseOGMetadata(url: string): Promise<ParseResult> {
       return { title: url, description: '', image: '', domain };
     }
     const text = await res.text();
-    const html = text.slice(0, 50000);
+    const html = text.slice(0, 700000);
 
-    const title = decodeHtmlEntities(
+    let title =
       extractMetaAttribute(html, 'og:title') ||
       extractMetaAttribute(html, 'twitter:title') ||
       extractMetaAttribute(html, 'title') ||
       html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim() ||
-      url
-    );
+      '';
 
-    const description = decodeHtmlEntities(
+    let description =
       extractMetaAttribute(html, 'og:description') ||
       extractMetaAttribute(html, 'twitter:description') ||
       extractMetaAttribute(html, 'description') ||
-      ''
-    );
+      '';
 
     const image =
       extractMetaAttribute(html, 'og:image') ||
       extractMetaAttribute(html, 'twitter:image') ||
       '';
 
+    // Fallback: JSON-LD structured data
+    if (!title) {
+      const jsonMatch = html.match(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/i);
+      if (jsonMatch) {
+        try {
+          const ld = JSON.parse(jsonMatch[1]);
+          title = ld.name || ld.headline || ld.title || '';
+          description = description || ld.description || '';
+        } catch {}
+      }
+    }
+
+    // Fallback: YouTube ytInitialPlayerResponse
+    if (!title) {
+      const ytMatch = html.match(/ytInitialPlayerResponse\s*=\s*({.*?});/);
+      if (ytMatch) {
+        try {
+          const yt = JSON.parse(ytMatch[1]);
+          title = yt.videoDetails?.title || '';
+          description = description || yt.videoDetails?.shortDescription || '';
+        } catch {}
+      }
+    }
+
     const domain = new URL(url).hostname;
 
-    return { title, description, image, domain };
+    return { title: decodeHtmlEntities(title || url), description: description ? decodeHtmlEntities(description) : '', image, domain };
   } catch {
     const domain = new URL(url).hostname;
     return { title: url, description: '', image: '', domain };

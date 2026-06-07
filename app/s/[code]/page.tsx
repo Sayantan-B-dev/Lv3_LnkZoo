@@ -33,7 +33,7 @@ export default async function ShortCodePage({ params }: { params: Promise<{ code
 
   if (!url) {
     return (
-      <html>
+      <html lang="en">
         <body style={{ fontFamily: 'sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', margin: 0, background: '#f5f5f5' }}>
           <p>Link not found.</p>
         </body>
@@ -50,7 +50,7 @@ export default async function ShortCodePage({ params }: { params: Promise<{ code
   const origin = process.env.NEXT_PUBLIC_BASE_URL || 'https://lnkzoo.vercel.app';
 
   return (
-    <html>
+    <html lang="en">
       <head>
         <title>{title}</title>
         <meta property="og:title" content={title} />

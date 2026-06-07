@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Topbar from '@/components/common/Topbar';
 import NotificationPanel from '@/components/common/NotificationPanel';
@@ -8,7 +9,7 @@ import LinkCard from '@/components/links/LinkCard';
 
 const LIMIT_OPTIONS = [20, 50, 100];
 
-export default function CategoriesPage() {
+function CategoriesPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const activeCategory = searchParams.get('category');
@@ -212,5 +213,13 @@ export default function CategoriesPage() {
         )}
       </div>
     </>
+  );
+}
+
+export default function CategoriesPage() {
+  return (
+    <Suspense fallback={null}>
+      <CategoriesPageContent />
+    </Suspense>
   );
 }

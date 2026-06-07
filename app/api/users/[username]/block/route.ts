@@ -17,8 +17,10 @@ export const POST = apiHandler(async (req: NextRequest, { params }: { params: { 
     ON CONFLICT DO NOTHING
   `;
 
-  await sql`DELETE FROM follows WHERE follower_id = ${session.user_id} AND followee_id = ${target.id}`;
-  await sql`DELETE FROM follows WHERE follower_id = ${target.id} AND followee_id = ${session.user_id}`;
+  await Promise.all([
+    sql`DELETE FROM follows WHERE follower_id = ${session.user_id} AND followee_id = ${target.id}`,
+    sql`DELETE FROM follows WHERE follower_id = ${target.id} AND followee_id = ${session.user_id}`,
+  ]);
 
   return NextResponse.json({ blocked: true });
 });

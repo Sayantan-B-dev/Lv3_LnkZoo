@@ -16,7 +16,7 @@ export function FAQSection({ faqOpen, setFaqOpen }: { faqOpen: number | null; se
           </div>
           <div className="faq-accordion">
             {FAQ_DATA.map(function(item, i) {
-              return <div key={i} className={'faq-item' + (faqOpen === i ? ' open' : '')}>
+              return <div key={item.q} className={'faq-item' + (faqOpen === i ? ' open' : '')}>
                 <button className="faq-question" onClick={function() { setFaqOpen(faqOpen === i ? null : i); }}>
                   <span>{item.q}</span>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className={'faq-chevron' + (faqOpen === i ? ' open' : '')}>

@@ -38,7 +38,7 @@ export function FeaturesSection() {
           </div>
           <div className="features-row triple">
             {FEATURES_DATA.slice(4, 7).map(function(f, i) {
-              return <div key={i} className="feature-card">
+              return <div key={f.title} className="feature-card">
                 <span className="feature-icon">{React.createElement(f.icon)}</span>
                 <h4>{f.title}</h4>
                 <p>{f.desc}</p>

@@ -10,10 +10,10 @@ export function MarqueeSection() {
       <div className="marquee-track">
         <div className="marquee-content">
           {TRENDING_TAGS.map(function(tag, i) {
-            return <Link href={'/tags/' + tag.replace('#', '')} key={i} className="marquee-item">{tag}</Link>;
+            return <Link href={'/tags/' + tag.replace('#', '')} key={tag} className="marquee-item">{tag}</Link>;
           })}
           {TRENDING_TAGS.map(function(tag, i) {
-            return <Link href={'/tags/' + tag.replace('#', '')} key={'dup-' + i} className="marquee-item">{tag}</Link>;
+            return <Link href={'/tags/' + tag.replace('#', '')} key={'dup-' + tag} className="marquee-item">{tag}</Link>;
           })}
         </div>
       </div>

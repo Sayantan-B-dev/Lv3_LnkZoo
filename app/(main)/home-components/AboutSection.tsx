@@ -21,7 +21,7 @@ export function AboutSection({ stats }: { stats: any }) {
               { val: '50+', label: 'Communities' },
               { val: (stats ? stats.totalLikes : 0).toLocaleString(), label: 'Upvotes Given' },
             ].map(function(s, i) {
-              return <div key={i} className="about-stat-card">
+              return <div key={s.label} className="about-stat-card">
                 <span className="about-stat-val">{s.val}</span>
                 <span className="about-stat-lbl">{s.label}</span>
               </div>;
