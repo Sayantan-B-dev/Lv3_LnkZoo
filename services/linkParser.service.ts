@@ -1,4 +1,5 @@
 import { decodeHtmlEntities } from '@/lib/html';
+import { fetchOEmbed, fallbackTitle } from '@/lib/platform';
 
 export interface ParseResult {
   title: string;
@@ -83,7 +84,24 @@ export async function parseOGMetadata(url: string): Promise<ParseResult> {
 
     const domain = new URL(url).hostname;
 
-    return { title: decodeHtmlEntities(title || url), description: description ? decodeHtmlEntities(description) : '', image, domain };
+    let finalTitle = title || '';
+    let finalDesc = description || '';
+
+    // Platform-specific oEmbed fallback for JS-rendered sites
+    if (!finalTitle) {
+      const oembed = await fetchOEmbed(url);
+      if (oembed) {
+        finalTitle = oembed.title;
+        finalDesc = finalDesc || oembed.description;
+      }
+    }
+
+    // Fallback to a readable platform name
+    if (!finalTitle) {
+      finalTitle = fallbackTitle(url) || url;
+    }
+
+    return { title: decodeHtmlEntities(finalTitle), description: finalDesc ? decodeHtmlEntities(finalDesc) : '', image, domain };
   } catch {
     const domain = new URL(url).hostname;
     return { title: url, description: '', image: '', domain };

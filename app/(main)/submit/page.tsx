@@ -123,6 +123,9 @@ export default function Submit() {
       if (res.ok) {
         addToast('Link posted to community!', 'success');
         router.push('/');
+      } else if (res.status === 409) {
+        const data = await res.json();
+        addToast(`Duplicate — already exists as /s/${data.shortCode}`, 'error');
       } else {
         addToast('Failed to post link. Check your input.', 'error');
       }

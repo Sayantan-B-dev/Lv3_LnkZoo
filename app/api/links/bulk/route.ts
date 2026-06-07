@@ -5,6 +5,8 @@ import { generateShortCode } from '@/lib/shortCode';
 import { gamificationService } from '@/services/gamification.service';
 import { apiHandler } from '@/lib/api-utils';
 import { decodeHtmlEntities } from '@/lib/html';
+import { fetchOEmbed, fallbackTitle } from '@/lib/platform';
+import { resolveUrl, checkDuplicate } from '@/lib/resolveUrl';
 
 const CONCURRENCY = 5;
 
@@ -71,8 +73,22 @@ async function parseUrl(url: string): Promise<ParseResult> {
       }
     }
 
-    title = title ? decodeHtmlEntities(title) : url;
+    title = title ? decodeHtmlEntities(title) : '';
     description = description ? decodeHtmlEntities(description) : null;
+
+    // Platform-specific oEmbed fallback for JS-rendered sites
+    if (!title || title === url) {
+      const oembed = await fetchOEmbed(url);
+      if (oembed) {
+        title = oembed.title;
+        description = description || oembed.description;
+      }
+    }
+
+    // Fallback to a readable platform name
+    if (!title || title === url) {
+      title = fallbackTitle(url) || url;
+    }
 
     return { title, description, image: image || null };
   } catch {
@@ -89,7 +105,14 @@ async function createLink(
   | { success: false; error: string }
 > {
   try {
-    const meta = await parseUrl(url);
+    const resolvedUrl = await resolveUrl(url);
+
+    const dup = await checkDuplicate(resolvedUrl);
+    if (dup.isDuplicate) {
+      return { success: false, error: `Duplicate — /s/${dup.shortCode}` };
+    }
+
+    const meta = await parseUrl(resolvedUrl);
     let shortCode = generateShortCode(6);
 
     const existing = await sql`SELECT 1 FROM links WHERE short_code = ${shortCode}`;
@@ -97,7 +120,7 @@ async function createLink(
 
     const [link] = await sql`
       INSERT INTO links (user_id, original_url, short_code, title, description, preview_image, visibility)
-      VALUES (${userId}, ${url}, ${shortCode}, ${meta.title}, ${meta.description}, ${meta.image}, ${visibility})
+      VALUES (${userId}, ${resolvedUrl}, ${shortCode}, ${meta.title}, ${meta.description}, ${meta.image}, ${visibility})
       RETURNING id, short_code
     `;
 

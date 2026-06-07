@@ -4,6 +4,7 @@ import { getSessionFromRequest } from '@/lib/auth';
 import { apiHandler } from '@/lib/api-utils';
 import { generateShortCode } from '@/lib/shortCode';
 import { gamificationService } from '@/services/gamification.service';
+import { resolveUrl, checkDuplicate } from '@/lib/resolveUrl';
 
 export const GET = apiHandler(async (req: NextRequest) => {
   const session = await getSessionFromRequest(req);
@@ -221,13 +222,20 @@ export const POST = apiHandler(async (req: NextRequest) => {
 
     if (!url || !title) return NextResponse.json({ error: 'URL and title required' }, { status: 400 });
 
+    const resolvedUrl = await resolveUrl(url);
+
+    const dup = await checkDuplicate(resolvedUrl);
+    if (dup.isDuplicate) {
+      return NextResponse.json({ error: `duplicate`, shortCode: dup.shortCode, title: dup.title }, { status: 409 });
+    }
+
     let shortCode = generateShortCode(6);
     const existing = await sql`SELECT 1 FROM links WHERE short_code = ${shortCode}`;
     if (existing.length) shortCode = generateShortCode(7);
 
     const [link] = await sql`
       INSERT INTO links (user_id, original_url, short_code, title, description, preview_image, visibility, is_anonymous)
-      VALUES (${session.user_id}, ${url}, ${shortCode}, ${title}, ${description ?? null}, ${previewImage ?? null}, ${vis}, ${isAnonymous})
+      VALUES (${session.user_id}, ${resolvedUrl}, ${shortCode}, ${title}, ${description ?? null}, ${previewImage ?? null}, ${vis}, ${isAnonymous})
       RETURNING id, short_code
     `;
 
