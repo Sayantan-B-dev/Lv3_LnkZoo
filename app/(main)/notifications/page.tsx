@@ -26,6 +26,7 @@ export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unread, setUnread] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const fetchNotifs = async () => {
     try {
@@ -48,12 +49,49 @@ export default function NotificationsPage() {
     fetchNotifs();
   }, [user, authLoading]);
 
+  const toggleSelect = (id: string) => {
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selected.size === notifications.length) {
+      setSelected(new Set());
+    } else {
+      setSelected(new Set(notifications.map(n => n.id)));
+    }
+  };
+
+  const bulkMark = async (isRead: boolean) => {
+    const ids = [...selected];
+    if (!ids.length) return;
+    try {
+      const res = await fetch('/api/notifications', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids, is_read: isRead }),
+      });
+      if (res.ok) {
+        setNotifications(prev => prev.map(n => ids.includes(n.id) ? { ...n, is_read: isRead } : n));
+        setUnread(prev => isRead ? Math.max(0, prev - ids.length) : prev + ids.length);
+        setSelected(new Set());
+        addToast(isRead ? 'Marked as read' : 'Marked as unread', 'success');
+      }
+    } catch {
+      addToast('Failed to update', 'error');
+    }
+  };
+
   const markAllRead = async () => {
     try {
       const res = await fetch('/api/notifications', { method: 'PATCH' });
       if (res.ok) {
         setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
         setUnread(0);
+        setSelected(new Set());
         addToast('Marked all as read', 'success');
       }
     } catch {
@@ -88,12 +126,25 @@ export default function NotificationsPage() {
             <h2 className="notif-page-title">
               {unread > 0 ? `Notifications (${unread})` : 'Notifications'}
             </h2>
-            {unread > 0 && (
-              <button onClick={markAllRead} className="ml-bulk-btn">
-                Mark all read
-              </button>
-            )}
+            <div className="notif-page-header-actions">
+              {unread > 0 && (
+                <button onClick={markAllRead} className="notif-bulk-btn">
+                  Mark all read
+                </button>
+              )}
+            </div>
           </div>
+
+          {selected.size > 0 && (
+            <div className="notif-bulk-bar">
+              <span className="notif-bulk-count">{selected.size} selected</span>
+              <div className="notif-bulk-actions">
+                <button onClick={() => bulkMark(true)} className="notif-bulk-btn">Mark as read</button>
+                <button onClick={() => bulkMark(false)} className="notif-bulk-btn">Mark as unread</button>
+                <button onClick={() => setSelected(new Set())} className="notif-bulk-btn">Cancel</button>
+              </div>
+            </div>
+          )}
 
           {loading ? (
             <div className="notif-page-loading">Loading...</div>
@@ -106,23 +157,33 @@ export default function NotificationsPage() {
             </div>
           ) : (
             <div className="notif-page-list">
+              <div className="notif-page-list-header">
+                <label className="notif-check-label" onClick={toggleSelectAll}>
+                  <input type="checkbox" className="notif-check" checked={selected.size === notifications.length} readOnly />
+                  Select all
+                </label>
+              </div>
               {notifications.map(n => (
-                <Link
+                <div
                   key={n.id}
-                  href={notifLink(n)}
-                  className={`notif-page-item${n.is_read ? '' : ' unread'}`}
+                  className={`notif-page-item${n.is_read ? '' : ' unread'}${selected.has(n.id) ? ' selected' : ''}`}
                 >
-                  <span className="notif-page-item-icon">{typeIcon(n.type)}</span>
-                  <div className="notif-page-item-body">
-                    <span>{n.message}</span>
-                    <div className="notif-page-item-meta">
-                      {new Date(n.created_at).toLocaleString()}
+                  <label className="notif-check-label" onClick={e => { e.preventDefault(); toggleSelect(n.id); }}>
+                    <input type="checkbox" className="notif-check" checked={selected.has(n.id)} readOnly />
+                  </label>
+                  <Link href={notifLink(n)} className="notif-page-item-link">
+                    <span className="notif-page-item-icon">{typeIcon(n.type)}</span>
+                    <div className="notif-page-item-body">
+                      <span>{n.message}</span>
+                      <div className="notif-page-item-meta">
+                        {new Date(n.created_at).toLocaleString()}
+                      </div>
                     </div>
-                  </div>
-                  {!n.is_read && (
-                    <span className="notif-page-item-dot" />
-                  )}
-                </Link>
+                    {!n.is_read && (
+                      <span className="notif-page-item-dot" />
+                    )}
+                  </Link>
+                </div>
               ))}
             </div>
           )}

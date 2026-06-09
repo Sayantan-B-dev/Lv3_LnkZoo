@@ -22,11 +22,24 @@ export const GET = apiHandler(async (req: NextRequest) => {
   return NextResponse.json({ notifications: rows, unread });
 });
 
-// PATCH /api/notifications — mark all read
+// PATCH /api/notifications — mark all read or bulk mark
 export const PATCH = apiHandler(async (req: NextRequest) => {
   const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  await sql`UPDATE notifications SET is_read = true WHERE user_id = ${session.user_id}`;
+  const body = await req.json().catch(() => null);
+  const ids = body?.ids;
+  const isRead = body?.is_read;
+
+  if (Array.isArray(ids)) {
+    if (ids.length === 0) return NextResponse.json({ ok: true });
+    await sql`
+      UPDATE notifications SET is_read = ${isRead ?? true}
+      WHERE id = ANY(${ids}) AND user_id = ${session.user_id}
+    `;
+  } else {
+    await sql`UPDATE notifications SET is_read = true WHERE user_id = ${session.user_id}`;
+  }
+
   return NextResponse.json({ ok: true });
 });
