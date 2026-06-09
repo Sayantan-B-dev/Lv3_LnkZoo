@@ -91,6 +91,7 @@
     padding: 0 12px;
     gap: 8px;
     height: var(--header-h);
+    width: auto;
   }
 
   #main {
@@ -101,6 +102,11 @@
   #topbar .post-btn { display: flex; padding: 5px 10px; font-size: 10px; gap: 4px; }
   #topbar .post-btn svg { width: 10px; height: 10px; }
   .topbar-right { gap: 4px; }
+
+  .topbar-content {
+    padding: 0 12px;
+    border-left: none;
+  }
 
   .burger-btn {
     width: 36px;

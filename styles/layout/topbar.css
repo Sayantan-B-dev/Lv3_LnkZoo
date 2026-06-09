@@ -19,18 +19,20 @@
   font-size: 13px;
   font-weight: 500;
   color: var(--text-2);
-  flex: 1
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .topbar-content{
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   align-items: center;
   border-left: 1px solid var(--border2);
   background-color: var(--bg-3);
-  /* border-right: 1px solid var(--border2); */
-  /* border-bottom: 1px solid var(--border2); */
   border-radius: var(--radius);
   padding: 0 20px;
 }

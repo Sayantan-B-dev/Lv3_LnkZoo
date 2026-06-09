@@ -121,6 +121,24 @@
 
 .link-page-content {
     animation: linkFadeIn 0.6s ease forwards;
+    overflow-x: hidden;
+}
+
+.link-card.detail .card-title,
+.link-card.detail .card-desc {
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.link-card.detail .card-footer {
+    overflow: hidden;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.link-card.detail .card-footer > div:first-child {
+    flex-wrap: wrap;
+    min-width: 0;
 }
 
 @keyframes linkFadeIn {
