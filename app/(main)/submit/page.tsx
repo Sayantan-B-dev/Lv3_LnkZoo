@@ -35,13 +35,6 @@ export default function Submit() {
 
   useEffect(() => {
     if (!hasUnsavedData) return;
-    const handler = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = ''; };
-    window.addEventListener('beforeunload', handler);
-    return () => window.removeEventListener('beforeunload', handler);
-  }, [hasUnsavedData]);
-
-  useEffect(() => {
-    if (!hasUnsavedData) return;
     const handler = (e: MouseEvent) => {
       const link = (e.target as HTMLElement).closest('a');
       if (!link || !link.href) return;
