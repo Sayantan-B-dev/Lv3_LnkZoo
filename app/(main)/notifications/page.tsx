@@ -83,58 +83,44 @@ export default function NotificationsPage() {
       <NotificationPanel />
 
       <div id="content">
-        <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-            <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text)', margin: 0 }}>
+        <div className="notif-page-container">
+          <div className="notif-page-header">
+            <h2 className="notif-page-title">
               {unread > 0 ? `Notifications (${unread})` : 'Notifications'}
             </h2>
             {unread > 0 && (
-              <button onClick={markAllRead} className="ml-bulk-btn" style={{ fontSize: '12px', padding: '6px 14px' }}>
+              <button onClick={markAllRead} className="ml-bulk-btn">
                 Mark all read
               </button>
             )}
           </div>
 
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-4)' }}>Loading...</div>
+            <div className="notif-page-loading">Loading...</div>
           ) : notifications.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--text-4)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-              <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" style={{ opacity: 0.4 }}>
+            <div className="notif-page-empty">
+              <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
               </svg>
-              <p style={{ margin: 0, fontSize: '13px' }}>No notifications yet.</p>
+              <p>No notifications yet.</p>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <div className="notif-page-list">
               {notifications.map(n => (
                 <Link
                   key={n.id}
                   href={notifLink(n)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    padding: '12px 14px',
-                    background: n.is_read ? 'var(--bg-1)' : 'color-mix(in srgb, var(--accent) 5%, var(--bg-1))',
-                    border: '1px solid var(--border)',
-                    borderRadius: '8px',
-                    fontSize: '13px',
-                    color: 'var(--text-2)',
-                    textDecoration: 'none',
-                    transition: 'background var(--t)',
-                  }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-2)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = n.is_read ? 'var(--bg-1)' : 'color-mix(in srgb, var(--accent) 5%, var(--bg-1))')}
+                  className={`notif-page-item${n.is_read ? '' : ' unread'}`}
                 >
-                  <span style={{ fontSize: '16px' }}>{typeIcon(n.type)}</span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
+                  <span className="notif-page-item-icon">{typeIcon(n.type)}</span>
+                  <div className="notif-page-item-body">
                     <span>{n.message}</span>
-                    <div style={{ fontSize: '11px', color: 'var(--text-4)', marginTop: '2px' }}>
+                    <div className="notif-page-item-meta">
                       {new Date(n.created_at).toLocaleString()}
                     </div>
                   </div>
                   {!n.is_read && (
-                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--accent)', flexShrink: 0 }} />
+                    <span className="notif-page-item-dot" />
                   )}
                 </Link>
               ))}

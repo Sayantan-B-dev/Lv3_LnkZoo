@@ -1,0 +1,100 @@
+/* ── NOTIFICATIONS PAGE ──────────────────────────── */
+.notif-page-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.notif-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.notif-page-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+}
+
+.notif-page-loading {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-4);
+}
+
+.notif-page-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.notif-page-empty svg {
+  opacity: 0.4;
+}
+
+.notif-page-empty p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.notif-page-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.notif-page-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--text-2);
+  text-decoration: none;
+  transition: background var(--t);
+}
+
+.notif-page-item:hover {
+  background: var(--bg-2);
+}
+
+.notif-page-item.unread {
+  background: color-mix(in srgb, var(--accent) 5%, var(--bg-1));
+}
+
+.notif-page-item:hover.unread {
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg-2));
+}
+
+.notif-page-item-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.notif-page-item-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.notif-page-item-meta {
+  font-size: 11px;
+  color: var(--text-4);
+  margin-top: 2px;
+}
+
+.notif-page-item-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
