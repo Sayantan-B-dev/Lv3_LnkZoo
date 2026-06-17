@@ -1,0 +1,33 @@
+LnkZoo -- A link aggregation and community platform for sharing and discovering links on the web.
+
+Built with Next.js 16, React 19, TypeScript, and PostgreSQL.
+
+Tech Stack
+
+- Next.js 16, React 19, TypeScript, CSS custom properties, D3.js
+- PostgreSQL (Neon + local pg), JWT auth with jose and bcryptjs
+- Cloudinary for images, Groq Llama 3.3 70B for auto tagging
+- cheerio for OG scraping, nanoid for short codes
+
+Features
+
+- Link submission with auto fetched OG metadata through 6 fallback strategies
+- Three visibility levels: public, followers only, private, all with emoji badges
+- 6 character short codes and duplicate URL detection
+- Three feed tabs: Following, Explore, For You
+- Hacker News style hot ranking, Internet Roulette slideshow, Daily Dose
+- Full text search, tag and domain browsing, leaderboard
+- Bulk upload with 5 concurrent threads and NDJSON streaming progress
+- Infinite nested comments with soft deletes and thread line connectors
+- Follow system, likes with optimistic UI, 5 type notifications
+- Streak tracking with single atomic SQL update
+- User dashboard with stats cards, sortable table, bulk actions
+- Admin panel with D3.js charts, flagged links, user management
+- 40 plus API routes with unified error handling and request IDs
+- Rate limiting, RBAC, security headers, structured logging
+- Dark and light theme with inline script FOUC prevention
+- Particle physics Canvas background, custom cursor, loading globe
+- Mobile responsive with full screen sidebar
+- URL shortener tool, privacy and terms pages
+
+Building LnkZoo covered a lot of ground from AI integration and real time streaming uploads to infinite nested comments and admin analytics. This is version 0.1 and there is plenty more planned.
