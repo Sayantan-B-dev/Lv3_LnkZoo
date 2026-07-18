@@ -446,7 +446,7 @@
 @media (max-width: 768px) {
   .ml-stats { grid-template-columns: repeat(2, 1fr); }
   .ml-toolbar { flex-direction: column; }
-  .ml-search { width: 100%; }
+  .ml-search { width: 100%; min-width: 0; }
   .ml-bulk-bar { flex-wrap: wrap; flex-direction: column; align-items: stretch; gap: 10px; }
   .ml-bulk-count { margin-right: 0; }
   .ml-bulk-actions { flex-wrap: wrap; gap: 6px; }

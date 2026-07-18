@@ -260,9 +260,11 @@
   .tag-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
   .tag-large { padding: 14px; }
   .tag-name { font-size: 14px; }
+  .category-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
 }
 
 @media (max-width: 480px) {
   .tag-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; }
   .tag-large { padding: 12px; }
+  .category-grid { grid-template-columns: 1fr; }
 }
