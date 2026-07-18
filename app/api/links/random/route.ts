@@ -8,6 +8,7 @@ export const dynamic = 'force-dynamic';
 export const GET = apiHandler(async (req: NextRequest) => {
   const session = await getSessionFromRequest(req);
   const excludeId = req.nextUrl.searchParams.get('exclude') || null;
+  const limit = Math.min(20, parseInt(req.nextUrl.searchParams.get('limit') ?? '1'));
   const uid = session?.user_id ?? null;
 
   try {
@@ -23,7 +24,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
       WHERE l.visibility = 'public'
       AND ((${excludeId}::text) IS NULL OR l.id::text != (${excludeId}::text))
       ORDER BY RANDOM()
-      LIMIT 1
+      LIMIT ${limit}
     `;
 
     if (!rows.length) {
@@ -38,16 +39,16 @@ export const GET = apiHandler(async (req: NextRequest) => {
         JOIN users u ON l.user_id = u.id
         WHERE l.visibility = 'public'
         ORDER BY RANDOM()
-        LIMIT 1
+        LIMIT ${limit}
       `;
 
       if (!fallback.length) {
         return NextResponse.json({ error: 'No links found' }, { status: 404 });
       }
-      return NextResponse.json({ link: fallback[0] });
+      return NextResponse.json({ links: fallback });
     }
 
-    return NextResponse.json({ link: rows[0] });
+    return NextResponse.json({ links: rows });
   } catch (err) {
     console.error('[Random API Error]', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
