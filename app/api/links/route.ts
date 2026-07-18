@@ -28,7 +28,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
       SELECT COUNT(*)::int AS count
       FROM links l
       JOIN users u ON l.user_id = u.id
-      WHERE (l.original_url LIKE ${'%//' + domain + '.%'} OR l.original_url LIKE ${'%//%.' + domain + '.%'})
+      WHERE (l.original_url LIKE ${'%//' + domain + '%'} OR l.original_url LIKE ${'%//%.' + domain + '%'})
         AND (l.visibility = 'public'
           OR (l.visibility = 'followers' AND EXISTS (SELECT 1 FROM follows WHERE follower_id = ${uid} AND followee_id = l.user_id))
           OR (l.visibility = 'private' AND l.user_id = ${uid}))
@@ -46,7 +46,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
       JOIN users u ON l.user_id = u.id
       LEFT JOIN link_tags lt ON lt.link_id = l.id
       LEFT JOIN tags t ON t.id = lt.tag_id
-      WHERE (l.original_url LIKE ${'%//' + domain + '.%'} OR l.original_url LIKE ${'%//%.' + domain + '.%'})
+      WHERE (l.original_url LIKE ${'%//' + domain + '%'} OR l.original_url LIKE ${'%//%.' + domain + '%'})
         AND (l.visibility = 'public'
           OR (l.visibility = 'followers' AND EXISTS (SELECT 1 FROM follows WHERE follower_id = ${uid} AND followee_id = l.user_id))
           OR (l.visibility = 'private' AND l.user_id = ${uid}))

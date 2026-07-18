@@ -34,6 +34,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
   const [sortBy, setSortBy] = useState('new');
   const [categories, setCategories] = useState<{ domain: string; count: number }[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [showCatFilter, setShowCatFilter] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showGlobe, setShowGlobe] = useState(true);
   const [fadeIn, setFadeIn] = useState(false);
@@ -350,23 +351,40 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
             <SortDropdown value={sortBy} onChange={setSortBy} />
           </div>
           {categories.length > 0 && (
-            <div className="filter-bar-scroll" style={{ marginBottom: '12px' }}>
+            <div style={{ marginBottom: '12px' }}>
               <button
-                className={`cat-filter-chip ${!activeCategory ? 'active' : ''}`}
-                onClick={() => setActiveCategory(null)}
+                onClick={() => setShowCatFilter(v => !v)}
+                style={{
+                  background: 'none', border: 'none', color: 'var(--text-4)', cursor: 'pointer',
+                  fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 0'
+                }}
               >
-                All
+                <svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24"
+                  style={{ transform: showCatFilter ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}>
+                  <path d="M8 5l8 7-8 7z" />
+                </svg>
+                Filter by category {activeCategory && <span style={{ color: 'var(--accent)' }}>({activeCategory})</span>}
               </button>
-              {categories.map((cat) => (
-                <button
-                  key={cat.domain}
-                  className={`cat-filter-chip ${activeCategory === cat.domain ? 'active' : ''}`}
-                  onClick={() => setActiveCategory(activeCategory === cat.domain ? null : cat.domain)}
-                >
-                  {cat.domain}
-                  <span className="cat-filter-count">{cat.count}</span>
-                </button>
-              ))}
+              {showCatFilter && (
+                <div className="filter-bar-scroll" style={{ marginTop: '8px' }}>
+                  <button
+                    className={`cat-filter-chip ${!activeCategory ? 'active' : ''}`}
+                    onClick={() => setActiveCategory(null)}
+                  >
+                    All
+                  </button>
+                  {categories.map((cat) => (
+                    <button
+                      key={cat.domain}
+                      className={`cat-filter-chip ${activeCategory === cat.domain ? 'active' : ''}`}
+                      onClick={() => setActiveCategory(activeCategory === cat.domain ? null : cat.domain)}
+                    >
+                      {cat.domain}
+                      <span className="cat-filter-count">{cat.count}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
           <ScatteredLinks apiEndpoint={apiEndpoint} />

@@ -110,6 +110,8 @@
   color: var(--text-2);
   line-height: 1.6;
   margin-bottom: 12px;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .comment-actions {
@@ -143,7 +145,7 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--text-4);
+  color: var(--text-2);
   margin-bottom: 24px;
 }
 

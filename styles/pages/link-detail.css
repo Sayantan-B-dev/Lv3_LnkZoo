@@ -1,19 +1,51 @@
 .link-detail-layout {
   display: grid;
-  grid-template-columns: 1fr 360px;
+  grid-template-columns: 500px 360px;
+  justify-content: center;
   gap: 24px;
-  align-items: start;
+  align-items: stretch;
   animation: linkFadeIn 0.6s ease forwards;
   overflow-x: hidden;
 }
 
 .link-detail-main {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.link-detail-spacer {
+  flex: 1;
+  display: flex;
+  background: color-mix(in srgb, var(--bg-1) 55%, transparent);
+  backdrop-filter: blur(8px);
+  border: 2px solid color-mix(in srgb, var(--accent) 18%, var(--border));
+  border-radius: 14px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.06), 0 0 0 1px color-mix(in srgb, var(--accent) 5%, transparent);
+  min-height: 80px;
+  overflow: hidden;
 }
 
 .link-detail-card {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  background: color-mix(in srgb, var(--bg-1) 55%, transparent);
+  backdrop-filter: blur(8px);
+  border: 2px solid color-mix(in srgb, var(--accent) 18%, var(--border));
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.06), 0 0 0 1px color-mix(in srgb, var(--accent) 5%, transparent);
+  transition: border-color 0.2s, box-shadow 0.3s;
+}
+
+.link-detail-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.08),
+    0 8px 32px rgba(0, 0, 0, 0.05),
+    0 0 0 2px color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
 .link-detail-img {
@@ -201,9 +233,14 @@
 }
 
 .link-detail-comments {
-  position: sticky;
-  top: 24px;
-  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  background: color-mix(in srgb, var(--bg-1) 55%, transparent);
+  backdrop-filter: blur(8px);
+  border: 2px solid color-mix(in srgb, var(--accent) 18%, var(--border));
+  border-radius: 14px;
+  padding: 12px 20px 20px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.06), 0 0 0 1px color-mix(in srgb, var(--accent) 5%, transparent);
   overflow-y: auto;
 }
 
@@ -212,14 +249,18 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 960px) {
   .link-detail-layout {
     grid-template-columns: 1fr;
   }
 
   .link-detail-comments {
     position: static;
-    max-height: none;
+    overflow-y: visible;
+  }
+
+  .link-detail-spacer {
+    display: none;
   }
 }
 

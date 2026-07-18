@@ -2,7 +2,7 @@
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--text-4);
+    color: var(--text-2);
     margin-bottom: 24px;
 }
 
@@ -75,7 +75,7 @@
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--text-4);
+    color: var(--text-2);
 }
 
 .category-grid {

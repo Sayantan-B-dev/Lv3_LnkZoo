@@ -1,0 +1,7 @@
+.particles-container {
+  flex: 1;
+  position: relative;
+}
+.particles-container canvas {
+  display: block;
+}

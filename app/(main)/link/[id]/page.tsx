@@ -10,6 +10,7 @@ import LoadingGlobe from '@/components/common/LoadingGlobe';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
+import Particles from '@/components/react-bits/Particles';
 
 const FALLBACK_IMG = '/fall-back-image.webp';
 
@@ -19,7 +20,7 @@ export default function LinkDetailPage({ params }: { params: Promise<{ id: strin
   const { addToast } = useToast();
   const { user } = useAuth();
   const [link, setLink] = useState<any>(null);
-  const [comments, setComments] = useState([]);
+  const [comments, setComments] = useState<any[]>([]);
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(true);
   const [showGlobe, setShowGlobe] = useState(true);
@@ -147,7 +148,15 @@ export default function LinkDetailPage({ params }: { params: Promise<{ id: strin
       try {
         const res = await fetch(`/api/comments/${commentId}`, { method: 'DELETE' });
         if (res.ok) {
-          setComments(comments.filter((c: any) => c.id !== commentId));
+          setComments(prev => {
+            const idsToRemove = new Set<string>();
+            const collectIds = (id: string) => {
+              idsToRemove.add(id);
+              prev.forEach(c => { if (c.parent_id === id) collectIds(c.id); });
+            };
+            collectIds(commentId);
+            return prev.filter(c => !idsToRemove.has(c.id));
+          });
           addToast('Comment deleted', 'success');
         } else {
           addToast('Failed to delete comment', 'error');
@@ -375,6 +384,19 @@ export default function LinkDetailPage({ params }: { params: Promise<{ id: strin
                 </div>
               </div>
             </div>
+          </div>
+          <div className="link-detail-spacer">
+            <Particles
+              particleColors={['#ffffff']}
+              particleCount={200}
+              particleSpread={10}
+              speed={0.1}
+              particleBaseSize={100}
+              moveParticlesOnHover
+              alphaParticles={false}
+              disableRotation={false}
+              pixelRatio={1}
+            />
           </div>
         </div>
 

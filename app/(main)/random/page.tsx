@@ -89,7 +89,8 @@ export default function RandomPage() {
             </div>
           ) : link ? (
             <div className="fade-in" style={{ width: '100%' }}>
-              <div className="link-card detail" style={{ padding: '32px', border: '2px solid color-mix(in srgb, var(--accent) 25%, var(--border))', boxShadow: '0 2px 16px rgba(0,0,0,0.06), 0 0 0 1px color-mix(in srgb, var(--accent) 6%, transparent)' }}>
+              <div className="link-card detail" style={{ padding: '32px', border: '2px solid color-mix(in srgb, var(--accent) 25%, var(--border))', boxShadow: '0 2px 16px rgba(0,0,0,0.06), 0 0 0 1px color-mix(in srgb, var(--accent) 6%, transparent)' }}
+                onClick={() => router.push(`/link/${link.id}`)}>
                 <div className="card-body" style={{ overflowWrap: 'break-word', wordBreak: 'break-word' }}>
                   <div className="card-meta" style={{ marginBottom: '16px' }}>
                     <span className="card-domain" style={{ background: 'var(--bg-2)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: '600' }}>
@@ -103,8 +104,8 @@ export default function RandomPage() {
                     {link.tags?.map((t: string) => <span key={t} className="tag">#{t}</span>)}
                   </div>
                   <div className="card-footer" style={{ borderTop: '1px solid var(--border)', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <a href={link.original_url} target="_blank" rel="noopener" className="visit-btn" onClick={() => setIsPaused(true)}>Visit Discovery ↗</a>
-                    <button onClick={handleLike} className={`like-btn ${link.liked_by_user ? 'active' : ''}`}>
+                    <a href={link.original_url} target="_blank" rel="noopener" className="visit-btn" onClick={(e) => { e.stopPropagation(); setIsPaused(true); }}>Visit Discovery ↗</a>
+                    <button onClick={(e) => { e.stopPropagation(); handleLike(); }} className={`like-btn ${link.liked_by_user ? 'active' : ''}`}>
                       <svg width="14" height="14" fill={link.liked_by_user ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.35-1.92-4.25-4.29-4.25-1.69 0-3.15.97-3.85 2.38A4.32 4.32 0 008.86 4C6.48 4 4.5 5.9 4.5 8.25c0 6.03 7.5 10.75 7.5 10.75s9-4.72 9-10.75z" />
                       </svg>

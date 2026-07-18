@@ -12,8 +12,30 @@ export default function Explore() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('new');
   const [searching, setSearching] = useState(false);
+  const [categories, setCategories] = useState<{ name: string; count: number }[]>([]);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [showCatFilter, setShowCatFilter] = useState(false);
 
-  const apiEndpoint = useMemo(() => `/api/links?sort=${sortBy}`, [sortBy]);
+  const apiEndpoint = useMemo(() => {
+    let url = `/api/links?sort=${sortBy}`;
+    if (activeCategory) url += `&domain=${encodeURIComponent(activeCategory)}`;
+    return url;
+  }, [sortBy, activeCategory]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch('/api/links/categories');
+        if (res.ok) {
+          const data = await res.json();
+          setCategories(data.categories ?? []);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -97,6 +119,43 @@ export default function Explore() {
               <h2 className="section-title">Discover</h2>
               <SortDropdown value={sortBy} onChange={setSortBy} />
             </div>
+            {categories.length > 0 && (
+              <div style={{ marginBottom: '12px' }}>
+                <button
+                  onClick={() => setShowCatFilter(v => !v)}
+                  style={{
+                    background: 'none', border: 'none', color: 'var(--text-4)', cursor: 'pointer',
+                    fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 0'
+                  }}
+                >
+                  <svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24"
+                    style={{ transform: showCatFilter ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}>
+                    <path d="M8 5l8 7-8 7z" />
+                  </svg>
+                  Filter by category {activeCategory && <span style={{ color: 'var(--accent)' }}>({activeCategory})</span>}
+                </button>
+                {showCatFilter && (
+                  <div className="filter-bar-scroll" style={{ marginTop: '8px' }}>
+                    <button
+                      className={`cat-filter-chip ${!activeCategory ? 'active' : ''}`}
+                      onClick={() => setActiveCategory(null)}
+                    >
+                      All
+                    </button>
+                    {categories.map((cat) => (
+                      <button
+                        key={cat.name}
+                        className={`cat-filter-chip ${activeCategory === cat.name ? 'active' : ''}`}
+                        onClick={() => setActiveCategory(activeCategory === cat.name ? null : cat.name)}
+                      >
+                        {cat.name}
+                        <span className="cat-filter-count">{cat.count}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
             <ScatteredLinks apiEndpoint={apiEndpoint} />
           </section>
         )}

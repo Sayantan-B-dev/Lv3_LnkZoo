@@ -27,7 +27,7 @@ export const GET = apiHandler(async (req: NextRequest, { params }: { params: { u
       OR (l.visibility = 'private' AND l.user_id = $2))`;
 
     const domainClause = domain
-      ? ` AND (l.original_url LIKE '%//${domain}.%' OR l.original_url LIKE '%//%.${domain}.%')`
+      ? ` AND (l.original_url LIKE '%//${domain}%' OR l.original_url LIKE '%//%.${domain}%')`
       : '';
 
     const [countRow] = await query(
