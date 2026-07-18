@@ -27,12 +27,14 @@ export const GET = apiHandler(async (req: NextRequest, { params }: { params: { u
       OR (l.visibility = 'private' AND l.user_id = $2))`;
 
     const domainClause = domain
-      ? ` AND (l.original_url LIKE '%//${domain}%' OR l.original_url LIKE '%//%.${domain}%')`
+      ? ` AND (l.original_url LIKE $5 OR l.original_url LIKE $6)`
       : '';
+    const params = [username.toLowerCase(), uid, limit, offset];
+    if (domain) params.push(`%//${domain}%`, `%//%.${domain}%`);
 
     const [countRow] = await query(
       `SELECT COUNT(*)::int AS count FROM links l JOIN users u ON l.user_id = u.id WHERE u.username = $1 AND ${visClause}${domainClause}`,
-      [username.toLowerCase(), uid]
+      params.slice(0, domain ? 6 : 4)
     );
 
     const rows = await query(
@@ -50,7 +52,7 @@ export const GET = apiHandler(async (req: NextRequest, { params }: { params: { u
        GROUP BY l.id, u.username, u.avatar_url
        ORDER BY ${orderBy}
        LIMIT $3 OFFSET $4`,
-      [username.toLowerCase(), uid, limit, offset]
+      params.slice(0, domain ? 6 : 4)
     );
 
     return NextResponse.json({ links: rows, total: countRow?.count ?? 0, page, limit });

@@ -387,7 +387,6 @@ export default function LinkDetailPage({ params }: { params: Promise<{ id: strin
           </div>
           <div className="link-detail-spacer">
             <Particles
-              particleColors={['#ffffff']}
               particleCount={200}
               particleSpread={10}
               speed={0.1}

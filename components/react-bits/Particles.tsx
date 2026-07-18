@@ -23,6 +23,17 @@ interface ParticlesProps {
 
 const defaultColors: string[] = ['#ffffff', '#ffffff', '#ffffff'];
 
+const getThemeColors = (): string[] => {
+  try {
+    const style = getComputedStyle(document.documentElement);
+    const t = style.getPropertyValue('--text').trim();
+    const t2 = style.getPropertyValue('--text-2').trim();
+    const t3 = style.getPropertyValue('--text-3').trim();
+    if (t) return [t, t2 || t, t3 || t];
+  } catch {}
+  return defaultColors;
+};
+
 const hexToRgb = (hex: string): [number, number, number] => {
   hex = hex.replace(/^#/, '');
   if (hex.length === 3) {
@@ -169,7 +180,7 @@ const Particles: React.FC<ParticlesProps> = ({
     const positions = new Float32Array(count * 3);
     const randoms = new Float32Array(count * 4);
     const colors = new Float32Array(count * 3);
-    const palette = particleColors && particleColors.length > 0 ? particleColors : defaultColors;
+    const palette = particleColors && particleColors.length > 0 ? particleColors : getThemeColors();
 
     for (let i = 0; i < count; i++) {
       let x: number, y: number, z: number, len: number;
@@ -207,6 +218,18 @@ const Particles: React.FC<ParticlesProps> = ({
     });
 
     const particles = new Mesh(gl, { mode: gl.POINTS, geometry, program });
+
+    const themeObserver = new MutationObserver(() => {
+      if (!particleColors || particleColors.length === 0) {
+        const newPalette = getThemeColors();
+        for (let i = 0; i < count; i++) {
+          const col = hexToRgb(newPalette[Math.floor(Math.random() * newPalette.length)]);
+          colors.set(col, i * 3);
+        }
+        geometry.attributes.color.needsUpdate = true;
+      }
+    });
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
     let animationFrameId: number;
     let lastTime = performance.now();
@@ -252,6 +275,7 @@ const Particles: React.FC<ParticlesProps> = ({
 
     return () => {
       ro.disconnect();
+      themeObserver.disconnect();
       cancelAnimationFrame(initResizeId);
       if (moveParticlesOnHover) {
         container.removeEventListener('mousemove', handleMouseMove);
