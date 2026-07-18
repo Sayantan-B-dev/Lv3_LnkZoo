@@ -32,6 +32,8 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
   const { addToast } = useToast();
   const [profile, setProfile] = useState<any>(null);
   const [sortBy, setSortBy] = useState('new');
+  const [categories, setCategories] = useState<{ domain: string; count: number }[]>([]);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [showGlobe, setShowGlobe] = useState(true);
   const [fadeIn, setFadeIn] = useState(false);
@@ -57,8 +59,10 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
   const cleanUsername = username.replace(/^@/, '');
 
   const apiEndpoint = useMemo(() => {
-    return `/api/users/${cleanUsername}/links?sort=${sortBy}`;
-  }, [cleanUsername, sortBy]);
+    let url = `/api/users/${cleanUsername}/links?sort=${sortBy}`;
+    if (activeCategory) url += `&domain=${encodeURIComponent(activeCategory)}`;
+    return url;
+  }, [cleanUsername, sortBy, activeCategory]);
 
   const fetchProfile = async () => {
     setLoading(true);
@@ -66,7 +70,10 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
     setFadeIn(false);
     dataReady.current = false;
     try {
-      const profRes = await fetch(`/api/users/${cleanUsername}`, { cache: 'no-store' });
+      const [profRes, catRes] = await Promise.all([
+        fetch(`/api/users/${cleanUsername}`, { cache: 'no-store' }),
+        fetch(`/api/users/${cleanUsername}/categories`, { cache: 'no-store' }),
+      ]);
       if (profRes.ok) {
         const profData = await profRes.json();
         setProfile(profData.user);
@@ -76,6 +83,10 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
           cover_url: profData.user.cover_url || '',
           website: profData.user.website || ''
         });
+      }
+      if (catRes.ok) {
+        const catData = await catRes.json();
+        setCategories(catData.categories ?? []);
       }
     } catch (err) {
       console.error('Failed to fetch profile', err);
@@ -338,6 +349,26 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
             <h2 className="section-title">Submissions</h2>
             <SortDropdown value={sortBy} onChange={setSortBy} />
           </div>
+          {categories.length > 0 && (
+            <div className="filter-bar-scroll" style={{ marginBottom: '12px' }}>
+              <button
+                className={`cat-filter-chip ${!activeCategory ? 'active' : ''}`}
+                onClick={() => setActiveCategory(null)}
+              >
+                All
+              </button>
+              {categories.map((cat) => (
+                <button
+                  key={cat.domain}
+                  className={`cat-filter-chip ${activeCategory === cat.domain ? 'active' : ''}`}
+                  onClick={() => setActiveCategory(activeCategory === cat.domain ? null : cat.domain)}
+                >
+                  {cat.domain}
+                  <span className="cat-filter-count">{cat.count}</span>
+                </button>
+              ))}
+            </div>
+          )}
           <ScatteredLinks apiEndpoint={apiEndpoint} />
         </div>
       </div>

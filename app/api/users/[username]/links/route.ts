@@ -19,14 +19,19 @@ export const GET = apiHandler(async (req: NextRequest, { params }: { params: { u
   const page = Math.max(1, parseInt(sp.get('page') ?? '1'));
   const limit = Math.min(200, parseInt(sp.get('limit') ?? '30'));
   const offset = (page - 1) * limit;
+  const domain = sp.get('domain');
 
   try {
     const visClause = `(l.visibility = 'public'
       OR (l.visibility = 'followers' AND EXISTS (SELECT 1 FROM follows WHERE follower_id = $2 AND followee_id = l.user_id))
       OR (l.visibility = 'private' AND l.user_id = $2))`;
 
+    const domainClause = domain
+      ? ` AND (l.original_url LIKE '%//${domain}.%' OR l.original_url LIKE '%//%.${domain}.%')`
+      : '';
+
     const [countRow] = await query(
-      `SELECT COUNT(*)::int AS count FROM links l JOIN users u ON l.user_id = u.id WHERE u.username = $1 AND ${visClause}`,
+      `SELECT COUNT(*)::int AS count FROM links l JOIN users u ON l.user_id = u.id WHERE u.username = $1 AND ${visClause}${domainClause}`,
       [username.toLowerCase(), uid]
     );
 
@@ -41,7 +46,7 @@ export const GET = apiHandler(async (req: NextRequest, { params }: { params: { u
        JOIN users u ON l.user_id = u.id
        LEFT JOIN link_tags lt ON lt.link_id = l.id
        LEFT JOIN tags t ON t.id = lt.tag_id
-       WHERE u.username = $1 AND ${visClause}
+       WHERE u.username = $1 AND ${visClause}${domainClause}
        GROUP BY l.id, u.username, u.avatar_url
        ORDER BY ${orderBy}
        LIMIT $3 OFFSET $4`,
