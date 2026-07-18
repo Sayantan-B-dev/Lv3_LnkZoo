@@ -1,46 +1,19 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import React, { useState, useEffect, useMemo } from 'react';
 import Topbar from '@/components/common/Topbar';
-import LinkCard from '@/components/links/LinkCard';
+import ScatteredLinks from '@/components/react-bits/ScatteredLinks';
 import SortDropdown from '@/components/common/SortDropdown';
 import { useRouter } from 'next/navigation';
 
 export default function Explore() {
   const router = useRouter();
-  const [tags, setTags] = useState([]);
-  const [latestLinks, setLatestLinks] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('new');
-  const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const [tagsRes, linksRes] = await Promise.all([
-          fetch('/api/tags'),
-          fetch(`/api/links?sort=${sortBy}&limit=10`)
-        ]);
-        if (tagsRes.ok) {
-          const data = await tagsRes.json();
-          setTags(data.tags);
-        }
-        if (linksRes.ok) {
-          const data = await linksRes.json();
-          setLatestLinks(data.links);
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [sortBy]);
+  const apiEndpoint = useMemo(() => `/api/links?sort=${sortBy}`, [sortBy]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -90,70 +63,42 @@ export default function Explore() {
           <section className="explore-section">
             <h2 className="section-title">{searching ? 'Searching...' : `Search results for "${searchQuery}"`}</h2>
             <div className="search-list">
-              {searchResults.length === 0 && !searching ? (
+                {searchResults.length === 0 && !searching ? (
                 <div className="empty">No matches found.</div>
-              ) : (
-                searchResults.map((link: any) => (
-                  <LinkCard
-                    key={link.id}
-                    link={link}
-                    variant="mini"
-                    showPreview={true}
-                    showComments={true}
-                    onClick={() => router.push(`/link/${link.id}`)}
-                    isClickable={true}
-                  />
+              ) : searching ? (
+                Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="glow-card-wrap" style={{ height: '72px', borderRadius: '12px', background: 'var(--bg-1)', border: '1px solid var(--border)' }}>
+                    <div className="skel" style={{ width: '100%', height: '100%', borderRadius: '12px' }}></div>
+                  </div>
                 ))
+              ) : (
+                searchResults.map((link: any) => {
+                  const domain = link.original_url ? new URL(link.original_url).hostname : '';
+                  return (
+                    <div key={link.id} className="explore-link-card" onClick={() => router.push(`/link/${link.id}`)}>
+                      <div className="explore-link-body">
+                        <span className="explore-link-domain">{domain}</span>
+                        <div className="explore-link-title">{link.title || 'Untitled'}</div>
+                      </div>
+                      {link.preview_image && (
+                        <div className="explore-link-img">
+                          <img src={link.preview_image} alt={link.title || ''} onError={(e) => { (e.target as HTMLImageElement).src = '/fall-back-image.webp'; }} />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
               )}
             </div>
           </section>
         ) : (
-          <>
-            {/* <section className="explore-section">
-              <h2 className="section-title">Popular Tags</h2>
-              <div className="tag-cloud">
-                {loading ? (
-                  Array.from({ length: 12 }).map((_, i) => (
-                    <div key={i} className="skel" style={{ width: '80px', height: '32px', borderRadius: '6px' }}></div>
-                  ))
-                ) : (
-                  tags.map((tag: any) => (
-                    <Link key={tag.id} href={`/tags/${tag.name}`} className="tag-item">
-                      <span className="tag-name">#{tag.name}</span>
-                      <span className="tag-count">{tag.usage_count}</span>
-                    </Link>
-                  ))
-                )}
-              </div>
-            </section> */}
-
-            <section className="explore-section">
-              <div className="section-header-row">
-                <h2 className="section-title">Latest Discoveries</h2>
-                <SortDropdown value={sortBy} onChange={setSortBy} />
-              </div>
-              <div className="latest-list">
-                {loading ? (
-                  Array.from({ length: 5 }).map((_, i) => (
-                    <div key={i} className="link-card mini skel" style={{ height: '60px' }}></div>
-                  ))
-                ) : (
-                  latestLinks.map((link: any) => (
-                    <LinkCard
-                      key={link.id}
-                      link={link}
-                      variant="mini"
-                      showPreview={true}
-                      showVotes={false}
-                      showComments={false}
-                      onClick={() => router.push(`/link/${link.id}`)}
-                      isClickable={true}
-                    />
-                  ))
-                )}
-              </div>
-            </section>
-          </>
+          <section className="explore-section">
+            <div className="section-header-row">
+              <h2 className="section-title">Discover</h2>
+              <SortDropdown value={sortBy} onChange={setSortBy} />
+            </div>
+            <ScatteredLinks apiEndpoint={apiEndpoint} />
+          </section>
         )}
       </div>
     </>

@@ -3,35 +3,37 @@
   background: color-mix(in srgb, var(--bg-1) 55%, transparent);
   backdrop-filter: blur(8px);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 14px;
+  border-radius: 10px;
+  padding: 16px;
   margin-bottom: 8px;
   display: flex;
-  gap: 12px;
-  transition: border-color var(--t), background var(--t), box-shadow var(--t), transform .15s;
+  gap: 14px;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.3s, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
   max-width: full;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .link-card:hover {
-  border-color: var(--border-md);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border-md));
   background: color-mix(in srgb, var(--bg-2) 70%, transparent);
-  transform: translateY(-2px);
+  transform: translateY(-4px);
   box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.06),
-    0 8px 24px rgba(0, 0, 0, 0.04);
+    0 8px 24px rgba(0, 0, 0, 0.04),
+    0 0 0 1px color-mix(in srgb, var(--accent) 8%, transparent);
   z-index: 2;
 }
 
 [data-theme="dark"] .link-card:hover {
   box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.3),
-    0 8px 24px rgba(0, 0, 0, 0.2);
+    0 8px 24px rgba(0, 0, 0, 0.2),
+    0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
 .link-card:active {
-  transform: scale(.995)
+  transform: scale(.98)
 }
 
 /* votes */
@@ -96,8 +98,9 @@
   font-size: 10px;
   color: var(--text-4);
   border: 1px solid var(--border);
-  border-radius: 3px;
-  padding: 1px 6px;
+  border-radius: 100px;
+  padding: 2px 10px;
+  letter-spacing: 0.3px;
 }
 
 .card-poster {
@@ -124,23 +127,22 @@
   align-items: flex-start;
 }
 .card-title {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 600;
   color: var(--text);
-  margin-bottom: 5px;
-  line-height: 1.4;
-  letter-spacing: -.1px;
+  margin-bottom: 6px;
+  line-height: 1.35;
+  letter-spacing: -.2px;
 }
 
 .card-desc {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-3);
-  margin-bottom: 8px;
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  margin-bottom: 10px;
+  line-height: 1.55;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .card-tags {
@@ -154,8 +156,8 @@
   font-size: 10px;
   color: var(--text-4);
   border: 1px solid var(--border);
-  border-radius: 3px;
-  padding: 1px 7px;
+  border-radius: 100px;
+  padding: 2px 10px;
   transition: color var(--t), border-color var(--t), background var(--t);
   cursor: pointer;
 }
@@ -175,18 +177,20 @@
 .card-stat {
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 10px;
+  gap: 5px;
+  font-size: 11px;
   color: var(--text-4);
   background: none;
   border: 0;
-  padding: 0;
-  transition: color var(--t);
+  padding: 3px 6px;
+  border-radius: 6px;
+  transition: color 0.2s, background 0.2s;
   cursor: pointer;
 }
 
 .card-stat:hover {
-  color: var(--text-2)
+  color: var(--text-2);
+  background: var(--bg-2);
 }
 
 .like-stat.active {
@@ -221,16 +225,21 @@
 }
 
 .card-preview {
-  width: 72px;
-  height: 52px;
+  width: 100px;
+  height: 76px;
   flex-shrink: 0;
-  border-radius: 4px;
+  border-radius: 8px;
   background: var(--bg-3);
   border: 1px solid var(--border);
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.25s ease;
+}
+
+.link-card:hover .card-preview {
+  transform: scale(1.04);
 }
 
 .card-preview.right {
@@ -548,4 +557,240 @@
   .card-domain { font-size: 9px; }
   .card-poster { font-size: 9px; }
   .card-time { font-size: 9px; }
+}
+
+/* ── NEW PLAIN CARDS (replacing GlowCard) ─────────── */
+.cat-link-card,
+.profile-link-card,
+.feed-link-card {
+  display: flex;
+  gap: 14px;
+  background: color-mix(in srgb, var(--bg-1) 55%, transparent);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  cursor: pointer;
+  transition: border-color var(--t), background var(--t), box-shadow var(--t), transform .15s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.cat-link-card:hover,
+.profile-link-card:hover,
+.feed-link-card:hover {
+  border-color: var(--border-md);
+  background: color-mix(in srgb, var(--bg-2) 70%, transparent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);
+}
+
+.cat-link-card:active,
+.profile-link-card:active,
+.feed-link-card:active {
+  transform: scale(.995);
+}
+
+.cat-link-img,
+.profile-link-img,
+.feed-link-img {
+  flex-shrink: 0;
+  width: 80px;
+  height: 64px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cat-link-img img,
+.profile-link-img img,
+.feed-link-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cat-link-body,
+.profile-link-body,
+.feed-link-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.cat-link-domain,
+.profile-link-domain,
+.feed-link-domain {
+  font-size: 11px;
+  color: var(--text-4);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.cat-link-title,
+.profile-link-title,
+.feed-link-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.35;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cat-link-desc,
+.profile-link-desc,
+.feed-link-desc {
+  font-size: 12px;
+  color: var(--text-3);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.cat-link-footer,
+.profile-link-footer,
+.feed-link-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cat-link-like,
+.feed-link-like {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text-4);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+
+.cat-link-like:hover,
+.feed-link-like:hover {
+  background: var(--bg-2);
+}
+
+.cat-link-like.active,
+.feed-link-like.active {
+  color: #ef4444;
+}
+
+.cat-link-stat,
+.profile-link-stat,
+.feed-link-stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text-4);
+}
+
+/* Categories grid */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+}
+
+/* ── DOSE CARDS ────────────────────────────────────── */
+.dose-link-card {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: color-mix(in srgb, var(--bg-1) 55%, transparent);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  cursor: pointer;
+  transition: border-color var(--t), background var(--t), box-shadow var(--t), transform .15s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  margin-bottom: 8px;
+}
+
+.dose-link-card:hover {
+  border-color: var(--border-md);
+  background: color-mix(in srgb, var(--bg-2) 70%, transparent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);
+}
+
+.dose-link-card:active { transform: scale(.995); }
+
+.dose-number {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--accent);
+  opacity: 0.4;
+  min-width: 44px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.dose-link-body { flex: 1; min-width: 0; }
+
+.dose-link-domain {
+  font-size: 11px;
+  color: var(--text-4);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.dose-link-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.35;
+  margin-bottom: 4px;
+}
+
+.dose-link-desc {
+  font-size: 12px;
+  color: var(--text-3);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.dose-link-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dose-link-poster {
+  font-size: 12px;
+  color: var(--text-4);
+  font-weight: 500;
+}
+
+.dose-link-img {
+  flex-shrink: 0;
+  width: 80px;
+  height: 64px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.dose-link-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }

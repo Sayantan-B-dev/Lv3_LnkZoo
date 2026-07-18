@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
-import LinkCard from '@/components/links/LinkCard';
+import React, { useMemo } from 'react';
 import SortDropdown from '@/components/common/SortDropdown';
+import ScatteredLinks from '@/components/react-bits/ScatteredLinks';
 import { Reveal } from './Reveal';
 
 interface FeedSectionProps {
@@ -12,13 +12,14 @@ interface FeedSectionProps {
   setActiveTab: (v: string) => void;
   sortBy: string;
   setSortBy: (v: string) => void;
-  links: any[];
-  loading: boolean;
-  handleLike: (id: string) => void;
-  onLinkClick: (id: string) => void;
 }
 
 export function FeedSection(props: FeedSectionProps) {
+  const apiEndpoint = useMemo(() => {
+    if (props.searchQuery.trim()) return `/api/links?q=${encodeURIComponent(props.searchQuery)}`;
+    return `/api/links?tab=${props.activeTab}&sort=${props.sortBy}`;
+  }, [props.searchQuery, props.activeTab, props.sortBy]);
+
   return (
     <Reveal disableExit>
       <section className="feed-section">
@@ -48,29 +49,7 @@ export function FeedSection(props: FeedSectionProps) {
             </div>
           )}
 
-          <div id="home-feed">
-            {props.loading ? (
-              Array.from({ length: 5 }).map(function(_, i) {
-                return <div key={i} className="link-card" style={{ height: '120px' }}>
-                  <div className="skel" style={{ width: '100%', height: '100%' }} />
-                </div>;
-              })
-            ) : props.links.length === 0 ? (
-              <div className="empty">No results found.</div>
-            ) : (
-              props.links.map(function(link: any) {
-                return <LinkCard
-                  key={link.id}
-                  link={link}
-                  variant="full"
-                  showPreview={true}
-                  onLike={function(id: string) { return Promise.resolve(props.handleLike(id)); }}
-                  onClick={function() { props.onLinkClick(link.id); }}
-                  isClickable={true}
-                />;
-              })
-            )}
-          </div>
+          <ScatteredLinks apiEndpoint={apiEndpoint} />
         </div>
       </section>
     </Reveal>

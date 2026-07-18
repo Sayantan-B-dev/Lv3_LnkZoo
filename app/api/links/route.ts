@@ -11,7 +11,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
   const sp = req.nextUrl.searchParams;
   const tab    = sp.get('tab') ?? 'explore';
   const page   = Math.max(1, parseInt(sp.get('page') ?? '1'));
-  const limit  = Math.min(50, parseInt(sp.get('limit') ?? '20'));
+  const limit  = Math.min(200, parseInt(sp.get('limit') ?? '20'));
   const offset = (page - 1) * limit;
   const tag    = sp.get('tag');
   const domain = sp.get('domain');
@@ -20,11 +20,11 @@ export const GET = apiHandler(async (req: NextRequest) => {
 
   const uid = session?.user_id ?? null;
 
-  let rows: any[];
+  let rows: any[] = [];
   let total = 0;
 
   if (domain) {
-    const [{ count }] = await sql`
+    [{ count: total }] = await sql`
       SELECT COUNT(*)::int AS count
       FROM links l
       JOIN users u ON l.user_id = u.id
@@ -33,8 +33,6 @@ export const GET = apiHandler(async (req: NextRequest) => {
           OR (l.visibility = 'followers' AND EXISTS (SELECT 1 FROM follows WHERE follower_id = ${uid} AND followee_id = l.user_id))
           OR (l.visibility = 'private' AND l.user_id = ${uid}))
     `;
-    total = count;
-
     rows = await sql`
       SELECT l.id, l.title, l.description, l.original_url, l.short_code,
              l.preview_image, l.is_anonymous, l.like_count, l.visibility,
@@ -57,6 +55,17 @@ export const GET = apiHandler(async (req: NextRequest) => {
       LIMIT ${limit} OFFSET ${offset}
     `;
   } else if (query) {
+    [{ count: total }] = await sql`
+      SELECT COUNT(*)::int AS count
+      FROM links l
+      JOIN users u ON l.user_id = u.id
+      LEFT JOIN link_tags lt ON lt.link_id = l.id
+      LEFT JOIN tags t ON t.id = lt.tag_id
+      WHERE (LOWER(l.title) LIKE ${'%' + query + '%'} OR LOWER(t.name) LIKE ${'%' + query + '%'})
+        AND (l.visibility = 'public'
+          OR (l.visibility = 'followers' AND EXISTS (SELECT 1 FROM follows WHERE follower_id = ${uid} AND followee_id = l.user_id))
+          OR (l.visibility = 'private' AND l.user_id = ${uid}))
+    `;
     rows = await sql`
       SELECT l.id, l.title, l.description, l.original_url, l.short_code,
              l.preview_image, l.is_anonymous, l.like_count, l.visibility,
@@ -79,6 +88,14 @@ export const GET = apiHandler(async (req: NextRequest) => {
       LIMIT ${limit} OFFSET ${offset}
     `;
   } else if (tab === 'following' && session) {
+    [{ count: total }] = await sql`
+      SELECT COUNT(*)::int AS count
+      FROM links l
+      JOIN users u ON l.user_id = u.id
+      JOIN follows f ON f.followee_id = l.user_id
+      WHERE f.follower_id = ${session.user_id}
+        AND l.visibility IN ('public', 'followers')
+    `;
     rows = await sql`
       SELECT l.id, l.title, l.description, l.original_url, l.short_code,
              l.preview_image, l.is_anonymous, l.like_count, l.visibility,
@@ -100,6 +117,16 @@ export const GET = apiHandler(async (req: NextRequest) => {
       LIMIT ${limit} OFFSET ${offset}
     `;
   } else if (tag) {
+    [{ count: total }] = await sql`
+      SELECT COUNT(*)::int AS count
+      FROM links l
+      JOIN users u ON l.user_id = u.id
+      JOIN link_tags lt ON lt.link_id = l.id
+      JOIN tags t ON t.id = lt.tag_id AND t.normalized_name = ${tag.toLowerCase()}
+      WHERE (l.visibility = 'public'
+          OR (l.visibility = 'followers' AND EXISTS (SELECT 1 FROM follows WHERE follower_id = ${uid} AND followee_id = l.user_id))
+          OR (l.visibility = 'private' AND l.user_id = ${uid}))
+    `;
     rows = await sql`
       SELECT l.id, l.title, l.description, l.original_url, l.short_code,
              l.preview_image, l.is_anonymous, l.like_count, l.visibility,
@@ -123,6 +150,16 @@ export const GET = apiHandler(async (req: NextRequest) => {
       LIMIT ${limit} OFFSET ${offset}
     `;
   } else if (sort === 'top') {
+    [{ count: total }] = await sql`
+      SELECT COUNT(*)::int AS count
+      FROM links l
+      JOIN users u ON l.user_id = u.id
+      LEFT JOIN link_tags lt ON lt.link_id = l.id
+      LEFT JOIN tags t ON t.id = lt.tag_id
+      WHERE (l.visibility = 'public'
+          OR (l.visibility = 'followers' AND EXISTS (SELECT 1 FROM follows WHERE follower_id = ${uid} AND followee_id = l.user_id))
+          OR (l.visibility = 'private' AND l.user_id = ${uid}))
+    `;
     rows = await sql`
       SELECT l.id, l.title, l.description, l.original_url, l.short_code,
              l.preview_image, l.is_anonymous, l.like_count, l.visibility,
@@ -144,6 +181,16 @@ export const GET = apiHandler(async (req: NextRequest) => {
       LIMIT ${limit} OFFSET ${offset}
     `;
   } else if (sort === 'oldest') {
+    [{ count: total }] = await sql`
+      SELECT COUNT(*)::int AS count
+      FROM links l
+      JOIN users u ON l.user_id = u.id
+      LEFT JOIN link_tags lt ON lt.link_id = l.id
+      LEFT JOIN tags t ON t.id = lt.tag_id
+      WHERE (l.visibility = 'public'
+          OR (l.visibility = 'followers' AND EXISTS (SELECT 1 FROM follows WHERE follower_id = ${uid} AND followee_id = l.user_id))
+          OR (l.visibility = 'private' AND l.user_id = ${uid}))
+    `;
     rows = await sql`
       SELECT l.id, l.title, l.description, l.original_url, l.short_code,
              l.preview_image, l.is_anonymous, l.like_count, l.visibility,
@@ -165,6 +212,16 @@ export const GET = apiHandler(async (req: NextRequest) => {
       LIMIT ${limit} OFFSET ${offset}
     `;
   } else if (sort === 'new') {
+    [{ count: total }] = await sql`
+      SELECT COUNT(*)::int AS count
+      FROM links l
+      JOIN users u ON l.user_id = u.id
+      LEFT JOIN link_tags lt ON lt.link_id = l.id
+      LEFT JOIN tags t ON t.id = lt.tag_id
+      WHERE (l.visibility = 'public'
+          OR (l.visibility = 'followers' AND EXISTS (SELECT 1 FROM follows WHERE follower_id = ${uid} AND followee_id = l.user_id))
+          OR (l.visibility = 'private' AND l.user_id = ${uid}))
+    `;
     rows = await sql`
       SELECT l.id, l.title, l.description, l.original_url, l.short_code,
              l.preview_image, l.is_anonymous, l.like_count, l.visibility,
@@ -186,6 +243,16 @@ export const GET = apiHandler(async (req: NextRequest) => {
       LIMIT ${limit} OFFSET ${offset}
     `;
   } else {
+    [{ count: total }] = await sql`
+      SELECT COUNT(*)::int AS count
+      FROM links l
+      JOIN users u ON l.user_id = u.id
+      LEFT JOIN link_tags lt ON lt.link_id = l.id
+      LEFT JOIN tags t ON t.id = lt.tag_id
+      WHERE (l.visibility = 'public'
+          OR (l.visibility = 'followers' AND EXISTS (SELECT 1 FROM follows WHERE follower_id = ${uid} AND followee_id = l.user_id))
+          OR (l.visibility = 'private' AND l.user_id = ${uid}))
+    `;
     rows = await sql`
       SELECT l.id, l.title, l.description, l.original_url, l.short_code,
              l.preview_image, l.is_anonymous, l.like_count, l.visibility,

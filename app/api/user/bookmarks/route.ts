@@ -7,6 +7,18 @@ export const GET = apiHandler(async (req: NextRequest) => {
   const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+  const sp = req.nextUrl.searchParams;
+  const page = Math.max(1, parseInt(sp.get('page') ?? '1'));
+  const limit = Math.min(200, parseInt(sp.get('limit') ?? '30'));
+  const offset = (page - 1) * limit;
+
+  const [{ count }] = await sql`
+    SELECT COUNT(*)::int AS count
+    FROM saved_links sl
+    JOIN links l ON l.id = sl.link_id
+    WHERE sl.user_id = ${session.user_id}
+  `;
+
   const rows = await sql`
     SELECT l.id, l.title, l.description, l.original_url, l.short_code,
            l.preview_image, l.visibility, l.like_count, l.comment_count, l.created_at,
@@ -21,7 +33,8 @@ export const GET = apiHandler(async (req: NextRequest) => {
     WHERE sl.user_id = ${session.user_id}
     GROUP BY sl.id, l.id, u.username, u.avatar_url
     ORDER BY sl.created_at DESC
+    LIMIT ${limit} OFFSET ${offset}
   `;
 
-  return NextResponse.json({ bookmarks: rows });
+  return NextResponse.json({ links: rows, total: count, page, limit });
 });

@@ -11,6 +11,8 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 
+const FALLBACK_IMG = '/fall-back-image.webp';
+
 export default function LinkDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
@@ -22,6 +24,7 @@ export default function LinkDetailPage({ params }: { params: Promise<{ id: strin
   const [loading, setLoading] = useState(true);
   const [showGlobe, setShowGlobe] = useState(true);
   const [fadeIn, setFadeIn] = useState(false);
+  const [imgError, setImgError] = useState(false);
   const minTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const dataReady = useRef(false);
 
@@ -166,7 +169,7 @@ export default function LinkDetailPage({ params }: { params: Promise<{ id: strin
       setCopied(true);
       addToast('Short URL copied to clipboard', 'success');
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
+    } catch {
       addToast('Failed to copy short URL', 'error');
     }
   };
@@ -196,10 +199,7 @@ export default function LinkDetailPage({ params }: { params: Promise<{ id: strin
   };
 
   const handleLike = async () => {
-    if (!user) {
-      router.push(`/login?from=/link/${id}`);
-      return;
-    }
+    if (!user) { router.push(`/login?from=/link/${id}`); return; }
     try {
       const res = await fetch(`/api/links/${id}/like`, { method: 'POST' });
       if (res.ok) {
@@ -228,7 +228,7 @@ export default function LinkDetailPage({ params }: { params: Promise<{ id: strin
       } else {
         addToast('Failed to post comment', 'error');
       }
-    } catch (err) {
+    } catch {
       addToast('Failed to post comment', 'error');
     } finally {
       setPostingComment(false);
@@ -245,7 +245,6 @@ export default function LinkDetailPage({ params }: { params: Promise<{ id: strin
         body: JSON.stringify({ linkId: id, parentId, content }),
       });
       if (res.ok) {
-        const data = await res.json();
         addToast('Reply posted!', 'success');
         setReplyingTo(null);
         await fetchComments();
@@ -275,137 +274,126 @@ export default function LinkDetailPage({ params }: { params: Promise<{ id: strin
     return <LoadingGlobe />;
   }
 
+  const previewSrc = imgError || !link.preview_image ? FALLBACK_IMG : link.preview_image;
+
   return (
     <>
       {showGlobe && <LoadingGlobe />}
-
       {!showGlobe && <Topbar title={link.title} />}
+      {!showGlobe && <NotificationPanel />}
 
       {fadeIn && (
-      <div id="content" className="link-page-content">
-        <div className="link-card detail">
-          <div className="card-body">
-            <div className="card-meta">
-              <span className="card-domain">{new URL(link.original_url).hostname}</span>
-              <span className="card-poster">@{link.username}</span>
-              <span className="card-time">{new Date(link.created_at).toLocaleDateString()}</span>
-            </div>
-
-            {isEditingLink ? (
-              <form onSubmit={handleUpdateLink} className="edit-link-form">
-                <input value={editLinkData.title} onChange={e => setEditLinkData({ ...editLinkData, title: e.target.value })} className="auth-input" style={{ width: '100%', marginBottom: '10px' }} placeholder="Title" />
-                <textarea value={editLinkData.description} onChange={e => setEditLinkData({ ...editLinkData, description: e.target.value })} className="auth-input" style={{ width: '100%', minHeight: '80px', marginBottom: '10px' }} placeholder="Description" />
-                <input value={editTags} onChange={e => setEditTags(e.target.value)} className="auth-input" style={{ width: '100%', marginBottom: '10px' }} placeholder="Tags (comma separated)" />
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  <button type="submit" className="save-btn">Save</button>
-                  <button type="button" onClick={() => setIsEditingLink(false)} className="cancel-btn">Cancel</button>
+      <div id="content" className="link-detail-layout fade-in">
+        <div className="link-detail-main">
+          <div className="link-detail-card-wrap">
+            <div className="link-detail-card">
+              {link.preview_image && (
+                <div className="link-detail-img">
+                  <img src={previewSrc} alt={link.title} onError={() => setImgError(true)} />
                 </div>
-              </form>
-            ) : (
-              <div className="card-header">
-                <div>
-                  <h1 className="card-title" style={{ fontSize: '20px' }}>{link.title}</h1>
-                  <p className="card-desc" style={{ WebkitLineClamp: 'unset' }}>{link.description}</p>
-                </div>
-                <div className="short-url-section">
-                  {!showShortUrl ? (
-                    <button onClick={handleGenerateShort} className="generate-short-btn">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-                      </svg>
-                      Generate Short URL
-                    </button>
-                  ) : (
-                    <div className="short-url-result">
-                      <div className="short-url-info">
-                        <span className="short-url-label">Short URL</span>
-                        <span className="short-url-value">{shortUrl}</span>
-                        <span className="short-url-expiry">Expires in 24 hours</span>
-                      </div>
-                      <button onClick={handleCopyShort} className={`short-copy-btn ${copied ? 'copied' : ''}`}>
-                        {copied ? (
-                          <>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                              <polyline points="20 6 9 17 4 12" />
-                            </svg>
-                            Copied
-                          </>
-                        ) : (
-                          <>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                            </svg>
-                            Copy
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            <div className="card-tags">
-              {link.tags?.map((t: string) => <Link href={`/tags/${t}`} key={t} className="tag">#{t}</Link>)}
-            </div>
-
-            <div className="card-footer" style={{ marginTop: '20px', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <a href={link.original_url} target="_blank" rel="noopener noreferrer" className="visit-btn">Open Link ↗</a>
-                <button onClick={handleLike} className={`like-btn ${link.liked_by_user ? 'active' : ''}`}>
-                  <svg width="14" height="14" fill={link.liked_by_user ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.35-1.92-4.25-4.29-4.25-1.69 0-3.15.97-3.85 2.38A4.32 4.32 0 008.86 4C6.48 4 4.5 5.9 4.5 8.25c0 6.03 7.5 10.75 7.5 10.75s9-4.72 9-10.75z" />
-                  </svg>
-                  {link.like_count ?? 0}
-                </button>
-                <button onClick={handleBookmark} className={`like-btn ${bookmarked ? 'active' : ''}`} title={bookmarked ? 'Remove bookmark' : 'Bookmark'}>
-                  <svg width="14" height="14" fill={bookmarked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
-                  </svg>
-                </button>
-                <button onClick={handleShare} className="like-btn" title="Share">
-                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
-                  </svg>
-                </button>
-                {user?.username === link.username && !isEditingLink && (
-                  <button onClick={() => setIsEditingLink(true)} className="edit-link-btn">Edit</button>
-                )}
-              </div>
-              {user?.username === link.username && (
-                <button onClick={() => {
-                  openConfirm('Delete this link? This cannot be undone.', async () => {
-                    closeConfirm();
-                    const res = await fetch(`/api/links/${id}`, { method: 'DELETE' });
-                    if (res.ok) {
-                      addToast('Link deleted', 'success');
-                      router.push('/');
-                    } else {
-                      addToast('Failed to delete link', 'error');
-                    }
-                  });
-                }} className="delete-btn">Delete Link</button>
               )}
+
+              <div className="link-detail-body">
+                <div className="link-detail-meta">
+                  <span className="link-detail-domain">{new URL(link.original_url).hostname}</span>
+                  <span className="link-detail-poster">@{link.username}</span>
+                  <span className="link-detail-time">{new Date(link.created_at).toLocaleDateString()}</span>
+                </div>
+
+                {isEditingLink ? (
+                  <form onSubmit={handleUpdateLink} className="edit-link-form">
+                    <input value={editLinkData.title} onChange={e => setEditLinkData({ ...editLinkData, title: e.target.value })} className="auth-input" style={{ width: '100%', marginBottom: '10px' }} placeholder="Title" />
+                    <textarea value={editLinkData.description} onChange={e => setEditLinkData({ ...editLinkData, description: e.target.value })} className="auth-input" style={{ width: '100%', minHeight: '80px', marginBottom: '10px' }} placeholder="Description" />
+                    <input value={editTags} onChange={e => setEditTags(e.target.value)} className="auth-input" style={{ width: '100%', marginBottom: '10px' }} placeholder="Tags (comma separated)" />
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <button type="submit" className="save-btn">Save</button>
+                      <button type="button" onClick={() => setIsEditingLink(false)} className="cancel-btn">Cancel</button>
+                    </div>
+                  </form>
+                ) : (
+                  <>
+                    <h1 className="link-detail-title">{link.title}</h1>
+                    {link.description && <p className="link-detail-desc">{link.description}</p>}
+
+                    <div className="link-detail-tags">
+                      {link.tags?.map((t: string) => <Link href={`/tags/${t}`} key={t} className="tag">#{t}</Link>)}
+                    </div>
+                  </>
+                )}
+
+                <div className="link-detail-actions">
+                  <div className="link-detail-actions-left">
+                    <a href={link.original_url} target="_blank" rel="noopener noreferrer" className="link-detail-btn primary">
+                      <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>
+                      Open Link
+                    </a>
+                    <button onClick={handleLike} className={`link-detail-btn ${link.liked_by_user ? 'active' : ''}`}>
+                      <svg width="14" height="14" fill={link.liked_by_user ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.35-1.92-4.25-4.29-4.25-1.69 0-3.15.97-3.85 2.38A4.32 4.32 0 008.86 4C6.48 4 4.5 5.9 4.5 8.25c0 6.03 7.5 10.75 7.5 10.75s9-4.72 9-10.75z" />
+                      </svg>
+                      {link.like_count ?? 0}
+                    </button>
+                    <button onClick={handleBookmark} className={`link-detail-btn ${bookmarked ? 'active' : ''}`}>
+                      <svg width="14" height="14" fill={bookmarked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
+                      </svg>
+                    </button>
+                    <button onClick={handleShare} className="link-detail-btn">
+                      <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
+                      </svg>
+                    </button>
+                    {user?.username === link.username && !isEditingLink && (
+                      <button onClick={() => setIsEditingLink(true)} className="link-detail-btn">Edit</button>
+                    )}
+                  </div>
+                  <div className="link-detail-actions-right">
+                    <div className="link-detail-short">
+                      {!showShortUrl ? (
+                        <button onClick={handleGenerateShort} className="link-detail-btn">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                          Short URL
+                        </button>
+                      ) : (
+                        <div className="short-url-result">
+                          <span className="short-url-value">{shortUrl}</span>
+                          <button onClick={handleCopyShort} className={`short-copy-btn ${copied ? 'copied' : ''}`}>
+                            {copied ? 'Copied!' : 'Copy'}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    {user?.username === link.username && (
+                      <button onClick={() => openConfirm('Delete this link? This cannot be undone.', async () => {
+                        closeConfirm();
+                        const res = await fetch(`/api/links/${id}`, { method: 'DELETE' });
+                        if (res.ok) { addToast('Link deleted', 'success'); router.push('/'); }
+                        else { addToast('Failed to delete link', 'error'); }
+                      })} className="link-detail-btn danger">Delete</button>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <CommentThread
-          comments={comments}
-          currentUsername={user?.username}
-          commentValue={newComment}
-          onCommentChange={setNewComment}
-          onCommentSubmit={handlePostComment}
-          onCommentDelete={handleCommentDelete}
-          onReply={handleReply}
-          isAuthenticated={!!user}
-          postingComment={postingComment}
-          postingReply={postingReply}
-          replyingTo={replyingTo}
-          setReplyingTo={setReplyingTo}
-        />
+        <div className="link-detail-comments">
+          <CommentThread
+            comments={comments}
+            currentUsername={user?.username}
+            commentValue={newComment}
+            onCommentChange={setNewComment}
+            onCommentSubmit={handlePostComment}
+            onCommentDelete={handleCommentDelete}
+            onReply={handleReply}
+            isAuthenticated={!!user}
+            postingComment={postingComment}
+            postingReply={postingReply}
+            replyingTo={replyingTo}
+            setReplyingTo={setReplyingTo}
+          />
+        </div>
       </div>
       )}
 

@@ -90,6 +90,40 @@
   overflow-x: hidden
 }
 
+.collapsed-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 0;
+}
+
+.collapsed-nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  color: var(--text-3);
+  transition: color var(--t), background var(--t);
+}
+
+.collapsed-nav-item:hover {
+  color: var(--text);
+  background: var(--bg-2);
+}
+
+.collapsed-nav-item.active {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.collapsed-nav-item .nav-icon {
+  width: 18px;
+  height: 18px;
+}
+
 .sidebar-nav::-webkit-scrollbar {
   width: 2px
 }

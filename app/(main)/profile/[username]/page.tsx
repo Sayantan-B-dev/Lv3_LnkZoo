@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef, use } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo, use } from 'react';
 import Link from 'next/link';
 import Topbar from '@/components/common/Topbar';
 import NotificationPanel from '@/components/common/NotificationPanel';
-import LinkCard from '@/components/links/LinkCard';
 import LoadingGlobe from '@/components/common/LoadingGlobe';
 import SortDropdown from '@/components/common/SortDropdown';
+import ScatteredLinks from '@/components/react-bits/ScatteredLinks';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import Cropper from 'react-easy-crop';
@@ -31,7 +31,6 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
   const { user: currentUser, logout } = useAuth();
   const { addToast } = useToast();
   const [profile, setProfile] = useState<any>(null);
-  const [links, setLinks] = useState([]);
   const [sortBy, setSortBy] = useState('new');
   const [loading, setLoading] = useState(true);
   const [showGlobe, setShowGlobe] = useState(true);
@@ -57,21 +56,20 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
 
   const cleanUsername = username.replace(/^@/, '');
 
+  const apiEndpoint = useMemo(() => {
+    return `/api/users/${cleanUsername}/links?sort=${sortBy}`;
+  }, [cleanUsername, sortBy]);
+
   const fetchProfile = async () => {
     setLoading(true);
     setShowGlobe(true);
     setFadeIn(false);
     dataReady.current = false;
     try {
-      const [profRes, linksRes] = await Promise.all([
-        fetch(`/api/users/${cleanUsername}`, { cache: 'no-store' }),
-        fetch(`/api/users/${cleanUsername}/links?sort=${sortBy}`, { cache: 'no-store' })
-      ]);
-      if (profRes.ok && linksRes.ok) {
+      const profRes = await fetch(`/api/users/${cleanUsername}`, { cache: 'no-store' });
+      if (profRes.ok) {
         const profData = await profRes.json();
-        const linksData = await linksRes.json();
         setProfile(profData.user);
-        setLinks(linksData.links);
         setEditData({
           bio: profData.user.bio || '',
           avatar_url: profData.user.avatar_url || '',
@@ -140,7 +138,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
     return () => {
       if (minTimer.current) clearTimeout(minTimer.current);
     };
-  }, [username, sortBy]);
+  }, [username]);
 
   useEffect(() => {
     if (!loading && minTimer.current && dataReady.current) {
@@ -340,26 +338,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
             <h2 className="section-title">Submissions</h2>
             <SortDropdown value={sortBy} onChange={setSortBy} />
           </div>
-          <div className="links-grid">
-            {links.length === 0 ? (
-              <div className="empty">No posts yet.</div>
-            ) : (
-              links.map((link: any) => (
-                <LinkCard
-                  key={link.id}
-                  link={link}
-                  variant="profile"
-                  showPreview={true}
-                  showVotes={true}
-                  showComments={true}
-                  onClick={() => router.push(`/link/${link.id}`)}
-                  isClickable={true}
-                  isOwner={!!currentUser && currentUser.id === link.user_id}
-                  onVisibilityChange={() => { /* parent feed will re-fetch if needed */ }}
-                />
-              ))
-            )}
-          </div>
+          <ScatteredLinks apiEndpoint={apiEndpoint} />
         </div>
       </div>
       )}

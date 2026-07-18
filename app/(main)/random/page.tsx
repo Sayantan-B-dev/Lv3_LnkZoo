@@ -6,6 +6,7 @@ import NotificationPanel from '@/components/common/NotificationPanel';
 import { useRouter } from 'next/navigation';
 
 const DURATION = 10;
+const FALLBACK_IMG = '/fall-back-image.webp';
 
 export default function RandomPage() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export default function RandomPage() {
   const [loading, setLoading] = useState(true);
   const [countdown, setCountdown] = useState(DURATION);
   const [isPaused, setIsPaused] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   const fetchRandom = useCallback(async (excludeId?: string) => {
     setLoading(true);
@@ -86,34 +88,36 @@ export default function RandomPage() {
               <div className="skel" style={{ width: '100%', height: '100%' }}></div>
             </div>
           ) : link ? (
-            <div className="link-card detail fade-in" style={{ padding: '32px', border: '2px solid var(--border)', background: 'var(--bg-1)' }}>
-              <div className="card-body" style={{ overflowWrap: 'break-word', wordBreak: 'break-word' }}>
-                <div className="card-meta" style={{ marginBottom: '16px' }}>
-                  <span className="card-domain" style={{ background: 'var(--bg-2)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: '600' }}>
-                    {new URL(link.original_url).hostname}
-                  </span>
-                  <span className="card-poster">@{link.username}</span>
+            <div className="fade-in" style={{ width: '100%' }}>
+              <div className="link-card detail" style={{ padding: '32px', border: 'none', background: 'transparent', boxShadow: 'none' }}>
+                <div className="card-body" style={{ overflowWrap: 'break-word', wordBreak: 'break-word' }}>
+                  <div className="card-meta" style={{ marginBottom: '16px' }}>
+                    <span className="card-domain" style={{ background: 'var(--bg-2)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: '600' }}>
+                      {new URL(link.original_url).hostname}
+                    </span>
+                    <span className="card-poster">@{link.username}</span>
+                  </div>
+                  <div className="card-title" style={{ fontSize: '22px', fontWeight: '700', marginBottom: '16px', lineHeight: '1.3' }}>{link.title}</div>
+                  <div className="card-desc" style={{ fontSize: '15px', color: 'var(--text-3)', marginBottom: '24px', lineHeight: '1.6' }}>{link.description}</div>
+                  <div className="card-tags" style={{ marginBottom: '24px' }}>
+                    {link.tags?.map((t: string) => <span key={t} className="tag">#{t}</span>)}
+                  </div>
+                  <div className="card-footer" style={{ borderTop: '1px solid var(--border)', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <a href={link.original_url} target="_blank" rel="noopener" className="visit-btn" onClick={() => setIsPaused(true)}>Visit Discovery ↗</a>
+                    <button onClick={handleLike} className={`like-btn ${link.liked_by_user ? 'active' : ''}`}>
+                      <svg width="14" height="14" fill={link.liked_by_user ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.35-1.92-4.25-4.29-4.25-1.69 0-3.15.97-3.85 2.38A4.32 4.32 0 008.86 4C6.48 4 4.5 5.9 4.5 8.25c0 6.03 7.5 10.75 7.5 10.75s9-4.72 9-10.75z" />
+                      </svg>
+                      {link.like_count ?? 0}
+                    </button>
+                  </div>
                 </div>
-                <div className="card-title" style={{ fontSize: '22px', fontWeight: '700', marginBottom: '16px', lineHeight: '1.3' }}>{link.title}</div>
-                <div className="card-desc" style={{ fontSize: '15px', color: 'var(--text-3)', marginBottom: '24px', lineHeight: '1.6' }}>{link.description}</div>
-                <div className="card-tags" style={{ marginBottom: '24px' }}>
-                  {link.tags?.map((t: string) => <span key={t} className="tag">#{t}</span>)}
-                </div>
-                <div className="card-footer" style={{ borderTop: '1px solid var(--border)', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <a href={link.original_url} target="_blank" rel="noopener" className="visit-btn" onClick={() => setIsPaused(true)}>Visit Discovery ↗</a>
-                  <button onClick={handleLike} className={`like-btn ${link.liked_by_user ? 'active' : ''}`}>
-                    <svg width="14" height="14" fill={link.liked_by_user ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.35-1.92-4.25-4.29-4.25-1.69 0-3.15.97-3.85 2.38A4.32 4.32 0 008.86 4C6.48 4 4.5 5.9 4.5 8.25c0 6.03 7.5 10.75 7.5 10.75s9-4.72 9-10.75z" />
-                    </svg>
-                    {link.like_count ?? 0}
-                  </button>
-                </div>
+                {(link.preview_image || true) && (
+                  <div className="card-preview right" style={{ width: '140px', height: '100px', alignSelf: 'center' }}>
+                    <img src={imgError || !link.preview_image ? FALLBACK_IMG : link.preview_image} alt={link.title} onError={() => setImgError(true)} />
+                  </div>
+                )}
               </div>
-              {link.preview_image && (
-                <div className="card-preview right" style={{ width: '140px', height: '100px', alignSelf: 'center' }}>
-                  <img src={link.preview_image} alt={link.title} />
-                </div>
-              )}
             </div>
           ) : (
             <div className="empty">No links available to discover.</div>

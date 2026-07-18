@@ -4,8 +4,6 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Topbar from '@/components/common/Topbar';
 import NotificationPanel from '@/components/common/NotificationPanel';
-import LinkCard from '@/components/links/LinkCard';
-
 import { useRouter } from 'next/navigation';
 
 export default function DailyDose() {
@@ -20,7 +18,17 @@ export default function DailyDose() {
         const res = await fetch('/api/links/daily-dose');
         if (res.ok) {
           const data = await res.json();
-          setLinks(data.links);
+          if (data.links && data.links.length > 0) {
+            setLinks(data.links);
+            setLoading(false);
+            return;
+          }
+        }
+        // fallback: fetch 5 random links
+        const randRes = await fetch('/api/links/random?limit=5');
+        if (randRes.ok) {
+          const randData = await randRes.json();
+          setLinks(randData.links || []);
         }
       } catch (err) {
         console.error('Failed to fetch daily dose', err);
@@ -48,21 +56,29 @@ export default function DailyDose() {
               <div key={i} className="link-card" style={{ height: '140px' }}><div className="skel" style={{ width: '100%', height: '100%' }}></div></div>
             ))
           ) : links.length === 0 ? (
-            <div className="empty">The community was quiet today. check back soon!</div>
+            <div className="empty">No links available right now.</div>
           ) : (
-            links.map((link: any, index: number) => (
-              <LinkCard
-                key={link.id}
-                link={link}
-                variant="dose"
-                doseNumber={index + 1}
-                showPoster={true}
-                showDescription={true}
-                showPreview={true}
-                onClick={() => router.push(`/link/${link.id}`)}
-                isClickable={true}
-              />
-            ))
+            links.map((link: any, index: number) => {
+              const domain = link.original_url ? new URL(link.original_url).hostname : '';
+              return (
+                <div key={link.id} className="dose-link-card" onClick={() => router.push(`/link/${link.id}`)}>
+                  <div className="dose-number">{String(index + 1).padStart(2, '0')}</div>
+                  <div className="dose-link-body">
+                    <span className="dose-link-domain">{domain}</span>
+                    <div className="dose-link-title">{link.title || 'Untitled'}</div>
+                    {link.description && <div className="dose-link-desc">{link.description}</div>}
+                    <div className="dose-link-footer">
+                      {link.username && <span className="dose-link-poster">@{link.username}</span>}
+                    </div>
+                  </div>
+                  {link.preview_image && (
+                    <div className="dose-link-img">
+                      <img src={link.preview_image} alt={link.title || ''} onError={(e) => { (e.target as HTMLImageElement).src = '/fall-back-image.webp'; }} />
+                    </div>
+                  )}
+                </div>
+              );
+            })
           )}
         </div>
       </div>
