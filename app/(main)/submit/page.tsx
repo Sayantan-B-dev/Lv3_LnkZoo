@@ -85,11 +85,11 @@ export default function Submit() {
         });
         setStep(2);
       } else {
-        addToast('Failed to parse URL — proceeding with raw link', 'info');
+        addToast('Failed to parse URL - proceeding with raw link', 'info');
         setStep(2);
       }
     } catch {
-      addToast('Failed to parse URL — proceeding with raw link', 'info');
+      addToast('Failed to parse URL - proceeding with raw link', 'info');
       setStep(2);
     } finally {
       setParsing(false);
@@ -118,7 +118,7 @@ export default function Submit() {
         router.push('/');
       } else if (res.status === 409) {
         const data = await res.json();
-        addToast(`Duplicate — already exists as /s/${data.shortCode}`, 'error');
+        addToast(`Duplicate - already exists as /s/${data.shortCode}`, 'error');
       } else {
         addToast('Failed to post link. Check your input.', 'error');
       }

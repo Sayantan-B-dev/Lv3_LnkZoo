@@ -82,7 +82,7 @@ export default function BulkUpload() {
       });
 
       if (!res.ok) {
-        addToast('Upload failed — server error', 'error');
+        addToast('Upload failed - server error', 'error');
         setSummary({ total: urls.length, succeeded: 0, failed: urls.length, limitApplied: false });
         setLoading(false);
         return;
@@ -144,7 +144,7 @@ export default function BulkUpload() {
               <p className="bulk-sub">
                 Paste URLs, one per line.{' '}
                 {isAdmin
-                  ? `Unlimited uploads — ${concurrency} concurrent threads.`
+                  ? `Unlimited uploads - ${concurrency} concurrent threads.`
                   : `Max 10 URLs at once.`}
               </p>
             </div>
@@ -181,7 +181,7 @@ export default function BulkUpload() {
                   <span className="bulk-count-num">{urls.length}</span> URL{urls.length !== 1 ? 's' : ''} detected
                   {exceeded && (
                     <span className="bulk-count-warn">
-                      — max {maxUrls} per upload
+                      - max {maxUrls} per upload
                     </span>
                   )}
                 </div>
@@ -260,7 +260,7 @@ export default function BulkUpload() {
                           {r.success && r.shortCode ? (
                             <code className="bulk-code">{r.shortCode}</code>
                           ) : (
-                            <span className="bulk-result-na">—</span>
+                            <span className="bulk-result-na">-</span>
                           )}
                         </td>
                         <td>

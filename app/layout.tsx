@@ -12,21 +12,21 @@ import './globals.css';
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://lnkzoo.vercel.app'
 
 export const metadata: Metadata = {
-  title: { default: 'LnkZoo — share links, find the web', template: '%s | LnkZoo' },
+  title: { default: 'LnkZoo - share links, find the web', template: '%s | LnkZoo' },
   description: 'A community for sharing and discovering the best links on the web.',
   metadataBase: new URL(baseUrl),
   icons: { icon: '/icon.svg' },
   openGraph: {
     type: 'website',
     siteName: 'LnkZoo',
-    title: 'LnkZoo — share links, find the web',
+    title: 'LnkZoo - share links, find the web',
     description: 'A community for sharing and discovering the best links on the web.',
     url: baseUrl,
     locale: 'en_US',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'LnkZoo — share links, find the web',
+    title: 'LnkZoo - share links, find the web',
     description: 'A community for sharing and discovering the best links on the web.',
   },
   robots: { index: true, follow: true },
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-theme="light" suppressHydrationWarning>
+    <html lang="en" data-theme="dark" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{
           __html: `

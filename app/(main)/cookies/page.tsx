@@ -18,7 +18,7 @@ export default function CookiesPage() {
 
         <section>
           <h2>How We Use Cookies</h2>
-          <p>LnkZoo uses essential cookies for authentication and security — these are necessary for the platform to function. We also use preference cookies to remember your theme and layout settings.</p>
+          <p>LnkZoo uses essential cookies for authentication and security - these are necessary for the platform to function. We also use preference cookies to remember your theme and layout settings.</p>
         </section>
 
         <section>

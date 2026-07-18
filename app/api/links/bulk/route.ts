@@ -109,7 +109,7 @@ async function createLink(
 
     const dup = await checkDuplicate(resolvedUrl);
     if (dup.isDuplicate) {
-      return { success: false, error: `Duplicate — /s/${dup.shortCode}` };
+      return { success: false, error: `Duplicate - /s/${dup.shortCode}` };
     }
 
     const meta = await parseUrl(resolvedUrl);

@@ -16,7 +16,7 @@ function NotFoundInner() {
       <CustomCursor />
       <Sidebar isOpen={isOpen} onClose={close} />
       <main id="main">
-        <Topbar title="404 — Not Found" />
+        <Topbar title="404 - Not Found" />
         <div id="content" className="fade-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '70vh', textAlign: 'center' }}>
           <div className="error-code" style={{ fontSize: '120px', fontWeight: '800', opacity: '0.05', position: 'absolute', zIndex: -1 }}>404</div>
           <h1 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '12px' }}>Lost in the grid?</h1>

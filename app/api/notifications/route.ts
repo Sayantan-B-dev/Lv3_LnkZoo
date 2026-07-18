@@ -22,7 +22,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
   return NextResponse.json({ notifications: rows, unread });
 });
 
-// PATCH /api/notifications — mark all read or bulk mark
+// PATCH /api/notifications - mark all read or bulk mark
 export const PATCH = apiHandler(async (req: NextRequest) => {
   const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

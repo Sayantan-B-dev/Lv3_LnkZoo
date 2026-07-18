@@ -56,7 +56,7 @@ async function callGroq(title: string, description: string): Promise<string[]> {
     },
     body: JSON.stringify({
       model: 'llama-3.3-70b-versatile',
-      messages: [{ role: 'user', content: `Suggest 3-5 tags for "${title}" — ${description || ''}. Tags: lowercase, single words. Reply: "tag1, tag2, tag3"` }],
+      messages: [{ role: 'user', content: `Suggest 3-5 tags for "${title}" - ${description || ''}. Tags: lowercase, single words. Reply: "tag1, tag2, tag3"` }],
       max_tokens: 50,
       temperature: 0.1,
     }),

@@ -14,7 +14,7 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
-/* Random discovery card — prominent accent border */
+/* Random discovery card - prominent accent border */
 .link-card.random-card {
   border: 2px solid color-mix(in srgb, var(--accent) 20%, var(--border));
   box-shadow: 0 2px 16px rgba(0,0,0,0.06), 0 0 0 1px color-mix(in srgb, var(--accent) 5%, transparent);
