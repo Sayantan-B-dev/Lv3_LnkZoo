@@ -86,7 +86,9 @@ export default function Users() {
             {users.map((u) => (
               <Link key={u.id} href={`/profile/${u.username}`} className="user-card">
                 <div className="user-card-avatar">
-                  {u.avatar_url ? <img src={u.avatar_url} alt={u.username} /> : u.username.slice(0, 2).toUpperCase()}
+                  {u.avatar_url
+                    ? <img src={u.avatar_url} alt={u.username} onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.textContent = u.username.slice(0, 2).toUpperCase(); }} />
+                    : u.username.slice(0, 2).toUpperCase()}
                 </div>
                 <div className="user-card-name">@{u.username}</div>
                 <div className="user-card-stats">
