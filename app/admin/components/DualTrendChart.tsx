@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
+import ChartEmpty from './ChartEmpty';
 
 const colors = { blue: '#3b82f6', green: '#10b981' };
 
@@ -90,7 +91,8 @@ export default function DualTrendChart({ data, title }: { data: { date: string; 
         <span className="adm-chart-title">{title}</span>
         <span className="adm-chart-total">{data.reduce((s, d) => s + d.posts, 0).toLocaleString()} posts · {data.reduce((s, d) => s + d.comments, 0).toLocaleString()} comments</span>
       </div>
-      <div ref={ref} className="adm-chart-body" />
+      {data.length < 2 && <ChartEmpty />}
+      <div ref={ref} className="adm-chart-body" style={data.length < 2 ? { display: 'none' } : undefined} />
       <div ref={tooltipRef} className="adm-tooltip" />
     </div>
   );

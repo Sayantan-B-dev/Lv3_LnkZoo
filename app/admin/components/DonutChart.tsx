@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
+import ChartEmpty from './ChartEmpty';
 
 const palette = ['#3b82f6', '#f59e0b', '#ef4444'];
 
@@ -59,7 +60,8 @@ export default function DonutChart({ data, title }: { data: { role: string; coun
   return (
     <div className="adm-chart-card">
       <div className="adm-chart-header"><span className="adm-chart-title">{title}</span></div>
-      <div className="adm-donut-wrap">
+      {!data.length && <ChartEmpty />}
+      <div className="adm-donut-wrap" style={!data.length ? { display: 'none' } : undefined}>
         <div ref={ref} />
         <div ref={legendRef} className="adm-legend" />
       </div>

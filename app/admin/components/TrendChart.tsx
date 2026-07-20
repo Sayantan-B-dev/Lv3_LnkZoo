@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
+import ChartEmpty from './ChartEmpty';
 
 export default function TrendChart({ data, title, color, height = 260 }: { data: { date: string; count: number }[]; title: string; color: string; height?: number }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -82,7 +83,8 @@ export default function TrendChart({ data, title, color, height = 260 }: { data:
         <span className="adm-chart-title">{title}</span>
         <span className="adm-chart-total">{data.reduce((s, d) => s + d.count, 0).toLocaleString()} total</span>
       </div>
-      <div ref={ref} className="adm-chart-body" />
+      {data.length < 2 && <ChartEmpty />}
+      <div ref={ref} className="adm-chart-body" style={data.length < 2 ? { display: 'none' } : undefined} />
       <div ref={tooltipRef} className="adm-tooltip" />
     </div>
   );

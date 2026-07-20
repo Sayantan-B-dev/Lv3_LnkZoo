@@ -19,5 +19,6 @@ export default function Sparkline({ data, color, height = 48 }: { data: { date: 
     svg.append('path').datum(pts).attr('d', area).attr('fill', color).attr('opacity', 0.12);
     svg.append('path').datum(pts).attr('d', line).attr('fill', 'none').attr('stroke', color).attr('stroke-width', 1.5);
   }, [data, color, height]);
+  if (data.length < 2) return <div className="adm-sparkline adm-sparkline-empty">No data yet</div>;
   return <div ref={ref} className="adm-sparkline" />;
 }

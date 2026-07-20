@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
+import ChartEmpty from './ChartEmpty';
 
 export default function HorizBarChart({ data, title }: { data: { name: string; usage_count: number }[]; title: string }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -45,7 +46,8 @@ export default function HorizBarChart({ data, title }: { data: { name: string; u
   return (
     <div className="adm-chart-card">
       <div className="adm-chart-header"><span className="adm-chart-title">{title}</span></div>
-      <div ref={ref} />
+      {!data.length && <ChartEmpty />}
+      <div ref={ref} style={!data.length ? { display: 'none' } : undefined} />
     </div>
   );
 }
