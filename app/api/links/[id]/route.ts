@@ -42,6 +42,8 @@ export const GET = apiHandler(async (req: NextRequest, { params }: { params: { i
   if (!canView) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
   sql`UPDATE links SET view_count = view_count + 1 WHERE id = ${id}`.catch(() => {});
+  const referrer = req.headers.get('referer') ?? null;
+  sql`INSERT INTO link_view_events (link_id, user_id, referrer) VALUES (${id}, ${session?.user_id ?? null}, ${referrer})`.catch(() => {});
 
   return NextResponse.json({ link });
 });

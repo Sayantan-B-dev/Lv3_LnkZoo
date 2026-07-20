@@ -1,3 +1,4 @@
+import { headers } from 'next/headers';
 import sql from '@/lib/db';
 
 export default async function ShortCodePage({ params }: { params: Promise<{ code: string }> }) {
@@ -8,6 +9,7 @@ export default async function ShortCodePage({ params }: { params: Promise<{ code
   let description = '';
   let image = '';
   let isShort = false;
+  let linkId: string | null = null;
 
   const [short] = await sql`
     SELECT original_url, created_at FROM shortened_links WHERE short_code = ${code} LIMIT 1
@@ -21,13 +23,14 @@ export default async function ShortCodePage({ params }: { params: Promise<{ code
 
   if (!url) {
     const [link] = await sql`
-      SELECT original_url, title, description, preview_image FROM links WHERE short_code = ${code} LIMIT 1
+      SELECT id, original_url, title, description, preview_image FROM links WHERE short_code = ${code} LIMIT 1
     `;
     if (link) {
       url = link.original_url;
       title = link.title;
       description = link.description || '';
       image = link.preview_image || '';
+      linkId = link.id;
     }
   }
 
@@ -41,11 +44,13 @@ export default async function ShortCodePage({ params }: { params: Promise<{ code
     );
   }
 
+  const referrer = (await headers()).get('referer') ?? null;
   if (isShort) {
     await sql`UPDATE shortened_links SET click_count = click_count + 1 WHERE short_code = ${code}`.catch(() => {});
   } else {
     await sql`UPDATE links SET click_count = click_count + 1 WHERE short_code = ${code}`.catch(() => {});
   }
+  sql`INSERT INTO link_click_events (link_id, short_code, referrer) VALUES (${linkId}, ${code}, ${referrer})`.catch(() => {});
 
   const origin = process.env.NEXT_PUBLIC_BASE_URL || 'https://lnkzoo.vercel.app';
 
