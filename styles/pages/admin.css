@@ -391,3 +391,78 @@
   .admin-main { padding: 14px 10px; }
   .adm-page-title { font-size: 20px; }
 }
+
+/* ── TOPICS MANAGER ─────────────────────────── */
+.topic-adm-create { display: flex; flex-direction: column; gap: 10px; }
+
+.topic-adm-create-row {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+
+.topic-adm-input {
+  flex: 1; min-width: 160px;
+  padding: 8px 12px; border-radius: 6px;
+  border: 1px solid var(--border); background: var(--bg);
+  color: var(--text); font-size: 13px; outline: none;
+  transition: border-color 0.15s;
+}
+.topic-adm-input:focus { border-color: var(--text-4); }
+
+.topic-adm-select { flex: 1; min-width: 200px; }
+
+.topic-adm-swatches { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
+
+.topic-adm-swatch {
+  width: 20px; height: 20px; border-radius: 50%;
+  cursor: pointer; border: 2px solid transparent;
+  transition: transform 0.12s, border-color 0.12s;
+}
+.topic-adm-swatch:hover { transform: scale(1.15); }
+.topic-adm-swatch.active { border-color: var(--text); transform: scale(1.15); }
+
+.topic-adm-type { margin-bottom: 16px; padding: 16px 20px; }
+
+.topic-adm-type-header {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding-bottom: 12px; border-bottom: 1px solid var(--border);
+}
+
+.topic-adm-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.topic-adm-dot.sm { width: 8px; height: 8px; }
+
+.topic-adm-type-name { font-size: 14px; font-weight: 600; color: var(--text); }
+
+.topic-adm-child-name { font-size: 13px; color: var(--text-2); }
+
+.topic-adm-slug { font-size: 11px; color: var(--text-4); }
+
+.topic-adm-count {
+  font-size: 11px; color: var(--text-4);
+  padding: 1px 8px; border-radius: 100px; border: 1px solid var(--border);
+}
+
+.topic-adm-actions { display: flex; gap: 6px; margin-left: auto; }
+
+.topic-adm-children { display: flex; flex-direction: column; }
+
+.topic-adm-child {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 10px 4px; border-bottom: 1px solid var(--border);
+}
+.topic-adm-child:last-child { border-bottom: none; }
+
+.topic-adm-empty, .topic-adm-child .topic-adm-empty {
+  font-size: 12px; color: var(--text-4); padding: 12px 4px;
+}
+
+.topic-adm-edit {
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 8px 0; width: 100%;
+}
+
+.topic-adm-edit-actions { display: flex; gap: 8px; }
+
+@media (max-width: 600px) {
+  .topic-adm-actions { margin-left: 0; width: 100%; }
+  .topic-adm-create-row { flex-direction: column; align-items: stretch; }
+}
