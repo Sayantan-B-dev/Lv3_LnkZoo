@@ -33,7 +33,10 @@ button {
 }
 
 input,
-textarea {
+textarea,
+select,
+optgroup,
+option {
   font-family: var(--font)
 }
 

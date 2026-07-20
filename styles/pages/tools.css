@@ -88,7 +88,7 @@
     color: var(--text-2);
 }
 .result-link{
-    font-family: monospace;
+    font-family: var(--font);
     font-size: 13px;
     color: var(--text);
     word-break: break-all;

@@ -33,7 +33,7 @@
     font-size: 32px;
     font-weight: 700;
     color: var(--text-4);
-    font-family: 'Geist Mono';
+    font-family: var(--font);
     opacity: 0.3;
     padding-top: 10px;
 }

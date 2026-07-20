@@ -6,6 +6,7 @@ import NotificationPanel from '@/components/common/NotificationPanel';
 import ConfirmModal from '@/components/common/ConfirmModal';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/context/ToastContext';
+import TopicSelect from '@/components/common/TopicSelect';
 
 interface Metadata {
   title: string;
@@ -23,11 +24,13 @@ interface TopicOption {
   id: number;
   slug: string;
   name: string;
+  color?: string | null;
 }
 
 interface TopicTypeGroup {
   id: number;
   name: string;
+  color?: string | null;
   topics: TopicOption[];
 }
 
@@ -216,20 +219,11 @@ export default function Submit() {
               </div>
               <div className="input-group-v">
                 <label>Topic</label>
-                <select
+                <TopicSelect
                   value={topicId}
-                  onChange={(e) => setTopicId(e.target.value)}
-                  className="sub-input"
-                >
-                  <option value="">No topic</option>
-                  {topicGroups.map((group) => (
-                    <optgroup key={group.id} label={group.name}>
-                      {group.topics.map((t) => (
-                        <option key={t.id} value={t.id}>{t.name}</option>
-                      ))}
-                    </optgroup>
-                  ))}
-                </select>
+                  onChange={setTopicId}
+                  groups={topicGroups}
+                />
               </div>
               <div className="input-group-v">
                 <label>Visibility</label>

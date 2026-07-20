@@ -1,5 +1,6 @@
 :root {
   --font: 'JetBrains Mono', 'Geist Mono', monospace;
+  --font-mono: 'JetBrains Mono', 'Geist Mono', monospace;
 
   /* dark (default) */
   --bg: #0e0e0d;

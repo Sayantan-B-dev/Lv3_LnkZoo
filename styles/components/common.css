@@ -10,7 +10,7 @@
         .config-item { display: flex; flex-direction: column; gap: 8px; }
         .config-row { display: flex; justify-content: space-between; align-items: center; }
         .config-row label { font-size: 10px; color: var(--text-4); font-weight: 600; text-transform: uppercase; }
-        .config-row span { font-size: 10px; color: var(--text-2); font-family: 'JetBrains Mono', monospace; }
+        .config-row span { font-size: 10px; color: var(--text-2); font-family: var(--font); }
         
         .config-item input { width: 100%; height: 2px; -webkit-appearance: none; background: var(--border); border-radius: 2px; outline: none; }
         .config-item input::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; background: var(--text-2); border-radius: 50%; cursor: pointer; border: 2px solid var(--bg); box-shadow: 0 0 5px rgba(0,0,0,0.5); }
