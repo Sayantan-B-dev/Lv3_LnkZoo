@@ -4,14 +4,10 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Topbar from '@/components/common/Topbar';
 import ScatteredLinks from '@/components/react-bits/ScatteredLinks';
 import SortDropdown from '@/components/common/SortDropdown';
-import { useRouter } from 'next/navigation';
 
 export default function Explore() {
-  const router = useRouter();
-  const [searchResults, setSearchResults] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('new');
-  const [searching, setSearching] = useState(false);
   const [categories, setCategories] = useState<{ name: string; count: number }[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [showCatFilter, setShowCatFilter] = useState(false);
@@ -37,32 +33,6 @@ export default function Explore() {
     fetchCategories();
   }, []);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (searchQuery.trim()) {
-        const performSearch = async () => {
-          setSearching(true);
-          try {
-            const res = await fetch(`/api/links?q=${encodeURIComponent(searchQuery)}`);
-            if (res.ok) {
-              const data = await res.json();
-              setSearchResults(data.links);
-            }
-          } catch (err) {
-            console.error(err);
-          } finally {
-            setSearching(false);
-          }
-        };
-        performSearch();
-      } else {
-        setSearchResults([]);
-      }
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
   return (
     <>
       <Topbar title="Explore" />
@@ -83,35 +53,8 @@ export default function Explore() {
 
         {searchQuery ? (
           <section className="explore-section">
-            <h2 className="section-title">{searching ? 'Searching...' : `Search results for "${searchQuery}"`}</h2>
-            <div className="search-list">
-                {searchResults.length === 0 && !searching ? (
-                <div className="empty">No matches found.</div>
-              ) : searching ? (
-                Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="glow-card-wrap" style={{ height: '72px', borderRadius: '12px', background: 'var(--bg-1)', border: '1px solid var(--border)' }}>
-                    <div className="skel" style={{ width: '100%', height: '100%', borderRadius: '12px' }}></div>
-                  </div>
-                ))
-              ) : (
-                searchResults.map((link: any) => {
-                  const domain = link.original_url ? new URL(link.original_url).hostname : '';
-                  return (
-                    <div key={link.id} className="explore-link-card" onClick={() => router.push(`/link/${link.id}`)}>
-                      <div className="explore-link-body">
-                        <span className="explore-link-domain">{domain}</span>
-                        <div className="explore-link-title">{link.title || 'Untitled'}</div>
-                      </div>
-                      {link.preview_image && (
-                        <div className="explore-link-img">
-                          <img src={link.preview_image} alt={link.title || ''} onError={(e) => { (e.target as HTMLImageElement).src = '/fall-back-image.webp'; }} />
-                        </div>
-                      )}
-                    </div>
-                  );
-                })
-              )}
-            </div>
+            <h2 className="section-title">{`Search results for "${searchQuery}"`}</h2>
+            <ScatteredLinks apiEndpoint={`/api/links?q=${encodeURIComponent(searchQuery)}`} />
           </section>
         ) : (
           <section className="explore-section">

@@ -42,7 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await new Promise(r => setTimeout(r, attempt * 1000));
         return refreshUser(attempt + 1);
       } else {
-        setUser(null);
+        // Transient server error: don't force a logout, just stop loading.
         setLoading(false);
       }
     } catch (err) {
@@ -51,7 +51,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await new Promise(r => setTimeout(r, attempt * 1000));
         return refreshUser(attempt + 1);
       }
-      setUser(null);
       setLoading(false);
     }
   };

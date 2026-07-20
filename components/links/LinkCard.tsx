@@ -23,6 +23,14 @@ interface LinkCardProps {
   onVisibilityChange?: (linkId: string, visibility: string) => void;
 }
 
+function CardSpinner() {
+  return (
+    <div className="card-loading-overlay" aria-hidden="true">
+      <div className="card-spinner" />
+    </div>
+  );
+}
+
 export default function LinkCard({
   link,
   variant = 'full',
@@ -48,6 +56,7 @@ export default function LinkCard({
   const [menuOpen, setMenuOpen] = useState(false);
   const [currentVisibility, setCurrentVisibility] = useState(link.visibility || 'public');
   const menuRef = useRef<HTMLDivElement>(null);
+  const [navigating, setNavigating] = useState(false);
 
   useEffect(() => {
     setCurrentVisibility(link.visibility || 'public');
@@ -155,11 +164,17 @@ export default function LinkCard({
     }
   };
 
+  const navigateToLink = () => {
+    if (!isClickable) return;
+    setNavigating(true);
+    router.push(`/link/${link.id}`);
+  };
+
   const handleCardClick = () => {
     if (onClick) {
       onClick();
-    } else if (isClickable) {
-      router.push(`/link/${link.id}`);
+    } else {
+      navigateToLink();
     }
   };
 
@@ -209,10 +224,11 @@ export default function LinkCard({
   if (variant === 'full') {
     return (
       <div
-        className="link-card"
+        className={`link-card${navigating ? ' navigating' : ''}`}
         onClick={handleCardClick}
         style={{ cursor: isClickable ? 'pointer' : 'default' }}
       >
+        {navigating && <CardSpinner />}
         {/* {showVotes && (
           <div className="vote-col" onClick={(e) => e.stopPropagation()}>
             <button className="vote-btn up" onClick={(e) => handleVote(e, 1)}>
@@ -299,7 +315,8 @@ export default function LinkCard({
   // Mini variant - compact card
   if (variant === 'mini') {
     return (
-      <div className="link-card mini" onClick={handleCardClick} style={{ cursor: isClickable ? 'pointer' : 'default' }}>
+      <div className={`link-card mini${navigating ? ' navigating' : ''}`} onClick={handleCardClick} style={{ cursor: isClickable ? 'pointer' : 'default' }}>
+        {navigating && <CardSpinner />}
         <div className="card-body">
           <div className="card-meta">
             <span className="card-domain">{domain}</span>
@@ -367,7 +384,8 @@ export default function LinkCard({
   // Profile variant - simplified card
   if (variant === 'profile') {
     return (
-      <div className="link-card" onClick={() => router.push(`/link/${link.id}`)} style={{ cursor: 'pointer' }}>
+      <div className={`link-card${navigating ? ' navigating' : ''}`} onClick={() => navigateToLink()} style={{ cursor: 'pointer' }}>
+        {navigating && <CardSpinner />}
         <div className="card-body">
                     <div className="card-meta">
             <span className="card-domain">{domain}</span>
@@ -436,7 +454,8 @@ export default function LinkCard({
     return (
       <div className="dose-card">
         {doseNumber && <div className="dose-number">0{doseNumber}</div>}
-        <div className="link-card" style={{ flex: 1, marginBottom: 0 }}>
+        <div className={`link-card${navigating ? ' navigating' : ''}`} style={{ flex: 1, marginBottom: 0 }} onClick={() => navigateToLink()}>
+          {navigating && <CardSpinner />}
           <div className="card-body">
           <div className="card-meta">
             <span className="card-domain">{domain}</span>
@@ -476,7 +495,7 @@ export default function LinkCard({
               </div>
             )}
           </div>
-            <Link href={`/link/${link.id}`} className="card-title" style={{ fontSize: '15px', fontWeight: '500', color: 'var(--text)', marginBottom: '5px', display: 'block' }}>
+            <Link href={`/link/${link.id}`} className="card-title" onClick={(e) => { e.stopPropagation(); setNavigating(true); }} style={{ fontSize: '15px', fontWeight: '500', color: 'var(--text)', marginBottom: '5px', display: 'block' }}>
               {link.title}
             </Link>
             {showDescription && <div className="card-desc">{link.description}</div>}

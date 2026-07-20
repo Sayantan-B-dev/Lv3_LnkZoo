@@ -20,6 +20,7 @@ export default function ScatteredLinks({ links: initialLinks, itemsPerPage = 30,
   const hoverTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [navigatingId, setNavigatingId] = useState<string | null>(null);
 
   const [serverLinks, setServerLinks] = useState<any[]>([]);
   const [totalItems, setTotalItems] = useState(0);
@@ -104,7 +105,15 @@ export default function ScatteredLinks({ links: initialLinks, itemsPerPage = 30,
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
           >
-            <div className="link-card" onClick={() => router.push(`/link/${link.id}`)}>
+            <div
+              className={`link-card${navigatingId === link.id ? ' navigating' : ''}`}
+              onClick={() => { setNavigatingId(link.id); router.push(`/link/${link.id}`); }}
+            >
+              {navigatingId === link.id && (
+                <div className="card-loading-overlay" aria-hidden="true">
+                  <div className="card-spinner" />
+                </div>
+              )}
               <div className="card-body">
                 <div className="card-meta">
                   <span className="card-domain">{link.original_url ? new URL(link.original_url).hostname : ''}</span>

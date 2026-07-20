@@ -2,7 +2,11 @@ import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 import * as jose from 'jose';
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
+const rawSecret = process.env.JWT_SECRET;
+if (process.env.NODE_ENV === 'production' && !rawSecret) {
+  throw new Error('JWT_SECRET is not set. Set it in your deployment environment.');
+}
+const JWT_SECRET = new TextEncoder().encode(rawSecret ?? 'development-insecure-secret');
 const COOKIE_NAME = 'lnkzoo_token';
 const MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 
@@ -49,12 +53,17 @@ export async function getSessionFromCookies(): Promise<JWTPayload | null> {
   return await verifyToken(token);
 }
 
-export function cookieOptions() {
+export function cookieOptions(req?: NextRequest) {
+  const isHttps = req
+    ? req.nextUrl.protocol === 'https:' ||
+      req.headers.get('x-forwarded-proto')?.split(',')[0].trim() === 'https'
+    : process.env.NODE_ENV === 'production';
   return {
     name: COOKIE_NAME,
     maxAge: MAX_AGE,
+    expires: new Date(Date.now() + MAX_AGE * 1000),
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: isHttps,
     sameSite: 'lax' as const,
     path: '/',
   };

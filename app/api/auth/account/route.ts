@@ -23,6 +23,6 @@ export const DELETE = apiHandler(async (req: NextRequest) => {
   await sql`DELETE FROM users WHERE id = ${session.user_id}`;
 
   const res = NextResponse.json({ ok: true });
-  res.cookies.set('lnkzoo_token', '', { maxAge: 0, path: '/' });
+  res.cookies.set('lnkzoo_token', '', { maxAge: 0, expires: new Date(0), path: '/' });
   return res;
 });

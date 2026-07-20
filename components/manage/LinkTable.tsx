@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 interface LinkRow {
   id: string;
@@ -36,6 +37,7 @@ const VIS_LABEL: Record<string, string> = {
 
 export default function LinkTable({ links, selected, onSelect, onSelectAll, sort, order, onSort }: LinkTableProps) {
   const router = useRouter();
+  const [navigatingId, setNavigatingId] = useState<string | null>(null);
 
   const allSelected = links.length > 0 && selected.size === links.length;
 
@@ -78,7 +80,7 @@ export default function LinkTable({ links, selected, onSelect, onSelectAll, sort
             </tr>
           ) : (
             links.map(link => (
-              <tr key={link.id} className={selected.has(link.id) ? 'ml-selected' : ''}>
+              <tr key={link.id} className={selected.has(link.id) ? 'ml-selected' : ''} style={{ opacity: navigatingId === link.id ? 0.6 : 1 }}>
                 <td>
                   <input
                     type="checkbox"
@@ -88,7 +90,7 @@ export default function LinkTable({ links, selected, onSelect, onSelectAll, sort
                   />
                 </td>
                 <td>
-                  <div className="ml-title-cell" onClick={() => router.push(`/link/${link.id}`)}>
+                   <div className="ml-title-cell" onClick={() => { setNavigatingId(link.id); router.push(`/link/${link.id}`); }}>
                     {link.title}
                   </div>
                 </td>

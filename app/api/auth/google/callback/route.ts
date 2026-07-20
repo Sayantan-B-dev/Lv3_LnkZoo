@@ -77,7 +77,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
 
     const token = await signToken({ user_id: user.id, username: user.username, role: user.role });
     const res = NextResponse.redirect(new URL('/', req.url));
-    const opts = cookieOptions();
+    const opts = cookieOptions(req);
     res.cookies.set(opts.name, token, opts);
     return res;
   } catch (err) {

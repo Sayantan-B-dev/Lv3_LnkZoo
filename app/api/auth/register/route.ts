@@ -54,7 +54,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
       },
       { status: 201 }
     );
-    const opts = cookieOptions();
+    const opts = cookieOptions(req);
     res.cookies.set(opts.name, token, opts);
     return res;
   } catch (err) {

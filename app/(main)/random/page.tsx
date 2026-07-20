@@ -15,6 +15,7 @@ export default function RandomPage() {
   const [countdown, setCountdown] = useState(DURATION);
   const [isPaused, setIsPaused] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const [navigating, setNavigating] = useState(false);
 
   const fetchRandom = useCallback(async (excludeId?: string) => {
     setLoading(true);
@@ -89,8 +90,11 @@ export default function RandomPage() {
             </div>
           ) : link ? (
             <div className="fade-in" style={{ width: '100%' }}>
-              <div className="link-card detail" style={{ padding: '32px', border: '2px solid color-mix(in srgb, var(--accent) 25%, var(--border))', boxShadow: '0 2px 16px rgba(0,0,0,0.06), 0 0 0 1px color-mix(in srgb, var(--accent) 6%, transparent)' }}
-                onClick={() => router.push(`/link/${link.id}`)}>
+              <div className={`link-card detail${navigating ? ' navigating' : ''}`} style={{ padding: '32px', border: '2px solid color-mix(in srgb, var(--accent) 25%, var(--border))', boxShadow: '0 2px 16px rgba(0,0,0,0.06), 0 0 0 1px color-mix(in srgb, var(--accent) 6%, transparent)' }}
+                onClick={() => { setNavigating(true); router.push(`/link/${link.id}`); }}>
+                {navigating && (
+                  <div className="card-loading-overlay" aria-hidden="true"><div className="card-spinner" /></div>
+                )}
                 <div className="card-body" style={{ overflowWrap: 'break-word', wordBreak: 'break-word' }}>
                   <div className="card-meta" style={{ marginBottom: '16px' }}>
                     <span className="card-domain" style={{ background: 'var(--bg-2)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: '600' }}>
