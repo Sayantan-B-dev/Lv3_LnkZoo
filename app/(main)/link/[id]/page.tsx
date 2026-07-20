@@ -305,6 +305,15 @@ export default function LinkDetailPage({ params }: { params: Promise<{ id: strin
               <div className="link-detail-body">
                 <div className="link-detail-meta">
                   <span className="link-detail-domain">{new URL(link.original_url).hostname}</span>
+                  {link.topic && (
+                    <Link
+                      href={`/topics/${link.topic}`}
+                      className="card-topic-badge"
+                      style={link.topic_color ? { '--topic-color': link.topic_color } as React.CSSProperties : undefined}
+                    >
+                      {link.topic_name}
+                    </Link>
+                  )}
                   <span className="link-detail-poster">@{link.username}</span>
                   <span className="link-detail-time">{new Date(link.created_at).toLocaleDateString()}</span>
                 </div>

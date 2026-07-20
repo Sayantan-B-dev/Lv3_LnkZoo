@@ -181,6 +181,19 @@ export default function LinkCard({
   const domain = new URL(link.original_url).hostname;
   const date = new Date(link.created_at).toLocaleDateString();
 
+  const renderTopic = () =>
+    link.topic ? (
+      <Link
+        href={`/topics/${link.topic}`}
+        className="card-topic-badge"
+        onClick={(e) => e.stopPropagation()}
+        style={link.topic_color ? { '--topic-color': link.topic_color } as React.CSSProperties : undefined}
+        title={link.topic_name}
+      >
+        {link.topic_name}
+      </Link>
+    ) : null;
+
   const renderFooter = () => (
     <div className="card-footer">
       <button
@@ -251,6 +264,7 @@ export default function LinkCard({
             <span className={`vis-badge vis-${currentVisibility}`} title={visibilityLabel(currentVisibility)}>
               {visibilityIcon(currentVisibility)}
             </span>
+            {renderTopic()}
             {showPoster && (
               <span className="card-poster" onClick={(e) => e.stopPropagation()}>
                 {link.is_anonymous ? (
@@ -323,6 +337,7 @@ export default function LinkCard({
             <span className={`vis-badge vis-${currentVisibility}`} title={visibilityLabel(currentVisibility)}>
               {visibilityIcon(currentVisibility)}
             </span>
+            {renderTopic()}
             {showPoster && (
               <span className="card-poster" onClick={(e) => e.stopPropagation()}>
                 {link.is_anonymous ? (
@@ -392,6 +407,7 @@ export default function LinkCard({
             <span className={`vis-badge vis-${currentVisibility}`} title={visibilityLabel(currentVisibility)}>
               {visibilityIcon(currentVisibility)}
             </span>
+            {renderTopic()}
             {showPoster && (
               <span className="card-poster" onClick={(e) => e.stopPropagation()}>
                 {link.is_anonymous ? (
@@ -462,6 +478,7 @@ export default function LinkCard({
             <span className={`vis-badge vis-${currentVisibility}`} title={visibilityLabel(currentVisibility)}>
               {visibilityIcon(currentVisibility)}
             </span>
+            {renderTopic()}
             {showPoster && (
               <span className="card-poster" onClick={(e) => e.stopPropagation()}>
                 {link.is_anonymous ? (
