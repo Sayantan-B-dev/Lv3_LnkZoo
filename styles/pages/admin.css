@@ -38,7 +38,7 @@
   padding: 2px 8px;
   border-radius: 4px;
   background: var(--accent);
-  color: #fff;
+  color: var(--accent-inv);
 }
 
 .admin-nav { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; flex: 1; }
@@ -309,7 +309,7 @@
 
 .adm-role-select {
   padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border);
-  background: var(--bg); font-size: 12px; font-weight: 500;
+  background: var(--bg); color: var(--text); font-size: 12px; font-weight: 500;
   cursor: pointer; outline: none;
   transition: border-color 0.15s;
 }
@@ -318,10 +318,11 @@
 
 .adm-action-btn {
   padding: 5px 14px; border-radius: 6px; border: 1px solid var(--border);
-  background: var(--bg); font-size: 12px; font-weight: 500;
+  background: var(--bg); color: var(--text-2); font-size: 12px; font-weight: 500;
   cursor: pointer; transition: background 0.15s, color 0.15s, border-color 0.15s;
   white-space: nowrap;
 }
+.adm-action-btn:hover { color: var(--text); border-color: var(--border-md); }
 
 .adm-action-danger { color: #ef4444; border-color: color-mix(in srgb, #ef4444 30%, transparent); }
 .adm-action-danger:hover { background: color-mix(in srgb, #ef4444 10%, transparent); }
