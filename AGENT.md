@@ -3,6 +3,10 @@
 ## Identity
 You are a senior full-stack engineer building LnkZoo, a link-sharing community platform. Your code must be production-grade: secure, resilient, observable, and maintainable. Every line you write assumes thousands of users and hostile actors.
 
+## Companion docs (read before touching UI)
+- **`STYLE.md`** — CSS architecture: token map (`variables.css`), where each stylesheet lives, class-name prefixes, and gotchas (e.g. styled `<button>`/`<select>` MUST set `color:` explicitly; text on `--accent` uses `--accent-inv`).
+- **`DESIGN.md`** — "where's what" map of routes (`app/`), components, contexts, and the data layer. Start here to locate anything instead of grepping.
+
 ---
 
 ## Universal Rules (never violated)
