@@ -19,6 +19,18 @@ interface SuggestedTag {
   exists: boolean;
 }
 
+interface TopicOption {
+  id: number;
+  slug: string;
+  name: string;
+}
+
+interface TopicTypeGroup {
+  id: number;
+  name: string;
+  topics: TopicOption[];
+}
+
 export default function Submit() {
   const router = useRouter();
   const { addToast } = useToast();
@@ -28,8 +40,19 @@ export default function Submit() {
   const [metadata, setMetadata] = useState<Metadata>({ title: '', description: '', image: '', tags: '' });
   const [step, setStep] = useState(1);
   const [visibility, setVisibility] = useState('public');
+  const [topicId, setTopicId] = useState('');
+  const [topicGroups, setTopicGroups] = useState<TopicTypeGroup[]>([]);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const pendingUrlRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    fetch('/api/links/topics')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data?.types) setTopicGroups(data.types);
+      })
+      .catch(() => {});
+  }, []);
 
   const hasUnsavedData = step === 2 && (!!metadata.title || !!metadata.description || !!metadata.tags);
 
@@ -109,6 +132,7 @@ export default function Submit() {
           description: metadata.description,
           previewImage: metadata.image,
           tags: metadata.tags.split(',').map(t => t.trim()).filter(Boolean),
+          topicId: topicId ? Number(topicId) : null,
           isAnonymous: false,
           visibility,
         }),
@@ -189,6 +213,23 @@ export default function Submit() {
                   onChange={(e) => setMetadata({ ...metadata, tags: e.target.value })}
                   className="sub-input"
                 />
+              </div>
+              <div className="input-group-v">
+                <label>Topic</label>
+                <select
+                  value={topicId}
+                  onChange={(e) => setTopicId(e.target.value)}
+                  className="sub-input"
+                >
+                  <option value="">No topic</option>
+                  {topicGroups.map((group) => (
+                    <optgroup key={group.id} label={group.name}>
+                      {group.topics.map((t) => (
+                        <option key={t.id} value={t.id}>{t.name}</option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </select>
               </div>
               <div className="input-group-v">
                 <label>Visibility</label>
