@@ -12,7 +12,7 @@ Route groups: `(main)` = public/user shell (sidebar+topbar), `admin` = admin she
 - Short-link resolver: `s/[code]/`.
 - **(main)** user app: `page.tsx` (home) · `explore/` · `topics/` + `topics/[topic]/` · `tags/` + `tags/[tag]/` · `categories/` + `categories/[category]/` · `link/[id]/` · `submit/` + `submit/bulk/` · `manage/links/` · `profile/` + `profile/[username]/` · `bookmarks/` · `daily-dose/` · `random/` · `leaderboard/` · `users/` · `notifications/` · `settings/` · `tools/` · legal (`privacy`,`terms`,`cookies`).
 - Home is composed of `app/(main)/home-components/*` (Hero, About, Features, Metrics, Feed, FAQ, CTA, Marquee, Reveal, CounterStat, icons).
-- **admin**: `layout.tsx` (shell + `navLinks` array — add nav entries here) · `dashboard/` · `users/` · `topics/` · `forbidden/`. Admin charts: `app/admin/components/*` (MetricCard, Sparkline, TrendChart, DualTrendChart, DonutChart, HorizBarChart, FlaggedPanel).
+- **admin**: `layout.tsx` (shell + `navLinks` array — add nav entries here) · `dashboard/` · `users/` · `topics/` · `forbidden/`. Admin charts: `app/admin/components/*` (MetricCard, Sparkline, TrendChart, DualTrendChart, DonutChart, PieChart, HorizBarChart, BucketBar, StatTable, FlaggedPanel, RangeSelector, ChartEmpty). Dashboard is sectioned + range-driven: `/api/admin/stats?range=7|30|90|all` returns gap-filled series; charts show `ChartEmpty` when no data.
 
 ## Shared components — `components/`
 - **common/**: `Navbar`, `Sidebar` (main nav entries here), `Topbar`, `Footer`, `ToastContainer`, `ConfirmModal`, `LoadingSpinner`, `LoadingGlobe`, `ErrorMessage`, `SignInPrompt`, `PasswordInput`, `SortDropdown`, `TopicSelect` (searchable grouped topic picker), `NotificationBell`, `NotificationPanel`, `CustomCursor`, `AnimatedBg`.
