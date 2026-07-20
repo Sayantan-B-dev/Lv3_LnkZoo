@@ -88,11 +88,42 @@
 
 .adm-page-time { font-size: 12px; color: var(--text-4); padding: 6px 14px; border-radius: 6px; border: 1px solid var(--border); }
 
+.adm-header-right { display: flex; align-items: center; gap: 12px; }
+
+/* ── Range selector ── */
+.adm-range {
+  display: inline-flex; gap: 2px; padding: 3px;
+  border: 1px solid var(--border); border-radius: 8px; background: var(--bg-1);
+}
+.adm-range-btn {
+  padding: 5px 12px; border: none; background: none; border-radius: 6px;
+  color: var(--text-3); font-size: 12px; font-weight: 500; cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.adm-range-btn:hover { color: var(--text); }
+.adm-range-btn.active { background: var(--accent); color: var(--accent-inv); font-weight: 600; }
+
+/* ── Section headers ── */
+.adm-section { margin: 32px 0 16px; display: flex; align-items: center; gap: 12px; }
+.adm-section:first-of-type { margin-top: 8px; }
+.adm-section-title {
+  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--text-3); white-space: nowrap;
+}
+.adm-section-line { flex: 1; height: 1px; background: var(--border); }
+
+/* ── 3-column chart grid ── */
+.adm-grid-3 {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 24px; margin-bottom: 24px;
+}
+.adm-refreshing { opacity: 0.55; transition: opacity 0.2s; pointer-events: none; }
+
 /* ── Metric Cards ── */
 .adm-metrics {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
   margin-bottom: 24px;
 }
 
@@ -391,6 +422,7 @@
   .admin-main { padding: 20px 16px; }
   .adm-metrics { grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .adm-grid { grid-template-columns: 1fr; gap: 16px; }
+  .adm-grid-3 { grid-template-columns: 1fr; gap: 16px; }
   .adm-metric-sparklines { grid-template-columns: 1fr; }
   .adm-table-wrap { overflow-x: auto; }
   .adm-metric { padding: 14px; }
