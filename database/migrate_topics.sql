@@ -105,3 +105,7 @@ INSERT INTO topics (id, parent_id, slug, name, color, sort_order) VALUES
   (99, 9, 'nature-environment','Nature & Environment',   '#22d3ee', 9),
   (100,9, 'community',          'Community',             '#22d3ee', 10)
 ON CONFLICT (id) DO NOTHING;
+
+-- Advance the SERIAL sequence past the explicitly-seeded ids so that
+-- admin-created topics (via API) get fresh non-colliding ids.
+SELECT setval('topics_id_seq', (SELECT MAX(id) FROM topics));
