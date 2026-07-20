@@ -11,12 +11,16 @@ export default function Explore() {
   const [categories, setCategories] = useState<{ name: string; count: number }[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [showCatFilter, setShowCatFilter] = useState(false);
+  const [topicTypes, setTopicTypes] = useState<{ slug: string; name: string; link_count: number }[]>([]);
+  const [activeTopicType, setActiveTopicType] = useState<string | null>(null);
+  const [showTopicFilter, setShowTopicFilter] = useState(false);
 
   const apiEndpoint = useMemo(() => {
     let url = `/api/links?sort=${sortBy}`;
     if (activeCategory) url += `&domain=${encodeURIComponent(activeCategory)}`;
+    if (activeTopicType) url += `&topicType=${encodeURIComponent(activeTopicType)}`;
     return url;
-  }, [sortBy, activeCategory]);
+  }, [sortBy, activeCategory, activeTopicType]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -30,7 +34,19 @@ export default function Explore() {
         console.error(err);
       }
     };
+    const fetchTopics = async () => {
+      try {
+        const res = await fetch('/api/links/topics');
+        if (res.ok) {
+          const data = await res.json();
+          setTopicTypes(data.types ?? []);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
     fetchCategories();
+    fetchTopics();
   }, []);
 
   return (
@@ -93,6 +109,43 @@ export default function Explore() {
                       >
                         {cat.name}
                         <span className="cat-filter-count">{cat.count}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+            {topicTypes.length > 0 && (
+              <div style={{ marginBottom: '12px' }}>
+                <button
+                  onClick={() => setShowTopicFilter(v => !v)}
+                  style={{
+                    background: 'none', border: 'none', color: 'var(--text-4)', cursor: 'pointer',
+                    fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 0'
+                  }}
+                >
+                  <svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24"
+                    style={{ transform: showTopicFilter ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}>
+                    <path d="M8 5l8 7-8 7z" />
+                  </svg>
+                  Filter by topic {activeTopicType && <span style={{ color: 'var(--accent)' }}>({topicTypes.find(t => t.slug === activeTopicType)?.name})</span>}
+                </button>
+                {showTopicFilter && (
+                  <div className="filter-bar-scroll" style={{ marginTop: '8px' }}>
+                    <button
+                      className={`cat-filter-chip ${!activeTopicType ? 'active' : ''}`}
+                      onClick={() => setActiveTopicType(null)}
+                    >
+                      All
+                    </button>
+                    {topicTypes.map((t) => (
+                      <button
+                        key={t.slug}
+                        className={`cat-filter-chip ${activeTopicType === t.slug ? 'active' : ''}`}
+                        onClick={() => setActiveTopicType(activeTopicType === t.slug ? null : t.slug)}
+                      >
+                        {t.name}
+                        <span className="cat-filter-count">{t.link_count}</span>
                       </button>
                     ))}
                   </div>
