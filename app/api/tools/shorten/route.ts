@@ -3,16 +3,19 @@ import sql from '@/lib/db';
 import { getSessionFromRequest } from '@/lib/auth';
 import { generateShortCode } from '@/lib/shortCode';
 import { apiHandler } from '@/lib/api-utils';
+import { rateLimit } from '@/lib/rate-limit';
 
 const SHORT_CODE_PATTERN = /\/s\/[a-zA-Z0-9]+/;
 
-// POST /api/tools/shorten
+function clientIp(req: NextRequest): string {
+  return req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
+}
+
 export const POST = apiHandler(async (req: NextRequest) => {
   try {
     const { url } = await req.json();
     if (!url) return NextResponse.json({ error: 'url required' }, { status: 400 });
 
-    // Prevent nested short links (e.g. /s/ABC pointing to /s/DEF)
     const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
     const appHost = new URL(appUrl).hostname;
     try {
@@ -20,11 +23,22 @@ export const POST = apiHandler(async (req: NextRequest) => {
       if (inputHost === appHost && SHORT_CODE_PATTERN.test(new URL(url).pathname)) {
         return NextResponse.json({ error: 'Cannot shorten a short link' }, { status: 400 });
       }
-    } catch {} // invalid URL, will fail later
+    } catch {}
 
     const session = await getSessionFromRequest(req);
+    const ip = clientIp(req);
 
-    // Dedup: return existing non-expired short link for the same URL
+    // Rate limit: 10/min anonymous, 30/min logged-in
+    const key = session ? `shorten:user:${session.user_id}` : `shorten:ip:${ip}`;
+    const maxReqs = session ? 30 : 10;
+    if (!rateLimit(key, maxReqs, 60_000)) {
+      const remaining = session ? '30 per minute' : '10 per minute';
+      return NextResponse.json({ error: `Rate limited — ${remaining}` }, { status: 429 });
+    }
+
+    // Clean up expired short links
+    sql`DELETE FROM shortened_links WHERE created_at <= NOW() - INTERVAL '1 day'`.catch(() => {});
+
     const [existing] = await sql`
       SELECT short_code, created_at
       FROM shortened_links
@@ -39,7 +53,6 @@ export const POST = apiHandler(async (req: NextRequest) => {
       });
     }
 
-    // Renew expired entry if one exists
     const [expired] = await sql`
       UPDATE shortened_links
       SET created_at = NOW(), click_count = 0

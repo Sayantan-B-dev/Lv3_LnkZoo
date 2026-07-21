@@ -92,9 +92,9 @@ export const TUTORIAL_DATA: TutorialSection[] = [
     intro: 'LnkZoo includes a built-in URL shortener and a tools page with utilities to get the most out of the platform.',
     steps: [
       { title: 'URL Shortener',
-        desc: 'On /tools, paste a long URL and generate a short `lnkzoo.vercel.app/s/[code]` link. Short links are trackable — you can see how many clicks they receive.' },
-      { title: 'Custom Short Codes',
-        desc: 'When creating a short URL, you can optionally set a custom code instead of a random one. Pick something memorable for links you share often.' },
+        desc: 'On /tools, paste a long URL and generate a short `lnkzoo.vercel.app/s/[code]` link. Short links are trackable — you can see how many clicks they receive. Rate-limited: 10/min for guests, 30/min for logged-in users.' },
+      { title: '24-Hour Expiry',
+        desc: 'Every short link auto-expires 24 hours after creation. Expired links are automatically cleaned up — they will no longer resolve. Create a new short link for the same URL if you need it again.' },
       { title: 'Click Analytics',
         desc: 'Every short link and full link tracks click and view counts. Admins can see aggregate click/view series on the dashboard. Your own per-link stats appear on /manage/links.' },
     ],

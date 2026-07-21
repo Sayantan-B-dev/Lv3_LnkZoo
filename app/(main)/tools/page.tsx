@@ -44,7 +44,7 @@ export default function Tools() {
         <div className="tool-grid">
           <div className="tool-card">
             <h2 className="tool-title">URL Shortener</h2>
-            <p className="tool-desc">Create clean, trackable short links for your projects. Expires in 24 hours.</p>
+            <p className="tool-desc">Create clean, trackable short links for your projects. Expires in 24 hours. Rate-limited: 10/min for guests, 30/min for logged-in users.</p>
             <form onSubmit={handleShorten} className="tool-form">
               <input 
                 type="url" 
@@ -62,7 +62,7 @@ export default function Tools() {
             {shortResult && (
               <div className="tool-result">
                 <div className="result-label">Your short link:</div>
-                <div className="result-expiry">Expires in 24 hours</div>
+                <div className="result-expiry">Expires in 24 hours · 10/min guests, 30/min logged-in</div>
                 <div className="result-box">
                   <span className="result-link">{shortResult.shortUrl}</span>
                   <button className={`short-copy-btn ${copied ? 'copied' : ''}`} onClick={async () => {

@@ -1,79 +1,47 @@
 import { headers } from 'next/headers';
+import { redirect, notFound } from 'next/navigation';
+import type { Metadata } from 'next';
 import sql from '@/lib/db';
+
+export async function generateMetadata({ params }: { params: Promise<{ code: string }> }): Promise<Metadata> {
+  const { code } = await params;
+  const [link] = await sql`
+    SELECT title, description, preview_image FROM links WHERE short_code = ${code} LIMIT 1
+  `;
+  if (!link) return { title: 'Redirecting...' };
+  return {
+    title: link.title,
+    description: link.description || undefined,
+    openGraph: {
+      title: link.title,
+      description: link.description || undefined,
+      images: link.preview_image ? [{ url: link.preview_image }] : [],
+    },
+  };
+}
 
 export default async function ShortCodePage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
-
-  let url: string | null = null;
-  let title = 'Redirecting...';
-  let description = '';
-  let image = '';
-  let isShort = false;
-  let linkId: string | null = null;
+  const referrer = (await headers()).get('referer') ?? null;
 
   const [short] = await sql`
-    SELECT original_url, created_at FROM shortened_links WHERE short_code = ${code} LIMIT 1
+    SELECT original_url FROM shortened_links
+    WHERE short_code = ${code} AND created_at > NOW() - INTERVAL '1 day'
+    LIMIT 1
   `;
   if (short) {
-    if (new Date(short.created_at) >= new Date(Date.now() - 86400000)) {
-      url = short.original_url;
-      isShort = true;
-    }
-  }
-
-  if (!url) {
-    const [link] = await sql`
-      SELECT id, original_url, title, description, preview_image FROM links WHERE short_code = ${code} LIMIT 1
-    `;
-    if (link) {
-      url = link.original_url;
-      title = link.title;
-      description = link.description || '';
-      image = link.preview_image || '';
-      linkId = link.id;
-    }
-  }
-
-  if (!url) {
-    return (
-      <html lang="en">
-        <body style={{ fontFamily: 'sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', margin: 0, background: '#f5f5f5' }}>
-          <p>Link not found.</p>
-        </body>
-      </html>
-    );
-  }
-
-  const referrer = (await headers()).get('referer') ?? null;
-  if (isShort) {
     await sql`UPDATE shortened_links SET click_count = click_count + 1 WHERE short_code = ${code}`.catch(() => {});
-  } else {
-    await sql`UPDATE links SET click_count = click_count + 1 WHERE short_code = ${code}`.catch(() => {});
+    redirect(short.original_url);
   }
-  sql`INSERT INTO link_click_events (link_id, short_code, referrer) VALUES (${linkId}, ${code}, ${referrer})`.catch(() => {});
 
-  const origin = process.env.NEXT_PUBLIC_BASE_URL || 'https://lnkzoo.vercel.app';
+  const [link] = await sql`
+    SELECT id, original_url FROM links WHERE short_code = ${code} LIMIT 1
+  `;
+  if (link) {
+    await sql`UPDATE links SET click_count = click_count + 1 WHERE short_code = ${code}`.catch(() => {});
+    sql`INSERT INTO link_click_events (link_id, short_code, referrer) VALUES (${link.id}, ${code}, ${referrer})`.catch(() => {});
+    redirect(link.original_url);
+  }
 
-  return (
-    <html lang="en">
-      <head>
-        <title>{title}</title>
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-        {image && <meta property="og:image" content={image} />}
-        <meta property="og:url" content={url} />
-        <meta property="og:type" content="article" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={title} />
-        <meta name="twitter:description" content={description} />
-        {image && <meta name="twitter:image" content={image} />}
-        <meta httpEquiv="refresh" content={`0;url=${url}`} />
-      </head>
-      <body style={{ fontFamily: 'sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', margin: 0, background: '#f5f5f5', flexDirection: 'column', gap: '12px' }}>
-        <p>Redirecting...</p>
-        <a href={url} style={{ color: '#3b82f6' }}>Click here if not redirected</a>
-        <script dangerouslySetInnerHTML={{ __html: `window.location.href=${JSON.stringify(url)}` }} />
-      </body>
-    </html>
-  );
+  notFound();
 }

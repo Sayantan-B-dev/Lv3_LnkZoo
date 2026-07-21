@@ -13,7 +13,7 @@ export async function resolveUrl(input: string): Promise<string> {
   if (link) return link.original_url;
 
   const [short] = await sql`
-    SELECT original_url FROM shortened_links WHERE short_code = ${code} LIMIT 1
+    SELECT original_url FROM shortened_links WHERE short_code = ${code} AND created_at > NOW() - INTERVAL '1 day' LIMIT 1
   `;
   if (short) return short.original_url;
 
