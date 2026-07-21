@@ -99,7 +99,8 @@ async function parseUrl(url: string): Promise<ParseResult> {
 async function createLink(
   url: string,
   userId: string,
-  visibility: string = 'public'
+  visibility: string = 'public',
+  topicId: number
 ): Promise<
   { success: true; id: string; shortCode: string; title: string }
   | { success: false; error: string }
@@ -113,14 +114,20 @@ async function createLink(
     }
 
     const meta = await parseUrl(resolvedUrl);
+
+    if (!meta.title || !meta.description) {
+      const label = !meta.title ? 'title' : 'description';
+      return { success: false, error: `Could not extract ${label} from URL — add manually on single-submit` };
+    }
+
     let shortCode = generateShortCode(6);
 
     const existing = await sql`SELECT 1 FROM links WHERE short_code = ${shortCode}`;
     if (existing.length) shortCode = generateShortCode(7);
 
     const [link] = await sql`
-      INSERT INTO links (user_id, original_url, short_code, title, description, preview_image, visibility)
-      VALUES (${userId}, ${resolvedUrl}, ${shortCode}, ${meta.title}, ${meta.description}, ${meta.image}, ${visibility})
+      INSERT INTO links (user_id, original_url, short_code, title, description, preview_image, visibility, topic_id)
+      VALUES (${userId}, ${resolvedUrl}, ${shortCode}, ${meta.title}, ${meta.description}, ${meta.image}, ${visibility}, ${topicId})
       RETURNING id, short_code
     `;
 
@@ -135,9 +142,12 @@ export const POST = apiHandler(async (req: NextRequest) => {
   const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { urls, visibility } = await req.json();
+  const { urls, visibility, topicId } = await req.json();
   if (!Array.isArray(urls) || urls.length === 0) {
     return NextResponse.json({ error: 'Provide at least one URL' }, { status: 400 });
+  }
+  if (!topicId) {
+    return NextResponse.json({ error: 'topic required' }, { status: 400 });
   }
 
   const userId = session.user_id;
@@ -156,7 +166,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
       async function worker() {
         while (queue.length > 0) {
           const { url, i } = queue.shift()!;
-          const result = await createLink(url, userId, visibility || 'public');
+          const result = await createLink(url, userId, visibility || 'public', topicId);
           results[i] = { url, ...result };
           completed++;
           controller.enqueue(encoder.encode(JSON.stringify({ type: 'progress', processed: completed, total: batch.length }) + '\n'));

@@ -53,11 +53,21 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }: { params: {
   const session = await getSessionFromRequest(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { title, description, visibility, tags } = await req.json();
+  const { title, description, visibility, tags, topicId } = await req.json();
   const [link] = await sql`SELECT user_id FROM links WHERE id = ${params.id}`;
   if (!link) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   if (link.user_id !== session.user_id) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
+  if (title !== undefined && !String(title).trim()) {
+    return NextResponse.json({ error: 'Title cannot be empty' }, { status: 400 });
+  }
+  if (description !== undefined && !String(description).trim()) {
+    return NextResponse.json({ error: 'Description cannot be empty' }, { status: 400 });
+  }
+  if (topicId !== undefined && !topicId) {
+    return NextResponse.json({ error: 'Topic is required' }, { status: 400 });
   }
 
   const [updated] = await sql`
@@ -65,9 +75,10 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }: { params: {
     SET title = COALESCE(${title ?? null}, title),
         description = COALESCE(${description ?? null}, description),
         visibility = COALESCE(${visibility ?? null}, visibility),
+        topic_id = COALESCE(${topicId ?? null}, topic_id),
         updated_at = NOW()
     WHERE id = ${params.id}
-    RETURNING id, title, description, visibility
+    RETURNING id, title, description, visibility, topic_id
   `;
 
   if (Array.isArray(tags)) {

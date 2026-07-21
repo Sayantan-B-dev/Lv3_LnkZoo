@@ -43,7 +43,8 @@ export const GET = apiHandler(async (req: NextRequest) => {
   const rows = await query(
     `SELECT l.id, l.title, l.description, l.original_url, l.short_code, l.preview_image,
             l.visibility, l.is_anonymous, l.like_count, l.comment_count, l.view_count, l.click_count,
-            l.created_at, l.updated_at,
+            l.created_at, l.updated_at, l.topic_id,
+            t3.slug AS topic_slug, t3.name AS topic_name, t3.color AS topic_color,
             COALESCE(
               ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL),
               ARRAY[]::text[]
@@ -51,8 +52,9 @@ export const GET = apiHandler(async (req: NextRequest) => {
      FROM links l
      LEFT JOIN link_tags lt ON lt.link_id = l.id
      LEFT JOIN tags t ON t.id = lt.tag_id
+     LEFT JOIN topics t3 ON l.topic_id = t3.id
      WHERE l.user_id = $1 ${dataWhere}
-     GROUP BY l.id
+     GROUP BY l.id, t3.slug, t3.name, t3.color
      ORDER BY ${sortCol} ${sortOrder}
      LIMIT $${q ? 3 : 2} OFFSET $${q ? 4 : 3}`,
     dataParams,

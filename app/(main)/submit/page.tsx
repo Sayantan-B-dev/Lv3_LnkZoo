@@ -125,6 +125,9 @@ export default function Submit() {
 
   const handleFinalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!topicId) { addToast('Please select a topic', 'error'); return; }
+    if (!metadata.title.trim()) { addToast('Title is required', 'error'); return; }
+    if (!metadata.description.trim()) { addToast('Description is required', 'error'); return; }
     setLoading(true);
     try {
       const res = await fetch('/api/links', {
@@ -135,7 +138,7 @@ export default function Submit() {
           description: metadata.description,
           previewImage: metadata.image,
           tags: metadata.tags.split(',').map(t => t.trim()).filter(Boolean),
-          topicId: topicId ? Number(topicId) : null,
+          topicId: Number(topicId),
           isAnonymous: false,
           visibility,
         }),
@@ -147,7 +150,8 @@ export default function Submit() {
         const data = await res.json();
         addToast(`Duplicate - already exists as /s/${data.shortCode}`, 'error');
       } else {
-        addToast('Failed to post link. Check your input.', 'error');
+        const data = await res.json().catch(() => ({}));
+        addToast(data.error || 'Failed to post link. Check your input.', 'error');
       }
     } catch {
       addToast('Failed to post link', 'error');
@@ -200,11 +204,12 @@ export default function Submit() {
                 />
               </div>
               <div className="input-group-v">
-                <label>Description</label>
+                <label>Description *</label>
                 <textarea
                   value={metadata.description}
                   onChange={(e) => setMetadata({ ...metadata, description: e.target.value })}
                   className="sub-input textarea"
+                  required
                 />
               </div>
               <div className="input-group-v">
@@ -218,11 +223,12 @@ export default function Submit() {
                 />
               </div>
               <div className="input-group-v">
-                <label>Topic</label>
+                <label>Topic *</label>
                 <TopicSelect
                   value={topicId}
                   onChange={setTopicId}
                   groups={topicGroups}
+                  required
                 />
               </div>
               <div className="input-group-v">

@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Topbar from '@/components/common/Topbar';
 import NotificationPanel from '@/components/common/NotificationPanel';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { useRouter } from 'next/navigation';
+import TopicSelect from '@/components/common/TopicSelect';
 import '../../../../styles/pages/submit-bulk.css';
 
 interface UploadResult {
@@ -26,7 +27,16 @@ export default function BulkUpload() {
   const [results, setResults] = useState<UploadResult[] | null>(null);
   const [summary, setSummary] = useState<{ total: number; succeeded: number; failed: number; limitApplied: boolean } | null>(null);
   const [visibility, setVisibility] = useState('public');
+  const [topicId, setTopicId] = useState('');
+  const [topicGroups, setTopicGroups] = useState<{ id: number; name: string; color?: string | null; topics: { id: number; slug: string; name: string; color?: string | null }[] }[]>([]);
   const textRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    fetch('/api/links/topics')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => { if (data?.types) setTopicGroups(data.types); })
+      .catch(() => {});
+  }, []);
 
   const isAdmin = user?.role === 'admin';
   const concurrency = isAdmin ? 10 : 5;
@@ -69,6 +79,7 @@ export default function BulkUpload() {
 
   const handleSubmit = async () => {
     if (urls.length === 0 || exceeded) return;
+    if (!topicId) { addToast('Please select a topic', 'error'); return; }
     setLoading(true);
     setProgress(0);
     setResults(null);
@@ -78,7 +89,7 @@ export default function BulkUpload() {
       const res = await fetch('/api/links/bulk', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ urls, visibility }),
+        body: JSON.stringify({ urls, visibility, topicId: Number(topicId) }),
       });
 
       if (!res.ok) {
@@ -163,6 +174,10 @@ export default function BulkUpload() {
                   <option value="followers">Followers Only</option>
                   <option value="private">Private</option>
                 </select>
+              </div>
+              <div className="input-group-v" style={{ marginBottom: '16px' }}>
+                <label>Topic *</label>
+                <TopicSelect value={topicId} onChange={setTopicId} groups={topicGroups} required />
               </div>
               <div className="bulk-input-area">
                 <textarea

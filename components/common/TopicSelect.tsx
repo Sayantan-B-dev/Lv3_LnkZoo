@@ -21,6 +21,7 @@ interface TopicSelectProps {
   onChange: (value: string) => void;
   groups: TopicSelectGroup[];
   placeholder?: string;
+  required?: boolean;
 }
 
 export default function TopicSelect({
@@ -28,6 +29,7 @@ export default function TopicSelect({
   onChange,
   groups,
   placeholder = 'Select a topic',
+  required,
 }: TopicSelectProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -86,7 +88,7 @@ export default function TopicSelect({
     <div className="topic-select" ref={ref}>
       <button
         type="button"
-        className={`topic-select-trigger ${open ? 'open' : ''}`}
+        className={`topic-select-trigger ${open ? 'open' : ''}${required && !value ? ' required' : ''}`}
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="listbox"
         aria-expanded={open}
@@ -135,14 +137,16 @@ export default function TopicSelect({
           </div>
 
           <div className="topic-select-list">
-            <button
-              type="button"
-              className={`topic-select-item none ${value === '' ? 'active' : ''}`}
-              onClick={() => choose('')}
-            >
-              <span className="topic-select-dot muted" />
-              No topic
-            </button>
+            {!required && (
+              <button
+                type="button"
+                className={`topic-select-item none ${value === '' ? 'active' : ''}`}
+                onClick={() => choose('')}
+              >
+                <span className="topic-select-dot muted" />
+                No topic
+              </button>
+            )}
 
             {filteredGroups.length === 0 ? (
               <div className="topic-select-empty">No topics found</div>

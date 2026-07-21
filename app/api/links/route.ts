@@ -371,7 +371,14 @@ export const POST = apiHandler(async (req: NextRequest) => {
   try {
     const { url, title, description, tags = [], visibility: vis = 'public', isAnonymous = false, previewImage, topicId } = await req.json();
 
-    if (!url || !title) return NextResponse.json({ error: 'URL and title required' }, { status: 400 });
+    const missing: string[] = [];
+    if (!url) missing.push('URL');
+    if (!title || !String(title).trim()) missing.push('title');
+    if (!description || !String(description).trim()) missing.push('description');
+    if (!topicId) missing.push('topic');
+    if (missing.length) {
+      return NextResponse.json({ error: `${missing.join(', ')} required` }, { status: 400 });
+    }
 
     const resolvedUrl = await resolveUrl(url);
 
@@ -386,7 +393,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
 
     const [link] = await sql`
       INSERT INTO links (user_id, original_url, short_code, title, description, preview_image, visibility, is_anonymous, topic_id)
-      VALUES (${session.user_id}, ${resolvedUrl}, ${shortCode}, ${title}, ${description ?? null}, ${previewImage ?? null}, ${vis}, ${isAnonymous}, ${topicId ?? null})
+      VALUES (${session.user_id}, ${resolvedUrl}, ${shortCode}, ${title}, ${description}, ${previewImage ?? null}, ${vis}, ${isAnonymous}, ${topicId})
       RETURNING id, short_code
     `;
 

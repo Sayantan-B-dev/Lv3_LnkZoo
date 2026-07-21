@@ -29,6 +29,9 @@
   border-color: var(--text-4);
   background: var(--bg-1);
 }
+.topic-select-trigger.required {
+  border-color: var(--red, #ef4444);
+}
 
 .topic-select-value {
   display: flex;
