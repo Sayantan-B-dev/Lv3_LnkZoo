@@ -20,7 +20,7 @@
 - **Persistent session** — auth survives dev-server restarts (stable JWT secret handling)
 
 ## Links
-- **Create** — submit single URL with auto-fetched OG metadata (title, description, image), manual tag input, anonymous posting
+- **Create** — submit single URL with auto-fetched OG metadata (title, description, image), manual tag input, anonymous posting. **Required**: topic, title, description — validated client + server.
 - **Navigation guard** — unsaved data detection on `/submit` with `ConfirmModal` on browser refresh or internal link click
 - **Visibility** — three levels: `public` (everyone), `followers` (only followers of author), `private` (only author)
 - **Visibility badge** — emoji indicator (🌐/👥/🔒) on all link cards
@@ -30,7 +30,7 @@
 - **Daily Dose** — curated discovery feed
 - **Random / Internet Roulette** — auto-play with 10s cooldown
 - **Search** — home page search, explore pre-fetching
-- **Short URLs** — `lnkzoo.vercel.app/s/[code]` with custom shortener tool
+- **Short URLs** — `lnkzoo.vercel.app/s/[code]` with custom shortener tool; auto-expire after 24h; rate-limited 10/min guests, 30/min users
 - **Flagging** — report inappropriate links
 - **Topic assignment** — grouped topic dropdown on submit form; `topic_id` stored per link
 - **Topic badge** — themed topic pill on link cards and detail page
@@ -102,6 +102,17 @@
 - **Explore filter** — filter the feed by topic type
 - **Link surfaces** — themed topic badge on cards and link detail page
 - **Admin** — tree manager for the full taxonomy
+
+## Home Page Sections
+- **Hero** — headline, stats, CTA
+- **Marquee** — trending tags carousel
+- **About** — what LnkZoo is + key stats grid
+- **Features** — 7 feature cards (discovery, previews, community, streaks, daily dose, short URLs, tags, analytics)
+- **How It Works** — explains Categories (domain filter), Topics (60 curated), Tags (free-form, chaotic)
+- **Metrics** — platform-wide stat counters
+- **Feed** — tabbed link feed (following/explore/for you) with sort + search
+- **FAQ** — accordion of common questions
+- **Tutorial** — 7-tab step-by-step platform guide (Feed & Discovery, Posting, Managing, Discover, Short URLs & Tools, Account, Admin Panel)
 
 ## UI & Theming
 - **Dark/light theme** — persisted in `localStorage` (`lnkzoo_theme`), inline `<script>` prevents FOUC

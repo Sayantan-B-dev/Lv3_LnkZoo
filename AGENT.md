@@ -61,6 +61,7 @@ if (!allowed) return NextResponse.json({ error: 'Too many requests' }, { status:
 - Strings must not exceed defined max lengths (title: 500, bio: 2000, comment: 5000)
 - IDs must match UUID format
 - Numeric params must be finite integers within expected range
+- **topicId, title, description are required on all link creation/update** — return 400 with specific field names; `TopicSelect` with `required` prop hides "No topic" option
 
 ### Rule 8: Never trust `from` redirect params
 ```typescript

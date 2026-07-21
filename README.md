@@ -8,6 +8,9 @@ LnkZoo is a modern, high-performance community platform designed for sharing, di
 * **Premium Interactive UI**: Experience a sleek dark-mode interface with glassmorphism, dynamic scaling, and a fully customizable "antigravity" background particle system that reacts to your cursor.
 * **Robust Social Features**: Follow users, track streaks, and earn verification badges. Dive deep into infinite nested comment threads with real-time upvoting and downvoting.
 * **Cloudinary Image Cropping**: Seamlessly upload and crop high-quality avatar and cover images directly from your profile, stored securely via Cloudinary.
+* **Curated Topics Taxonomy**: 60 pre-defined topics organized under categories — every link must be assigned a topic, keeping the feed organised.
+* **URL Shortener**: On-demand short links with tracking, auto-expire after 24 hours, rate-limited (10/min guests, 30/min users).
+* **Admin Analytics Dashboard**: Sectioned dashboard with d3-based charts, global time-range selector (7D/30D/90D/All), gap-filled daily series, and empty-state handling.
 * **Smart Search & Tag Graphing**: Find exactly what you're looking for with instantaneous search and explore dynamic relationships between content tags.
 * **Authentication**: Secure JWT-based session management with support for Google OAuth and standard credential logins.
 

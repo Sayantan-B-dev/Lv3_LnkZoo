@@ -21,6 +21,7 @@ All colors/sizing are CSS vars on `:root` (dark) + `[data-theme="light"]`. Never
 ## Gotchas (learned the hard way)
 - **Native `<button>`/`<select>` do NOT inherit text color.** Any styled button/select MUST set `color:` explicitly or text goes invisible (system default vs dark bg). See `.adm-action-btn`, `.adm-role-select`.
 - **Text on `--accent` uses `--accent-inv`**, not `#fff` (accent is light in dark theme).
+- **Required `TopicSelect` state**: `.topic-select-trigger.required` adds a red border (`var(--red, #ef4444)`) when the required field is empty.
 - Per-topic colors: passed via inline `style={{ background: color }}` / `--topic-color` custom prop + `color-mix()`; the palette source is `PRESET_COLORS` in `app/admin/topics/page.tsx`.
 
 ## Class-name prefixes (namespacing by area)
@@ -32,6 +33,11 @@ All colors/sizing are CSS vars on `:root` (dark) + `[data-theme="light"]`. Never
 | `.card-*` / `.card-topic-badge` | Link cards | `ui/link-card.css` |
 | `.confirm-*` | ConfirmModal | `components/common.css` |
 | `.admin-*` | Admin shell (sidebar/logo/nav) | `pages/admin.css` |
+| `.hiw-*` | How It Works home section | `pages/home-component-css/howitworks.css` |
+| `.tutorial-*` | Platform guide home section | `pages/home-component-css/tutorial.css` |
+| `.ml-*` | Manage links page | `pages/manage-links.css` |
+| `.bulk-*` | Bulk upload page | `pages/submit-bulk.css` |
+| `.tool-*` | Developer tools page | — |
 
 ## Where things live
 - **Core**: `core/variables.css` (tokens) · `core/reset.css` · `core/typography.css` (html 13px, `--font` on body + form els) · `core/utilities.css` · `core/animations.css`.
