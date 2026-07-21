@@ -1,0 +1,136 @@
+'use client';
+
+export interface TutorialSection {
+  id: string;
+  label: string;
+  icon: string;
+  intro: string;
+  steps: { title: string; desc: string }[];
+}
+
+export const TUTORIAL_DATA: TutorialSection[] = [
+  {
+    id: 'feed',
+    label: 'Feed & Discovery',
+    icon: '⊞',
+    intro: 'The Feed is your central stream of links. Use the tabs, sort controls, search bar, and category/topic filters to surface exactly what you want to see.',
+    steps: [
+      { title: 'Tabbed Feed',
+        desc: 'On the home page, switch between "Following" (links from people you follow), "Explore" (all public links), and "For You" (algorithmic suggestions). Each tab pulls from the same link pool but applies different visibility and ranking rules.' },
+      { title: 'Sort & Filter',
+        desc: 'Use the sort dropdown to order links by Newest, Oldest, or Most Likes. Combine sort with the category or topic filter to narrow results — e.g. "Explore" + "Tech" category + "Most Likes" shows the top tech links.' },
+      { title: 'Search',
+        desc: 'The search bar on the home page and /explore page searches link titles and descriptions. Results are shown in a unified card view you can further filter by category or tags.' },
+      { title: 'Daily Dose',
+        desc: 'Visit /daily-dose for a curated daily digest of 5 top links picked by the community. Updated every 24 hours — a quick way to catch what you missed.' },
+      { title: 'Random / Roulette',
+        desc: 'Head to /random for "Internet Roulette" — click the button to surface a random public link every 10 seconds. Great for serendipitous discovery.' },
+    ],
+  },
+  {
+    id: 'posting',
+    label: 'Posting Links',
+    icon: '⊕',
+    intro: 'Sharing a link on LnkZoo takes seconds. You can post a single URL or upload many at once. Each link can be organised with a topic, tags, and a visibility level.',
+    steps: [
+      { title: 'Single Link',
+        desc: 'Go to /submit, paste a URL, and LnkZoo automatically fetches its OG metadata (title, description, preview image). You can override the title and description before posting.' },
+      { title: 'Choose a Topic',
+        desc: 'Every link must be assigned to one of 60 curated topics, grouped under broader categories. Use the grouped dropdown to pick the right topic — this keeps the feed organised.' },
+      { title: 'Add Tags',
+        desc: 'Tags are free-form keywords you type in (comma-separated). They supplement the curated topic for micro-categorisation. The system may suggest tags via AI after you paste the URL.' },
+      { title: 'Set Visibility',
+        desc: 'Three visibility levels: Public (visible to everyone), Followers (visible only to your followers), Private (visible only to you). Change visibility anytime from the link\'s three-dot menu.' },
+      { title: 'Bulk Upload',
+        desc: 'On /submit/bulk, paste up to 10 URLs at once (unlimited for admins). LnkZoo processes them in parallel (5 at a time), fetches metadata, and streams progress. A downloadable .txt report shows results per URL.' },
+    ],
+  },
+  {
+    id: 'managing',
+    label: 'Managing Links',
+    icon: '☰',
+    intro: 'Your personal link management dashboard at /manage/links gives you full control over everything you\'ve posted — search, sort, bulk edit, and more.',
+    steps: [
+      { title: 'Stats Overview',
+        desc: 'At the top of the page, stat cards show your totals: links posted, public/followers/private counts, plus likes, views, comments, and clicks received.' },
+      { title: 'Link Table',
+        desc: 'Below the stats, a sortable table lists all your links. Click any column header (Title, Likes, Views, Comments, Created) to sort ascending/descending.' },
+      { title: 'Search & Filter',
+        desc: 'Use the search bar above the table to filter your links by title or description. Combine with sort and pagination to quickly find specific links.' },
+      { title: 'Bulk Actions',
+        desc: 'Check the box in the table header to select all links on the current page, or check individual rows. A bulk action bar appears showing the count of selected links. From there you can: change visibility of all selected (Public/Follower/Private), add or remove tags via the Tag modal, or delete selected links.' },
+      { title: 'Pagination & Page Size',
+        desc: 'Use the page controls at the bottom to navigate pages. Change the page size via the dropdown (20/50/100 per page).' },
+      { title: 'Edit Individual Links',
+        desc: 'Click the three-dot menu on any link row to change its visibility or edit its details.' },
+    ],
+  },
+  {
+    id: 'discover',
+    label: 'Discover & Connect',
+    icon: '◆',
+    intro: 'Beyond the feed, LnkZoo offers several ways to find interesting people, explore trending content, and browse by topic or category.',
+    steps: [
+      { title: 'Users Directory',
+        desc: 'Visit /users to browse all registered users in a card grid. Each card shows their avatar, bio, link count, and follower count. Click a user to visit their profile.' },
+      { title: 'Leaderboard',
+        desc: 'The /leaderboard page ranks users by total likes received across their links. Filter by period (Week / Month / All Time) to see who\'s trending now vs. all-time top curators.' },
+      { title: 'Topics Hub',
+        desc: 'At /topics, browse all 60 curated topics grouped by category. Click any topic to see all links tagged with it. The sidebar makes jumping between topics fast.' },
+      { title: 'Categories',
+        desc: 'The /categories page lists broad domains (Tech, Art, Science, Gaming, etc.). Each category page shows its sub-topics and recent links — a coarser filter than topics.' },
+      { title: 'Tags Explorer',
+        desc: 'Visit /tags to see all user-generated tags. Click a tag to visit its dedicated page showing all links that use it. Great for niche interests that don\'t fit a curated topic.' },
+      { title: 'Following & Followers',
+        desc: 'On any user\'s profile, click their follower/following count to see the list in a popup. Follow users to populate your "Following" feed tab on the home page.' },
+    ],
+  },
+  {
+    id: 'tools',
+    label: 'Short URLs & Tools',
+    icon: '⚡',
+    intro: 'LnkZoo includes a built-in URL shortener and a tools page with utilities to get the most out of the platform.',
+    steps: [
+      { title: 'URL Shortener',
+        desc: 'On /tools, paste a long URL and generate a short `lnkzoo.vercel.app/s/[code]` link. Short links are trackable — you can see how many clicks they receive.' },
+      { title: 'Custom Short Codes',
+        desc: 'When creating a short URL, you can optionally set a custom code instead of a random one. Pick something memorable for links you share often.' },
+      { title: 'Click Analytics',
+        desc: 'Every short link and full link tracks click and view counts. Admins can see aggregate click/view series on the dashboard. Your own per-link stats appear on /manage/links.' },
+    ],
+  },
+  {
+    id: 'account',
+    label: 'Account & Community',
+    icon: '⚙',
+    intro: 'Manage your profile, track your activity, and configure your experience from the account pages.',
+    steps: [
+      { title: 'Profile',
+        desc: 'Your profile page shows your avatar, cover image, bio, website, interests, posting streak, and all your public links. Edit your profile from /settings.' },
+      { title: 'Bookmarks',
+        desc: 'Save links to your bookmarks at /bookmarks. Bookmark any public link from its detail page or card menu. Your bookmarks are private.' },
+      { title: 'Notifications',
+        desc: 'The bell icon in the topbar opens your notification panel. Get notified when someone likes or comments on your link, follows you, or when your link is flagged.' },
+      { title: 'Settings',
+        desc: 'At /settings you can update your email, password, profile info (avatar, cover, bio, website, interests), and manage your account preferences.' },
+      { title: 'Streaks & Gamification',
+        desc: 'Post at least one link each day to build your streak. Your streak (and total links posted) is displayed on your profile and contributes to your leaderboard rank.' },
+    ],
+  },
+  {
+    id: 'admin',
+    label: 'Admin Panel',
+    icon: '▲',
+    intro: 'Admins have access to a full analytics dashboard and user management tools to keep the platform running smoothly.',
+    steps: [
+      { title: 'Dashboard Analytics',
+        desc: 'The /admin/dashboard shows platform-wide metrics: user growth, link growth, engagement trends, daily active users, top contributors, content distributions (by topic, visibility, role), and more. Use the range selector (7D/30D/90D/All) to adjust the time window for all charts.' },
+      { title: 'User Management',
+        desc: 'At /admin/users, view all registered users in a table. Change user roles (user/pro-user/admin), ban/unban accounts, and search by username or email.' },
+      { title: 'Topics Management',
+        desc: 'Admins can manage the curated topic taxonomy from /admin/topics. Add, edit, delete, and reorder topics in a tree view.' },
+      { title: 'Flagged Content',
+        desc: 'The dashboard and moderation section show recently flagged links for review. Take action to remove inappropriate content or dismiss flags.' },
+    ],
+  },
+];
