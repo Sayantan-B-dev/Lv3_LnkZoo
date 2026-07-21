@@ -220,7 +220,7 @@
   padding: 0 6px;
   border-radius: 5px;
   background: var(--accent);
-  color: #fff;
+  color: var(--accent-inv);
   font-size: 12px;
   font-weight: 600;
 }

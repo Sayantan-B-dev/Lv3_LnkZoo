@@ -9,7 +9,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
 
   const sp = req.nextUrl.searchParams;
   const page = Math.max(1, parseInt(sp.get('page') ?? '1'));
-  const limit = Math.min(50, parseInt(sp.get('limit') ?? '20'));
+  const limit = Math.min(100, parseInt(sp.get('limit') ?? '20'));
   const offset = (page - 1) * limit;
   const sort = sp.get('sort') ?? 'created_at';
   const order = sp.get('order') ?? 'desc';

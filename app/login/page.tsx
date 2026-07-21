@@ -48,7 +48,7 @@ function LoginForm() {
       <div className="auth-card">
         <Link href="/" className="auth-home-link">&larr; Home</Link>
         <div className="auth-header">
-          <div className="logo-mark">gx</div>
+          <div className="logo-mark">lz</div>
           <h1>Welcome back</h1>
           <p>Enter your details to sign in</p>
         </div>
