@@ -11,41 +11,36 @@ export const POST = apiHandler(async (req: NextRequest, { params }: { params: { 
 
   const linkId = params.id;
 
-  const [existing] = await sql`
-    SELECT 1 FROM link_likes WHERE user_id = ${session.user_id} AND link_id = ${linkId}
+  const [deleted] = await sql`
+    DELETE FROM link_likes WHERE user_id = ${session.user_id} AND link_id = ${linkId}
+    RETURNING 1 AS was_liked
   `;
 
-  if (existing) {
-    await sql`DELETE FROM link_likes WHERE user_id = ${session.user_id} AND link_id = ${linkId}`;
-    const [link] = await sql`
-      UPDATE links
-      SET like_count = GREATEST(like_count - 1, 0)
-      WHERE id = ${linkId}
-      RETURNING like_count
-    `;
-    return NextResponse.json({ liked: false, like_count: link?.like_count ?? 0 });
+  const liked = !deleted;
+
+  if (liked) {
+    await sql`INSERT INTO link_likes (user_id, link_id) VALUES (${session.user_id}, ${linkId})`;
   }
 
-  const [link] = await sql`SELECT user_id, title FROM links WHERE id = ${linkId}`;
-  if (!link) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-
-  await sql`INSERT INTO link_likes (user_id, link_id) VALUES (${session.user_id}, ${linkId})`;
   const [updated] = await sql`
     UPDATE links
-    SET like_count = like_count + 1
+    SET like_count = GREATEST(like_count ${liked ? sql`+ 1` : sql`- 1`}, 0)
     WHERE id = ${linkId}
     RETURNING like_count
   `;
 
-  if (link.user_id !== session.user_id) {
-    await notificationService.create({
-      user_id: link.user_id,
-      actor_id: session.user_id,
-      type: 'like',
-      entity_id: linkId,
-      message: `liked your link "${link.title.slice(0, 60)}"`,
-    });
+  if (liked) {
+    const [link] = await sql`SELECT user_id, title FROM links WHERE id = ${linkId}`;
+    if (link && link.user_id !== session.user_id) {
+      notificationService.create({
+        user_id: link.user_id,
+        actor_id: session.user_id,
+        type: 'like',
+        entity_id: linkId,
+        message: `liked your link "${link.title.slice(0, 60)}"`,
+      }).catch(() => {});
+    }
   }
 
-  return NextResponse.json({ liked: true, like_count: updated.like_count });
+  return NextResponse.json({ liked, like_count: updated.like_count });
 });

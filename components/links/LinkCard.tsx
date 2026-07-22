@@ -112,14 +112,21 @@ export default function LinkCard({
 
   const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    try {
-      if (onLike) {
-        await onLike(link.id);
-        return;
-      }
+    if (onLike) {
+      await onLike(link.id);
+      return;
+    }
 
+    const prevLiked = likedByUser;
+    const prevCount = likeCount;
+    setLikedByUser(!prevLiked);
+    setLikeCount(prevCount + (prevLiked ? -1 : 1));
+
+    try {
       const res = await fetch(`/api/links/${link.id}/like`, { method: 'POST' });
       if (res.status === 401) {
+        setLikedByUser(prevLiked);
+        setLikeCount(prevCount);
         router.push(`/login?from=${window.location.pathname}`);
         return;
       }
@@ -128,23 +135,30 @@ export default function LinkCard({
         setLikedByUser(data.liked);
         setLikeCount(data.like_count);
       }
-    } catch (err) {
-      console.error(err);
+    } catch {
+      setLikedByUser(prevLiked);
+      setLikeCount(prevCount);
     }
   };
 
   const handleBookmark = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    const prevBookmarked = bookmarked;
+    setBookmarked(!prevBookmarked);
+
     try {
-      const res = await fetch('/api/auth/me');
-      if (!res.ok) { router.push(`/login?from=${window.location.pathname}`); return; }
-      const method = bookmarked ? 'DELETE' : 'POST';
+      const method = prevBookmarked ? 'DELETE' : 'POST';
       const bmRes = await fetch(`/api/links/${link.id}/bookmark`, { method });
+      if (bmRes.status === 401) {
+        setBookmarked(prevBookmarked);
+        router.push(`/login?from=${window.location.pathname}`);
+        return;
+      }
       if (bmRes.ok) {
-        setBookmarked(!bookmarked);
-        addToast(bookmarked ? 'Removed bookmark' : 'Bookmarked', 'success');
+        addToast(prevBookmarked ? 'Removed bookmark' : 'Bookmarked', 'success');
       }
     } catch {
+      setBookmarked(prevBookmarked);
       addToast('Failed', 'error');
     }
   };
