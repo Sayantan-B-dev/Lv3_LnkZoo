@@ -5,6 +5,7 @@ import { apiHandler } from '@/lib/api-utils';
 import { generateShortCode } from '@/lib/shortCode';
 import { gamificationService } from '@/services/gamification.service';
 import { resolveUrl, checkDuplicate } from '@/lib/resolveUrl';
+import { LIMITS } from '@/lib/limits';
 
 export const GET = apiHandler(async (req: NextRequest) => {
   const session = await getSessionFromRequest(req);
@@ -380,6 +381,13 @@ export const POST = apiHandler(async (req: NextRequest) => {
       return NextResponse.json({ error: `${missing.join(', ')} required` }, { status: 400 });
     }
 
+    if (title.length > LIMITS.TITLE_MAX) {
+      return NextResponse.json({ error: `Title must be ${LIMITS.TITLE_MAX} characters or fewer` }, { status: 400 });
+    }
+    if (description.length > LIMITS.DESC_MAX) {
+      return NextResponse.json({ error: `Description must be ${LIMITS.DESC_MAX} characters or fewer` }, { status: 400 });
+    }
+
     const resolvedUrl = await resolveUrl(url);
 
     const dup = await checkDuplicate(resolvedUrl);
@@ -397,7 +405,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
       RETURNING id, short_code
     `;
 
-    for (const rawTag of tags.slice(0, 5)) {
+    for (const rawTag of tags.slice(0, LIMITS.TAGS_MAX)) {
       const name = String(rawTag).trim().toLowerCase().replace(/^#/, '');
       if (!name) continue;
 

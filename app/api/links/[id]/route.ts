@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
 import { getSessionFromRequest } from '@/lib/auth';
 import { apiHandler } from '@/lib/api-utils';
+import { LIMITS } from '@/lib/limits';
 
 // ── GET /api/links/[id] ─────────────────────────────────────
 export const GET = apiHandler(async (req: NextRequest, { params }: { params: { id: string } }) => {
@@ -60,11 +61,21 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }: { params: {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
-  if (title !== undefined && !String(title).trim()) {
-    return NextResponse.json({ error: 'Title cannot be empty' }, { status: 400 });
+  if (title !== undefined) {
+    if (!String(title).trim()) {
+      return NextResponse.json({ error: 'Title cannot be empty' }, { status: 400 });
+    }
+    if (title.length > LIMITS.TITLE_MAX) {
+      return NextResponse.json({ error: `Title must be ${LIMITS.TITLE_MAX} characters or fewer` }, { status: 400 });
+    }
   }
-  if (description !== undefined && !String(description).trim()) {
-    return NextResponse.json({ error: 'Description cannot be empty' }, { status: 400 });
+  if (description !== undefined) {
+    if (!String(description).trim()) {
+      return NextResponse.json({ error: 'Description cannot be empty' }, { status: 400 });
+    }
+    if (description.length > LIMITS.DESC_MAX) {
+      return NextResponse.json({ error: `Description must be ${LIMITS.DESC_MAX} characters or fewer` }, { status: 400 });
+    }
   }
   if (topicId !== undefined && !topicId) {
     return NextResponse.json({ error: 'Topic is required' }, { status: 400 });
@@ -84,7 +95,7 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }: { params: {
   if (Array.isArray(tags)) {
     await sql`DELETE FROM link_tags WHERE link_id = ${params.id}`;
 
-    for (const name of tags) {
+    for (const name of tags.slice(0, LIMITS.TAGS_MAX)) {
       const tagName = name.toLowerCase().replace(/^#/, '').trim();
       if (!tagName) continue;
       const [tag] = await sql`

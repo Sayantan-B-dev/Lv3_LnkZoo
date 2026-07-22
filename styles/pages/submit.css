@@ -78,6 +78,15 @@
     resize: vertical;
 }
 
+.sub-input.textarea::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sub-input.textarea::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
 .submit-preview {
   margin-bottom: 16px;
   border-radius: 8px;

@@ -7,6 +7,7 @@ import ConfirmModal from '@/components/common/ConfirmModal';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/context/ToastContext';
 import TopicSelect from '@/components/common/TopicSelect';
+import { LIMITS } from '@/lib/limits';
 
 interface Metadata {
   title: string;
@@ -201,8 +202,10 @@ export default function Submit() {
                   value={metadata.title}
                   onChange={(e) => setMetadata({ ...metadata, title: e.target.value })}
                   required
+                  maxLength={LIMITS.TITLE_MAX}
                   className="sub-input"
                 />
+                <span className="char-counter">{metadata.title.length}/{LIMITS.TITLE_MAX}</span>
               </div>
               <div className="input-group-v">
                 <label>Description *</label>
@@ -211,7 +214,9 @@ export default function Submit() {
                   onChange={(e) => setMetadata({ ...metadata, description: e.target.value })}
                   className="sub-input textarea"
                   required
+                  maxLength={LIMITS.DESC_MAX}
                 />
+                <span className="char-counter">{metadata.description.length}/{LIMITS.DESC_MAX}</span>
               </div>
               <div className="input-group-v">
                 <label>Tags (comma separated)</label>
