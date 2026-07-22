@@ -41,12 +41,17 @@ export default function ScatteredLinks({ links: initialLinks, itemsPerPage = 30,
       try {
         const sep = apiEndpoint.includes('?') ? '&' : '?';
         const res = await fetch(`${apiEndpoint}${sep}limit=${itemsPerPage}&page=${safePage + 1}`);
-        if (!res.ok) return;
+        if (!res.ok) {
+          console.error('[ScatteredLinks] API error', res.status, await res.text().catch(() => ''));
+          return;
+        }
         const data = await res.json();
         if (cancelled) return;
         setServerLinks(data.links || []);
         setTotalItems(data.total || 0);
-      } catch { } finally {
+      } catch (e) {
+        console.error('[ScatteredLinks] fetch catch', e);
+      } finally {
         if (!cancelled) setLoading(false);
       }
     };

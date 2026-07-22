@@ -159,7 +159,11 @@
 - Consistent error responses (no stack traces leaked)
 - API route ownership guards (delete/update only own resources)
 
-## Changelog — 2026-07-20 → 2026-07-21
+## Changelog — 2026-07-20 → 2026-07-22
+
+### 2026-07-22 — Profile links COUNT query fix
+- **Fix** — profile links endpoint (`GET /api/users/[username]/links`) was passing `$3`/`$4` (limit/offset) to the `COUNT(*)` query, which only uses `$1`/`$2` (and `$3`/`$4` for domain). Caused PostgreSQL prepared-statement param mismatch errors (`bind message supplies 4 parameters, but prepared statement "" requires 2`). Separated count params with contiguous numbering.
+- **ScatteredLinks** — added error logging to API fetch calls for easier debugging.
 
 ### 2026-07-20
 - **Auth persistence** — session now survives dev-server restarts; added card navigation loader and unified search card styling (`a539aab`).

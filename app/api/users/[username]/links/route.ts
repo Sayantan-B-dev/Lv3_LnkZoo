@@ -32,9 +32,16 @@ export const GET = apiHandler(async (req: NextRequest, { params }: { params: { u
     const params = [username.toLowerCase(), uid, limit, offset];
     if (domain) params.push(`%//${domain}%`, `%//%.${domain}%`);
 
+    const countDomainClause = domain
+      ? ` AND (l.original_url LIKE $3 OR l.original_url LIKE $4)`
+      : '';
+    const countParams = domain
+      ? [username.toLowerCase(), uid, `%//${domain}%`, `%//%.${domain}%`]
+      : [username.toLowerCase(), uid];
+
     const [countRow] = await query(
-      `SELECT COUNT(*)::int AS count FROM links l JOIN users u ON l.user_id = u.id WHERE u.username = $1 AND ${visClause}${domainClause}`,
-      params.slice(0, domain ? 6 : 4)
+      `SELECT COUNT(*)::int AS count FROM links l JOIN users u ON l.user_id = u.id WHERE u.username = $1 AND ${visClause}${countDomainClause}`,
+      countParams
     );
 
     const rows = await query(
