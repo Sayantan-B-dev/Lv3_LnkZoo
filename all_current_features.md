@@ -167,6 +167,7 @@
 - **Fix** — OG parser (`parseOGMetadata`) used a Chrome/125 User-Agent that Facebook blocks (returns 400). Switched to a version-less Chrome UA (`AppleWebKit/537.36`), which Facebook accepts and returns full OG tags. Also added `fallbackTitle()` on non-200 responses so users get a readable platform name (e.g., "Facebook Post") instead of the raw URL.
 - **OG parser** — resolves relative `og:image` URLs to absolute via `new URL(rawImage, url)`. Added `og:image:secure_url` fallback. Facebook CDN images (`scontent.*.fbcdn.net`) return 403 (hotlink protection) — added `onError` on submit preview to hide the broken image, plus `referrerPolicy="no-referrer"`.
 - **Platform fallbacks** — added LinkedIn to `fallbackTitle()`. Tested all: YouTube, Threads, LinkedIn serve OG tags; X/Twitter uses oEmbed; Instagram serves no metadata (requires Graph API) but `fallbackTitle` covers it.
+- **Bulk upload** — replaced its own duplicate `parseUrl()` with the shared `parseOGMetadata()` so all fixes (UA, og:image/secure_url, relative URLs, fallbackTitle) apply to bulk too.
 
 ### 2026-07-20
 - **Auth persistence** — session now survives dev-server restarts; added card navigation loader and unified search card styling (`a539aab`).

@@ -4,97 +4,10 @@ import { getSessionFromRequest } from '@/lib/auth';
 import { generateShortCode } from '@/lib/shortCode';
 import { gamificationService } from '@/services/gamification.service';
 import { apiHandler } from '@/lib/api-utils';
-import { decodeHtmlEntities } from '@/lib/html';
-import { fetchOEmbed, fallbackTitle } from '@/lib/platform';
 import { resolveUrl, checkDuplicate } from '@/lib/resolveUrl';
+import { parseOGMetadata } from '@/services/linkParser.service';
 
 const CONCURRENCY = 5;
-
-interface ParseResult {
-  title: string;
-  description: string | null;
-  image: string | null;
-}
-
-async function parseUrl(url: string): Promise<ParseResult> {
-  try {
-    const res = await fetch(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36' },
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!res.ok) return { title: url, description: null, image: null };
-    const text = await res.text();
-    const html = text.slice(0, 700000);
-
-    const extractAttr = (tag: string, attr: string): string => {
-      const m = tag.match(new RegExp(`${attr}=(["'])(.*?)\\1`, 'i'));
-      return m ? m[2] : '';
-    };
-
-    const getMeta = (prop: string): string => {
-      const metaRegex = /<meta[\s>][^>]*>/gi;
-      let m: RegExpExecArray | null;
-      while ((m = metaRegex.exec(html)) !== null) {
-        const tag = m[0];
-        const p = extractAttr(tag, 'property') || extractAttr(tag, 'name');
-        if (p.toLowerCase() !== prop.toLowerCase()) continue;
-        const val = extractAttr(tag, 'content');
-        if (val) return val;
-      }
-      return '';
-    };
-
-    const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
-    let title = getMeta('title') || (titleMatch ? titleMatch[1].trim() : '');
-    let description: string | null = getMeta('description') || '';
-    const image = getMeta('image') || '';
-
-    // Fallback: JSON-LD structured data
-    if (!title) {
-      const jsonMatch = html.match(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/i);
-      if (jsonMatch) {
-        try {
-          const ld = JSON.parse(jsonMatch[1]);
-          title = ld.name || ld.headline || ld.title || '';
-          description = description || ld.description || '';
-        } catch {}
-      }
-    }
-
-    // Fallback: YouTube ytInitialPlayerResponse
-    if (!title) {
-      const ytMatch = html.match(/ytInitialPlayerResponse\s*=\s*({.*?});/);
-      if (ytMatch) {
-        try {
-          const yt = JSON.parse(ytMatch[1]);
-          title = yt.videoDetails?.title || '';
-          description = description || yt.videoDetails?.shortDescription || '';
-        } catch {}
-      }
-    }
-
-    title = title ? decodeHtmlEntities(title) : '';
-    description = description ? decodeHtmlEntities(description) : null;
-
-    // Platform-specific oEmbed fallback for JS-rendered sites
-    if (!title || title === url) {
-      const oembed = await fetchOEmbed(url);
-      if (oembed) {
-        title = oembed.title;
-        description = description || oembed.description;
-      }
-    }
-
-    // Fallback to a readable platform name
-    if (!title || title === url) {
-      title = fallbackTitle(url) || url;
-    }
-
-    return { title, description, image: image || null };
-  } catch {
-    return { title: url, description: null, image: null };
-  }
-}
 
 async function createLink(
   url: string,
@@ -113,10 +26,10 @@ async function createLink(
       return { success: false, error: `Duplicate - /s/${dup.shortCode}` };
     }
 
-    const meta = await parseUrl(resolvedUrl);
+    const { title, description, image } = await parseOGMetadata(resolvedUrl);
 
-    if (!meta.title || !meta.description) {
-      const label = !meta.title ? 'title' : 'description';
+    if (!title || !description) {
+      const label = !title ? 'title' : 'description';
       return { success: false, error: `Could not extract ${label} from URL — add manually on single-submit` };
     }
 
@@ -127,11 +40,11 @@ async function createLink(
 
     const [link] = await sql`
       INSERT INTO links (user_id, original_url, short_code, title, description, preview_image, visibility, topic_id)
-      VALUES (${userId}, ${resolvedUrl}, ${shortCode}, ${meta.title}, ${meta.description}, ${meta.image}, ${visibility}, ${topicId})
+      VALUES (${userId}, ${resolvedUrl}, ${shortCode}, ${title}, ${description}, ${image || null}, ${visibility}, ${topicId})
       RETURNING id, short_code
     `;
 
-    return { success: true, id: link.id, shortCode: link.short_code, title: meta.title };
+    return { success: true, id: link.id, shortCode: link.short_code, title };
   } catch (err) {
     console.error('[bulk] failed:', url, err);
     return { success: false, error: 'Failed to create link' };
