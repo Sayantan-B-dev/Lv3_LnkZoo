@@ -149,6 +149,17 @@ export default function LinkCard({
     }
   };
 
+  const handleCopyLink = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const url = `${window.location.origin}/link/${link.id}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      addToast('Link copied to clipboard', 'success');
+    } catch {
+      addToast('Failed to copy link', 'error');
+    }
+  };
+
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const shareUrl = `${window.location.origin}/link/${link.id}`;
@@ -218,6 +229,12 @@ export default function LinkCard({
       <button className={`card-stat ${bookmarked ? 'active' : ''}`} onClick={handleBookmark} type="button" title={bookmarked ? 'Remove bookmark' : 'Bookmark'}>
         <svg width="14" height="14" fill={bookmarked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
+        </svg>
+      </button>
+      <button className="card-stat" onClick={handleCopyLink} type="button" title="Copy link">
+        <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
         </svg>
       </button>
       <button className="card-stat" onClick={handleShare} type="button" title="Share">
