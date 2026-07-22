@@ -31,6 +31,7 @@ export async function parseOGMetadata(url: string): Promise<ParseResult> {
     const res = await fetch(url, {
       headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
       signal: AbortSignal.timeout(8000),
+      redirect: 'follow',
     });
 
     if (!res.ok) {
@@ -53,10 +54,12 @@ export async function parseOGMetadata(url: string): Promise<ParseResult> {
       extractMetaAttribute(html, 'description') ||
       '';
 
-    const image =
+    const rawImage =
       extractMetaAttribute(html, 'og:image') ||
+      extractMetaAttribute(html, 'og:image:secure_url') ||
       extractMetaAttribute(html, 'twitter:image') ||
       '';
+    const image = rawImage ? new URL(rawImage, url).href : '';
 
     // Fallback: JSON-LD structured data
     if (!title) {

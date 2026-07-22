@@ -192,7 +192,7 @@ export default function Submit() {
             <form onSubmit={handleFinalSubmit} className="submit-form">
               {metadata.image && (
                 <div className="submit-preview">
-                  <img src={metadata.image} alt="Preview" className="submit-preview-img" />
+                  <img src={metadata.image} alt="Preview" className="submit-preview-img" referrerPolicy="no-referrer" onError={(e) => { (e.currentTarget.closest('.submit-preview') as HTMLElement)?.style.setProperty('display', 'none'); }} />
                 </div>
               )}
               <div className="input-group-v">

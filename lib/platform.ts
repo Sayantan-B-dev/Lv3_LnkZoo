@@ -54,6 +54,11 @@ export function fallbackTitle(url: string): string | null {
       return 'YouTube Video';
     }
 
+    if (hostname.includes('linkedin')) {
+      if (pathIncludes(url, ['/posts/', '/company/', '/in/'])) return 'LinkedIn Post';
+      return 'LinkedIn';
+    }
+
     return null;
   } catch {
     return null;
