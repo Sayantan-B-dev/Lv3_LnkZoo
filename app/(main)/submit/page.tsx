@@ -171,8 +171,8 @@ export default function Submit() {
         <div className="submit-card">
           {step === 1 ? (
             <form onSubmit={handleUrlSubmit} className="submit-form">
-              <h1 className="form-title">Share something interesting</h1>
-              <p className="form-sub">Drop a URL and we'll handle the rest.</p>
+              <h1 className="form-title">Paste a link</h1>
+              <p className="form-sub">We auto-fetch the title, description, preview image &amp; suggest tags from the URL — edit anything before posting.</p>
               <div className="input-group">
                 <input
                   type="url"

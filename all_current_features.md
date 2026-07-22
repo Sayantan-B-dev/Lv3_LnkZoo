@@ -168,6 +168,7 @@
 - **OG parser** — resolves relative `og:image` URLs to absolute via `new URL(rawImage, url)`. Added `og:image:secure_url` fallback. Facebook CDN images (`scontent.*.fbcdn.net`) return 403 (hotlink protection) — added `onError` on submit preview to hide the broken image, plus `referrerPolicy="no-referrer"`.
 - **Platform fallbacks** — added LinkedIn to `fallbackTitle()`. Tested all: YouTube, Threads, LinkedIn serve OG tags; X/Twitter uses oEmbed; Instagram serves no metadata (requires Graph API) but `fallbackTitle` covers it.
 - **Bulk upload** — replaced its own duplicate `parseUrl()` with the shared `parseOGMetadata()` so all fixes (UA, og:image/secure_url, relative URLs, fallbackTitle) apply to bulk too.
+- **Submit form copy** — updated the step-1 heading/subtitle to explain auto-fetching of title, description, image & tag suggestions.
 
 ### 2026-07-20
 - **Auth persistence** — session now survives dev-server restarts; added card navigation loader and unified search card styling (`a539aab`).
