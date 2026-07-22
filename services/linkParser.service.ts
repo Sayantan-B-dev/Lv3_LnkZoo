@@ -29,13 +29,13 @@ function extractMetaAttribute(html: string, property: string): string {
 export async function parseOGMetadata(url: string): Promise<ParseResult> {
   try {
     const res = await fetch(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36' },
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
       signal: AbortSignal.timeout(8000),
     });
 
     if (!res.ok) {
       const domain = new URL(url).hostname;
-      return { title: url, description: '', image: '', domain };
+      return { title: fallbackTitle(url) || url, description: '', image: '', domain };
     }
     const text = await res.text();
     const html = text.slice(0, 700000);
@@ -104,6 +104,6 @@ export async function parseOGMetadata(url: string): Promise<ParseResult> {
     return { title: decodeHtmlEntities(finalTitle), description: finalDesc ? decodeHtmlEntities(finalDesc) : '', image, domain };
   } catch {
     const domain = new URL(url).hostname;
-    return { title: url, description: '', image: '', domain };
+    return { title: fallbackTitle(url) || url, description: '', image: '', domain };
   }
 }

@@ -161,9 +161,10 @@
 
 ## Changelog — 2026-07-20 → 2026-07-22
 
-### 2026-07-22 — Profile links COUNT query fix
+### 2026-07-22 — OG parser: Facebook fetching, profile links COUNT fix
 - **Fix** — profile links endpoint (`GET /api/users/[username]/links`) was passing `$3`/`$4` (limit/offset) to the `COUNT(*)` query, which only uses `$1`/`$2` (and `$3`/`$4` for domain). Caused PostgreSQL prepared-statement param mismatch errors (`bind message supplies 4 parameters, but prepared statement "" requires 2`). Separated count params with contiguous numbering.
 - **ScatteredLinks** — added error logging to API fetch calls for easier debugging.
+- **Fix** — OG parser (`parseOGMetadata`) used a Chrome/125 User-Agent that Facebook blocks (returns 400). Switched to a version-less Chrome UA (`AppleWebKit/537.36`), which Facebook accepts and returns full OG tags. Also added `fallbackTitle()` on non-200 responses so users get a readable platform name (e.g., "Facebook Post") instead of the raw URL.
 
 ### 2026-07-20
 - **Auth persistence** — session now survives dev-server restarts; added card navigation loader and unified search card styling (`a539aab`).
