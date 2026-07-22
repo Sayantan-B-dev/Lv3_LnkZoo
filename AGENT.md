@@ -72,7 +72,10 @@ const safeFrom = from.startsWith('/') && !from.startsWith('//') ? from : '/';
 ### Rule 9: Use parameterized queries exclusively
 Always use `sql` tagged template literals. Never concatenate strings into SQL.
 
-### Rule 10: Graceful degradation
+### Rule 10: Never commit without user confirmation
+Every commit MUST be explicitly requested or confirmed by the user. Stage changes and present a summary, then wait for confirmation before running `git commit`. This applies to all sessions regardless of task urgency.
+
+### Rule 11: Graceful degradation
 If a non-critical feature fails (recommendations, notifications sidebar), the page still renders. Show empty state instead of crashing.
 
 ---

@@ -11,23 +11,20 @@ export const POST = apiHandler(async (req: NextRequest, { params }: { params: { 
 
   const linkId = params.id;
 
-  const [deleted] = await sql`
+  const deleted = await sql`
     DELETE FROM link_likes WHERE user_id = ${session.user_id} AND link_id = ${linkId}
     RETURNING 1 AS was_liked
   `;
 
-  const liked = !deleted;
+  const liked = deleted.length === 0;
 
   if (liked) {
     await sql`INSERT INTO link_likes (user_id, link_id) VALUES (${session.user_id}, ${linkId})`;
   }
 
-  const [updated] = await sql`
-    UPDATE links
-    SET like_count = GREATEST(like_count ${liked ? sql`+ 1` : sql`- 1`}, 0)
-    WHERE id = ${linkId}
-    RETURNING like_count
-  `;
+  const [updated] = liked
+    ? await sql`UPDATE links SET like_count = like_count + 1 WHERE id = ${linkId} RETURNING like_count`
+    : await sql`UPDATE links SET like_count = GREATEST(like_count - 1, 0) WHERE id = ${linkId} RETURNING like_count`;
 
   if (liked) {
     const [link] = await sql`SELECT user_id, title FROM links WHERE id = ${linkId}`;

@@ -22,7 +22,7 @@ export default function BookmarksPage() {
       <Topbar title="Bookmarks" />
       <NotificationPanel />
       <div id="content">
-        <div style={{ maxWidth: '640px', margin: '0 auto' }}>
+        <div className="view active">
           <div style={{
             display: 'flex', alignItems: 'center', gap: '12px',
             marginBottom: '24px', paddingBottom: '16px',

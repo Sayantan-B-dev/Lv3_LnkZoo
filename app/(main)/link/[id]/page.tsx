@@ -333,10 +333,10 @@ export default function LinkDetailPage({ params }: { params: Promise<{ id: strin
                   <form onSubmit={handleUpdateLink} className="edit-link-form">
                     <input value={editLinkData.title} onChange={e => setEditLinkData({ ...editLinkData, title: e.target.value })} className="auth-input" style={{ width: '100%', marginBottom: '4px' }} placeholder="Title" maxLength={LIMITS.TITLE_MAX} />
                     <span className="char-counter" style={{ marginBottom: '10px', display: 'block' }}>{editLinkData.title.length}/{LIMITS.TITLE_MAX}</span>
-                    <textarea value={editLinkData.description} onChange={e => setEditLinkData({ ...editLinkData, description: e.target.value })} className="auth-input" style={{ width: '100%', minHeight: '80px', marginBottom: '4px' }} placeholder="Description" maxLength={LIMITS.DESC_MAX} />
+                    <textarea value={editLinkData.description} onChange={e => setEditLinkData({ ...editLinkData, description: e.target.value })} className="auth-input edit-link-textarea" style={{ width: '100%', minHeight: '80px', marginBottom: '4px' }} placeholder="Description" maxLength={LIMITS.DESC_MAX} />
                     <span className="char-counter" style={{ marginBottom: '10px', display: 'block' }}>{editLinkData.description.length}/{LIMITS.DESC_MAX}</span>
                     <input value={editTags} onChange={e => setEditTags(e.target.value)} className="auth-input" style={{ width: '100%', marginBottom: '10px' }} placeholder="Tags (comma separated)" />
-                    <div style={{ display: 'flex', gap: '10px' }}>
+                    <div style={{ display: 'flex', gap: '10px', marginBottom: '14px' }}>
                       <button type="submit" className="save-btn">Save</button>
                       <button type="button" onClick={() => setIsEditingLink(false)} className="cancel-btn">Cancel</button>
                     </div>

@@ -249,6 +249,19 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+.auth-input.edit-link-textarea {
+  resize: vertical;
+}
+
+.auth-input.edit-link-textarea::-webkit-scrollbar {
+  width: 4px;
+}
+
+.auth-input.edit-link-textarea::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
 @media (max-width: 960px) {
   .link-detail-layout {
     grid-template-columns: 1fr;
