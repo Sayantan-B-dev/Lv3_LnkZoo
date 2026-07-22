@@ -8,6 +8,34 @@ import { resolveUrl, checkDuplicate } from '@/lib/resolveUrl';
 import { parseOGMetadata } from '@/services/linkParser.service';
 
 const CONCURRENCY = 5;
+const ADMIN_CONCURRENCY = 25;
+const DOMAIN_MAX = 2;
+const BUDGET_MS = 45_000;
+const PROGRESS_BATCH = 10;
+
+function safeHostname(url: string): string {
+  try { return new URL(url).hostname; } catch { return 'unknown'; }
+}
+
+const domainActive = new Map<string, number>();
+
+async function acquireDomain(url: string): Promise<void> {
+  const host = safeHostname(url);
+  while (true) {
+    const cur = domainActive.get(host) ?? 0;
+    if (cur < DOMAIN_MAX) {
+      domainActive.set(host, cur + 1);
+      return;
+    }
+    await new Promise(r => setTimeout(r, 200));
+  }
+}
+
+function releaseDomain(url: string) {
+  const host = safeHostname(url);
+  const cur = domainActive.get(host) ?? 1;
+  domainActive.set(host, Math.max(0, cur - 1));
+}
 
 async function createLink(
   url: string,
@@ -34,9 +62,11 @@ async function createLink(
     }
 
     let shortCode = generateShortCode(6);
-
-    const existing = await sql`SELECT 1 FROM links WHERE short_code = ${shortCode}`;
-    if (existing.length) shortCode = generateShortCode(7);
+    for (let tries = 0; tries < 3; tries++) {
+      const existing = await sql`SELECT 1 FROM links WHERE short_code = ${shortCode}`;
+      if (!existing.length) break;
+      shortCode = generateShortCode(6);
+    }
 
     const [link] = await sql`
       INSERT INTO links (user_id, original_url, short_code, title, description, preview_image, visibility, topic_id)
@@ -66,37 +96,70 @@ export const POST = apiHandler(async (req: NextRequest) => {
   const userId = session.user_id;
   const isAdmin = session.role === 'admin';
   const maxUrls = isAdmin ? urls.length : Math.min(urls.length, 10);
-  const concurrency = isAdmin ? 10 : CONCURRENCY;
+  const concurrency = isAdmin ? ADMIN_CONCURRENCY : CONCURRENCY;
   const batch = urls.slice(0, maxUrls);
 
   const encoder = new TextEncoder();
+  const startTime = Date.now();
+
   const stream = new ReadableStream({
     async start(controller) {
       const results: Array<{ url: string; success: boolean; title?: string; shortCode?: string; error?: string }> = new Array(batch.length);
       const queue = batch.map((url, i) => ({ url, i }));
       let completed = 0;
 
+      function sendProgress(processed: number, total: number) {
+        controller.enqueue(encoder.encode(JSON.stringify({ type: 'progress', processed, total }) + '\n'));
+      }
+
+      let timedOut = false;
+
       async function worker() {
         while (queue.length > 0) {
+          if (Date.now() - startTime >= BUDGET_MS) {
+            timedOut = true;
+            break;
+          }
+
           const { url, i } = queue.shift()!;
-          const result = await createLink(url, userId, visibility || 'public', topicId);
-          results[i] = { url, ...result };
+          await acquireDomain(url);
+          try {
+            const result = await createLink(url, userId, visibility || 'public', topicId);
+            results[i] = { url, ...result };
+          } finally {
+            releaseDomain(url);
+          }
+
           completed++;
-          controller.enqueue(encoder.encode(JSON.stringify({ type: 'progress', processed: completed, total: batch.length }) + '\n'));
+
+          if (completed % PROGRESS_BATCH === 0 || completed === batch.length) {
+            sendProgress(completed, batch.length);
+          }
         }
       }
 
       await Promise.all(Array.from({ length: concurrency }, () => worker()));
 
+      if (timedOut) {
+        for (let i = 0; i < batch.length; i++) {
+          if (results[i] === undefined) {
+            results[i] = { url: batch[i].url, success: false, error: 'Processing timeout — try a smaller batch' };
+          }
+        }
+        if (completed % PROGRESS_BATCH !== 0 || completed === 0) {
+          sendProgress(completed, batch.length);
+        }
+      }
+
       await gamificationService.updateStreak(userId);
 
-      const valid = results.filter(Boolean);
       controller.enqueue(encoder.encode(JSON.stringify({
         type: 'done',
-        results: valid,
+        results,
         total: batch.length,
-        succeeded: valid.filter(r => r.success).length,
-        failed: valid.filter(r => !r.success).length,
+        succeeded: results.filter(r => r.success).length,
+        failed: results.filter(r => !r.success).length,
+        timedOut,
         limitApplied: !isAdmin && urls.length > 10,
       }) + '\n'));
       controller.close();

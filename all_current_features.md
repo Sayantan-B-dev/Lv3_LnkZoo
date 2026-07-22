@@ -169,6 +169,7 @@
 - **Platform fallbacks** — added LinkedIn to `fallbackTitle()`. Tested all: YouTube, Threads, LinkedIn serve OG tags; X/Twitter uses oEmbed; Instagram serves no metadata (requires Graph API) but `fallbackTitle` covers it.
 - **Bulk upload** — replaced its own duplicate `parseUrl()` with the shared `parseOGMetadata()` so all fixes (UA, og:image/secure_url, relative URLs, fallbackTitle) apply to bulk too.
 - **Submit form copy** — updated the step-1 heading/subtitle to explain auto-fetching of title, description, image & tag suggestions.
+- **Bulk upload safety** — per-domain concurrency (max 2/hostname prevents rate-limit blocks), 45s time budget guard (gracefully marks remaining items as timeout instead of silent stream cut), admin concurrency raised to 25, short-code retry loop (3 attempts before failing), batch progress events (every 10 URLs reduces stream overhead).
 
 ### 2026-07-20
 - **Auth persistence** — session now survives dev-server restarts; added card navigation loader and unified search card styling (`a539aab`).
