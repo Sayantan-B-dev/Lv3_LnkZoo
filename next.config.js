@@ -1,5 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Pin the bundler root to this project. Without it Next walks up the tree,
+  // finds the stray lockfile in the parent `LnkZoo/` folder, and treats it as a
+  // monorepo root — which desyncs module IDs ("[project]/_dev/...") from the
+  // React Client Manifest and 500s every route.
+  turbopack: {
+    root: __dirname,
+  },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: '**' },
