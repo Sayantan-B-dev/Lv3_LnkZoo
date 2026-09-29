@@ -1,5 +1,15 @@
 import { decodeHtmlEntities } from '@/lib/html';
 import { fetchOEmbed, fallbackTitle } from '@/lib/platform';
+import { fetchRemote } from '@/lib/urlSafety';
+
+/** `new URL()` throws on unparseable input, which callers routinely hand us. */
+function safeHostname(url: string): string {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return '';
+  }
+}
 
 export interface ParseResult {
   title: string;
@@ -44,21 +54,29 @@ function extractYouTube(html: string): { title?: string; description?: string } 
 }
 
 export async function parseOGMetadata(url: string): Promise<ParseResult> {
+  const empty = (): ParseResult => ({
+    title: fallbackTitle(url) || url,
+    description: '',
+    image: '',
+    domain: safeHostname(url),
+  });
+
   try {
-    const res = await fetch(url, {
+    // fetchRemote re-checks every redirect hop, so a public host that bounces
+    // to 127.0.0.1 or the cloud metadata endpoint is refused (returns null).
+    const res = await fetchRemote(url, {
       headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
       signal: AbortSignal.timeout(6000),
-      redirect: 'follow',
     });
 
-    if (!res.ok) {
-      return { title: fallbackTitle(url) || url, description: '', image: '', domain: new URL(url).hostname };
-    }
+    if (!res) return empty();
+
+    if (!res.ok) return empty();
 
     const text = await res.text();
     const html = text.slice(0, 150000);
     const meta = buildMetaMap(html);
-    const domain = new URL(url).hostname;
+    const domain = safeHostname(url);
 
     const get = (...keys: string[]) => {
       for (const k of keys) { const v = meta.get(k); if (v) return v; }
@@ -100,6 +118,6 @@ export async function parseOGMetadata(url: string): Promise<ParseResult> {
       domain,
     };
   } catch {
-    return { title: fallbackTitle(url) || url, description: '', image: '', domain: new URL(url).hostname };
+    return empty();
   }
 }
