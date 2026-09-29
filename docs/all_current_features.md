@@ -34,6 +34,7 @@
 - **Flagging** — report inappropriate links
 - **Topic assignment** — grouped topic dropdown on submit form; `topic_id` stored per link
 - **Topic badge** — themed topic pill on link cards and detail page
+- **Topic-tinted card border** — every link card's border takes a dim mix of its topic's colour (`topics.color`), brightening toward the text colour on hover; untopicced cards stay neutral grey. Driven by one `--topic-color` custom property set inline on the card root, so the detail page and all four LinkCard variants share the same treatment
 - **Card navigation loader** — loading indicator when opening a link card
 - **View & click tracking** — every link view (`link_view_events`) and short-link click (`link_click_events`) recorded for analytics
 
@@ -177,6 +178,10 @@
 - Admin-only mutations verified against `session.role`, not a client-supplied flag
 
 ## Changelog — 2026-08-10 → present
+
+### 2026-09-30 — Topic-tinted card borders
+- **Every link card takes its colour from its topic.** `LinkCard` sets `--topic-color` inline from `link.topic_color` (the seeded `topics.color` for the card's topic-type); the border is `color-mix(topic-color 28%, var(--border))` at rest — a dim version — and `color-mix(topic-color 30%, var(--text))` on hover, which reads as a brighter near-white tint in dark mode and a darker ink tint in light mode. Cards without a topic keep a neutral grey border. The link-detail card gets the same treatment via the page root. The topic badge now *inherits* the card's variable instead of defining its own, so badge and border always agree.
+- **API coverage** — `topic` / `topic_name` / `topic_color` added to every card-feeding endpoint that lacked them: `/api/links/random` (both branches), `/api/links/daily-dose`, `/api/user/bookmarks`, `/api/users/[username]/links`, `/api/tags/[name]/links`, `/api/recommendations` (all three branches). The main feed, detail and manage endpoints already returned them. All joins are `LEFT JOIN topics t3 ON t3.id = l.topic_id` with the topic columns added to `GROUP BY` where aggregation is used.
 
 ### 2026-09-30 — Policy upgrade pass (access, headers, legal, RLS)
 - **SSRF guard** — `lib/urlSafety.ts`: `checkRemoteUrl()` rejects non-http(s), embedded credentials, loopback/private/link-local/CGNAT/metadata IPs, bare intranet names and `.internal`-style hosts; `fetchRemote()` re-checks **every redirect hop**. `parseOGMetadata()` (used by `/api/tools/parse` and bulk upload) goes through it — it previously fetched any URL with `redirect: 'follow'`. `/api/tools/parse` also gains a 20/min per-IP limit, a boundary check (400 with a clear reason), and no longer echoes raw fetch errors.

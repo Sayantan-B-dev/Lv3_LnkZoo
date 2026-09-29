@@ -22,7 +22,7 @@ All colors/sizing are CSS vars on `:root` (dark) + `[data-theme="light"]`. Never
 - **Native `<button>`/`<select>` do NOT inherit text color.** Any styled button/select MUST set `color:` explicitly or text goes invisible (system default vs dark bg). See `.adm-action-btn`, `.adm-role-select`.
 - **Text on `--accent` uses `--accent-inv`**, not `#fff` (accent is light in dark theme).
 - **Required `TopicSelect` state**: `.topic-select-trigger.required` adds a red border (`var(--red, #ef4444)`) when the required field is empty.
-- Per-topic colors: passed via inline `style={{ background: color }}` / `--topic-color` custom prop + `color-mix()`; the palette source is `PRESET_COLORS` in `app/admin/topics/page.tsx`.
+- Per-topic colors: passed via inline `style={{ background: color }}` / `--topic-color` custom prop + `color-mix()`; the palette source is `PRESET_COLORS` in `app/admin/topics/page.tsx`. Link cards also set `--topic-color` on the card root from `link.topic_color`, tinting the border (`ui/link-card.css`); the badge inherits it.
 
 ## Class-name prefixes (namespacing by area)
 | Prefix | Area | File |
