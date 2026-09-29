@@ -6,6 +6,7 @@
 | `AGENT.md` | Agent guidelines: coding rules, security checklist, structure |
 | `STYLE.md` | CSS architecture, token map, class conventions |
 | `DESIGN.md` | Route/component/data-layer map ("where's what") |
+| `policies.md` | Access & security policy matrix: page/route/row layers, abuse limits, SSRF guard |
 | `all_current_features.md` | Full feature list + changelog |
 | `tools.md` | Developer Tools page: URL Shortener, Low Weight File Transfer, Text Share |
 | `next_tools.md` | Backlog of candidate `/tools` additions + the SSRF guard any URL-fetching tool needs |
