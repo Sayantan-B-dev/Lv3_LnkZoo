@@ -107,6 +107,18 @@ enough for one Node process; move to Redis if we ever scale horizontally.
 Mutation routes cap the request **before** reading the body (`content-length`
 → 413) so a giant upload never sits in memory.
 
+## Response headers (`next.config.js`)
+
+Every route sends: a `Content-Security-Policy` (external origins pinned to the
+two Google Fonts hosts; inline scripts still allowed for the theme bootstrap and
+Next hydration — closing that means nonces via middleware), HSTS (ignored on
+http/localhost), `Permissions-Policy` denying camera/mic/geo/payment/usb,
+`X-Frame-Options: DENY`, `nosniff` and `Referrer-Policy`.
+`X-XSS-Protection` is deliberately absent — deprecated and ignored everywhere.
+
+Dev adds `'unsafe-eval'` (React refresh) and `ws:` (HMR) to the CSP; prod does
+not.
+
 ## Input & content rules
 
 - Parameterized queries only — `sql` tagged templates or `query(text, $n)`.
