@@ -44,10 +44,32 @@ export type FeedbackStatus = (typeof FEEDBACK_STATUSES)[number]['id'];
 
 export const DEFAULT_FEEDBACK_STATUS: FeedbackStatus = 'open';
 
+/**
+ * Chosen by the author when posting.
+ *   public  -> listed for everyone, signed out included
+ *   private -> only the author and admins
+ */
+export const FEEDBACK_VISIBILITIES = [
+  { id: 'public', label: 'Public', hint: 'Anyone can see this on the board.' },
+  { id: 'private', label: 'Private', hint: 'Only you and the maintainers can see it.' },
+] as const;
+
+export type FeedbackVisibility = (typeof FEEDBACK_VISIBILITIES)[number]['id'];
+
+export const DEFAULT_FEEDBACK_VISIBILITY: FeedbackVisibility = 'public';
+
+export function isFeedbackVisibility(value: string): value is FeedbackVisibility {
+  return FEEDBACK_VISIBILITIES.some((v) => v.id === value);
+}
+
 export function isFeedbackStatus(value: string): value is FeedbackStatus {
   return FEEDBACK_STATUSES.some((s) => s.id === value);
 }
 
 export function feedbackStatusLabel(id: string): string {
   return FEEDBACK_STATUSES.find((s) => s.id === id)?.label ?? id;
+}
+
+export function feedbackVisibilityLabel(id: string): string {
+  return FEEDBACK_VISIBILITIES.find((v) => v.id === id)?.label ?? id;
 }

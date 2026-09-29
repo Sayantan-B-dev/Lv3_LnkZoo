@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionFromRequest } from '@/lib/auth';
 
-const PROTECTED = ['/submit', '/profile', '/notifications', '/feedback'];
+// /feedback is deliberately NOT here: the board is public to read. Posting is
+// gated in the API, not the page.
+const PROTECTED = ['/submit', '/profile', '/notifications'];
 const ADMIN_ONLY = ['/admin'];
 
 export async function proxy(req: NextRequest) {
@@ -31,5 +33,5 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/submit', '/profile/:path*', '/notifications', '/feedback', '/admin/:path*'],
+  matcher: ['/submit', '/profile/:path*', '/notifications', '/admin/:path*'],
 };

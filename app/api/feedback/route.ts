@@ -17,7 +17,9 @@ import {
   FEEDBACK_POST_MAX_PER_IP,
   FEEDBACK_POST_MAX_PER_USER,
   FEEDBACK_POST_WINDOW_MS,
+  DEFAULT_FEEDBACK_VISIBILITY,
   isFeedbackStatus,
+  isFeedbackVisibility,
 } from '@/lib/feedbackRules';
 import {
   createFeedback,
@@ -96,6 +98,15 @@ export const POST = apiHandler(async (req: NextRequest) => {
     );
   }
 
+  const rawVisibility = form.get('visibility');
+  const visibility =
+    typeof rawVisibility === 'string' && rawVisibility
+      ? rawVisibility
+      : DEFAULT_FEEDBACK_VISIBILITY;
+  if (!isFeedbackVisibility(visibility)) {
+    return NextResponse.json({ error: 'Unknown visibility' }, { status: 400 });
+  }
+
   let screenshot: { buffer: Buffer; mime: string } | null = null;
   const rawScreenshot = form.get('screenshot');
   if (rawScreenshot && typeof rawScreenshot !== 'string') {
@@ -123,6 +134,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
       userId: session.user_id,
       title,
       description,
+      visibility,
       screenshot,
     });
     return NextResponse.json({ feedback: created }, { status: 201 });
@@ -133,31 +145,33 @@ export const POST = apiHandler(async (req: NextRequest) => {
 });
 
 /**
- * List reports. Admins get everyone's (optionally filtered by status, plus
- * per-status counts); a normal user only ever sees their own.
+ * Public board. Signed-out visitors get public reports; a signed-in user also
+ * gets their own private ones; an admin gets everything. The filters narrow
+ * that set, never widen it.
  */
 export const GET = apiHandler(async (req: NextRequest) => {
   const session = await getSessionFromRequest(req);
-  if (!session) {
-    return NextResponse.json({ error: 'Please sign in' }, { status: 401 });
-  }
+  const isAdmin = session?.role === 'admin';
+  const viewerId = session?.user_id ?? null;
 
+  const ip = clientIp(req);
+  const bucketKey = session ? `feedback:list:${session.user_id}` : `feedback:list:ip:${ip}`;
   if (
-    !rateLimit(
-      `feedback:list:${session.user_id}`,
-      FEEDBACK_LIST_MAX_PER_USER,
-      FEEDBACK_LIST_WINDOW_MS
-    )
+    !rateLimit(bucketKey, FEEDBACK_LIST_MAX_PER_USER, FEEDBACK_LIST_WINDOW_MS)
   ) {
     return NextResponse.json({ error: 'Too many requests, slow down' }, { status: 429 });
   }
 
-  const isAdmin = session.role === 'admin';
   const sp = req.nextUrl.searchParams;
 
   const statusParam = sp.get('status');
   if (statusParam && !isFeedbackStatus(statusParam)) {
     return NextResponse.json({ error: 'Unknown status' }, { status: 400 });
+  }
+
+  const visibilityParam = sp.get('visibility');
+  if (visibilityParam && !isFeedbackVisibility(visibilityParam)) {
+    return NextResponse.json({ error: 'Unknown visibility' }, { status: 400 });
   }
 
   const limit = Math.min(
@@ -167,9 +181,10 @@ export const GET = apiHandler(async (req: NextRequest) => {
   const page = Math.max(1, parseInt(sp.get('page') ?? '1', 10) || 1);
 
   const { items, total } = await listFeedback({
-    viewerId: session.user_id,
+    viewerId,
     isAdmin,
-    status: isAdmin ? statusParam ?? undefined : undefined,
+    status: statusParam ?? undefined,
+    visibility: visibilityParam ?? undefined,
     limit,
     offset: (page - 1) * limit,
   });
@@ -180,6 +195,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
     page,
     limit,
     isAdmin,
-    counts: isAdmin ? await feedbackStatusCounts() : undefined,
+    signedIn: !!session,
+    counts: await feedbackStatusCounts(viewerId, isAdmin),
   });
 });

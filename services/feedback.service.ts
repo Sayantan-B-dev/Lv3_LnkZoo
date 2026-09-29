@@ -1,6 +1,11 @@
 import { v2 as cloudinary } from 'cloudinary';
 import sql, { query } from '@/lib/db';
-import { DEFAULT_FEEDBACK_STATUS, type FeedbackStatus } from '@/lib/feedbackRules';
+import {
+  DEFAULT_FEEDBACK_STATUS,
+  DEFAULT_FEEDBACK_VISIBILITY,
+  type FeedbackStatus,
+  type FeedbackVisibility,
+} from '@/lib/feedbackRules';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -16,6 +21,7 @@ export interface FeedbackItem {
   description: string;
   screenshot_url: string | null;
   status: FeedbackStatus;
+  visibility: FeedbackVisibility;
   created_at: string;
   updated_at: string;
   username: string | null;
@@ -25,37 +31,63 @@ export interface FeedbackItem {
 }
 
 export interface ListFeedbackOptions {
-  viewerId: string;
+  /** null for signed-out visitors. */
+  viewerId: string | null;
   isAdmin: boolean;
   status?: string;
+  visibility?: string;
   limit: number;
   offset: number;
 }
 
 const SELECT_COLUMNS = `
-  f.id, f.user_id, f.title, f.description, f.screenshot_url, f.status,
+  f.id, f.user_id, f.title, f.description, f.screenshot_url, f.status, f.visibility,
   f.created_at, f.updated_at, u.username, u.avatar_url
 `;
 
 /**
- * Admins see every report; everyone else sees only their own. `status` filters
- * only apply to the admin view.
+ * Access policy for reads:
+ *   admin        -> everything
+ *   signed in    -> public reports + their own, whatever the visibility
+ *   signed out   -> public reports only
+ *
+ * `status` and `visibility` filters narrow whatever the policy already allows,
+ * so they can never widen it.
  */
+function visibilityCondition(
+  viewerId: string | null,
+  isAdmin: boolean,
+  conds: string[],
+  params: any[],
+  n: number
+): number {
+  if (isAdmin) return n;
+  if (viewerId) {
+    conds.push(`(f.visibility = 'public' OR f.user_id = $${n + 1})`);
+    params.push(viewerId);
+    return n + 1;
+  }
+  conds.push(`f.visibility = 'public'`);
+  return n;
+}
+
 export async function listFeedback(
   options: ListFeedbackOptions
 ): Promise<{ items: FeedbackItem[]; total: number }> {
-  const { viewerId, isAdmin, status, limit, offset } = options;
+  const { viewerId, isAdmin, status, visibility, limit, offset } = options;
 
   const conds: string[] = [];
   const params: any[] = [];
-  let n = 0;
 
-  if (!isAdmin) {
-    conds.push(`f.user_id = $${++n}`);
-    params.push(viewerId);
-  } else if (status) {
+  let n = visibilityCondition(viewerId, isAdmin, conds, params, 0);
+
+  if (status) {
     conds.push(`f.status = $${++n}`);
     params.push(status);
+  }
+  if (visibility) {
+    conds.push(`f.visibility = $${++n}`);
+    params.push(visibility);
   }
 
   const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
@@ -80,17 +112,35 @@ export async function listFeedback(
       (row: any): FeedbackItem => ({
         ...row,
         status: (row.status ?? DEFAULT_FEEDBACK_STATUS) as FeedbackStatus,
-        is_mine: row.user_id === viewerId,
+        visibility: (row.visibility ?? DEFAULT_FEEDBACK_VISIBILITY) as FeedbackVisibility,
+        is_mine: !!viewerId && row.user_id === viewerId,
       })
     ),
     total: countRow?.count ?? 0,
   };
 }
 
-export async function feedbackStatusCounts(): Promise<Record<string, number>> {
-  const rows = await query(
-    `SELECT status, COUNT(*)::int AS count FROM feedback GROUP BY status`
-  );
+/**
+ * Per-status tallies, respecting the same access policy as the list so a
+ * counter never reveals the existence of a private report.
+ */
+export async function feedbackStatusCounts(
+  viewerId: string | null,
+  isAdmin: boolean
+): Promise<Record<string, number>> {
+  const rows = isAdmin
+    ? await query(`SELECT status, COUNT(*)::int AS count FROM feedback GROUP BY status`)
+    : viewerId
+      ? await query(
+          `SELECT status, COUNT(*)::int AS count FROM feedback
+           WHERE visibility = 'public' OR user_id = $1 GROUP BY status`,
+          [viewerId]
+        )
+      : await query(
+          `SELECT status, COUNT(*)::int AS count FROM feedback
+           WHERE visibility = 'public' GROUP BY status`
+        );
+
   const counts: Record<string, number> = {};
   for (const row of rows) counts[row.status] = row.count;
   return counts;
@@ -100,6 +150,7 @@ export async function createFeedback(input: {
   userId: string;
   title: string;
   description: string;
+  visibility: FeedbackVisibility;
   screenshot?: { buffer: Buffer; mime: string } | null;
 }): Promise<FeedbackItem> {
   let screenshotUrl: string | null = null;
@@ -122,9 +173,9 @@ export async function createFeedback(input: {
   }
 
   const [row] = await sql`
-    INSERT INTO feedback (user_id, title, description, screenshot_url, screenshot_public_id)
-    VALUES (${input.userId}, ${input.title}, ${input.description}, ${screenshotUrl}, ${screenshotPublicId})
-    RETURNING id, title, description, screenshot_url, status, created_at, updated_at
+    INSERT INTO feedback (user_id, title, description, screenshot_url, screenshot_public_id, visibility)
+    VALUES (${input.userId}, ${input.title}, ${input.description}, ${screenshotUrl}, ${screenshotPublicId}, ${input.visibility})
+    RETURNING id, title, description, screenshot_url, status, visibility, created_at, updated_at
   `;
 
   return {
