@@ -6,6 +6,11 @@ folded into the feature they belong to unless they stand alone. For the
 thematic view — what the app does today, grouped by area — see
 `all_current_features.md`; for access rules, `policies.md`.
 
+## 2026-09-30 — Topic-tinted card borders
+
+- Every link card's border takes a dim mix of its topic's colour from the seeded `topics.color` palette (AI & Data violet, Web & Cloud blue, Science & Math green, …), brightening toward the text colour on hover; cards without a topic stay neutral grey. Driven by one `--topic-color` custom property on the card root; the link-detail card and the topic badge share it. Six card-feeding APIs that dropped the colour (random, daily-dose, bookmarks, profile links, tag links, recommendations) gained `topic` / `topic_name` / `topic_color` (1ee56d1)
+- Follow-up fix: the main feeds (home, explore, topics, tags, bookmarks, categories, websites, profile) render through `ScatteredLinks`, not the shared `LinkCard`, so they had stayed grey — it now sets the same variable. The floating hover-preview popup (image + stats card after 400ms hover) was removed along with its timer, tracking and ~90 lines of CSS (8d671c4)
+
 ## 2026-09-30 — Policy hardening
 
 - SSRF guard for server-side URL fetches (`lib/urlSafety.ts`): scheme, credential, loopback/private/metadata host checks, re-applied on **every redirect hop**; wired into the OG parser used by submit and bulk upload (79ef32a)
@@ -163,6 +168,7 @@ thematic view — what the app does today, grouped by area — see
 
 ---
 
-*Derived from `git log --date=short` (148 commits, 2026-04-29 → 2026-09-30).
-Superseded work is noted inline (hero marquee → grid; light → dark default).
+*Derived from `git log --date=short` (168 commits, 2026-04-29 → 2026-09-30).
+Superseded work is noted inline (hero marquee → grid; light → dark default;
+feed hover-preview popup removed).
 Never-shipped experiments are not listed.*
