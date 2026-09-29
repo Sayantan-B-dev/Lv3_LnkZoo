@@ -175,6 +175,9 @@
 
 ## Changelog — 2026-08-10 → present
 
+### 2026-09-29 — Hero showcases all tools
+- **Hero tool showcase** (`HeroTools.tsx`) — the scrolling marquee pill is replaced by a visible 2×2 grid of tool cards right in the hero: URL Shortener (`/tools#url-shortener`), File Transfer (`/tools#file-transfer`), Text Share (`/tools#text-share`), and Meta Scraper marked with a "Soon" badge. Each card shows an icon, name, and one-line description with a staggered fade-up entrance; "View all →" links to `/tools`. Stacks to a single column at ≤480px.
+
 ### 2026-08-10 — Hero tools marquee, working theme toggle icon, mobile-tuned particles
 - **Hero tools marquee pill** (`HeroToolsMarquee.tsx`) — replaces the earlier dropdown approach: a pill-shaped button next to "Share a Link" / "Explore Feed" with a wrench icon + "Explore Different Tools" label, a scrolling strip cycling `URL SHORTENER • LOW WEIGHT FILE TRANSFER • TEXT SHARE` (mono, uppercase, dotted separators, seamless 12s loop, pauses on hover), and an arrow that nudges right on hover; whole pill is a `Link` to `/tools`. Full-width with unbounded scroll strip at ≤768px.
 - **Theme toggle icon fix** — the topbar icon was a hardcoded moon SVG that never swapped. Added `context/ThemeContext.tsx` (`ThemeProvider` + `useTheme`) wrapped in `app/layout.tsx`; `Topbar.tsx` renders moon in dark mode, sun in light mode with a pop-rotate animation. Context reads `data-theme` and follows changes via `MutationObserver`; persistence (`lnkzoo_theme`) untouched.

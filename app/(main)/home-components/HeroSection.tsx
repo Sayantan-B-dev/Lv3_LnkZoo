@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { HeroToolsMarquee } from './HeroToolsMarquee';
+import { HeroTools } from './HeroTools';
 
 export function HeroSection({ stats, onShareClick }: { stats: any; onShareClick: () => void }) {
   return (
@@ -20,8 +20,8 @@ export function HeroSection({ stats, onShareClick }: { stats: any; onShareClick:
           <div className="hero-actions">
             <button className="hero-btn primary" onClick={onShareClick}>Share a Link</button>
             <Link href="/explore" className="hero-btn secondary">Explore Feed</Link>
-            <HeroToolsMarquee />
           </div>
+          <HeroTools />
         </div>
         <div className="hero-stats">
           <div className="hero-stat-card">

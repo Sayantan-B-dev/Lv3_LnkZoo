@@ -59,3 +59,34 @@ export const ChartIcon = function() {
     React.createElement('path', { d: 'M18 20V10M12 20V4M6 20v-6' })
   );
 };
+
+export const ShortenIcon = function() {
+  return React.createElement('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' },
+    React.createElement('path', { d: 'M9 7H7a5 5 0 000 10h2' }),
+    React.createElement('path', { d: 'M15 7h2a5 5 0 010 10h-2' }),
+    React.createElement('path', { d: 'M8 12h8' })
+  );
+};
+
+export const FileTransferIcon = function() {
+  return React.createElement('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' },
+    React.createElement('path', { d: 'M12 16V4' }),
+    React.createElement('path', { d: 'M7 9l5-5 5 5' }),
+    React.createElement('path', { d: 'M4 20h16' })
+  );
+};
+
+export const TextShareIcon = function() {
+  return React.createElement('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' },
+    React.createElement('path', { d: 'M4 6h16' }),
+    React.createElement('path', { d: 'M4 12h16' }),
+    React.createElement('path', { d: 'M4 18h9' })
+  );
+};
+
+export const MetaScraperIcon = function() {
+  return React.createElement('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' },
+    React.createElement('path', { d: 'M9 8l-4 4 4 4' }),
+    React.createElement('path', { d: 'M15 8l4 4-4 4' })
+  );
+};
