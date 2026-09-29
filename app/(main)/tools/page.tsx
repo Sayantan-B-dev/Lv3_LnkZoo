@@ -8,6 +8,8 @@ import { useToast } from '@/context/ToastContext';
 import {
   MAX_TEMP_FILE_BYTES,
   BLOCKED_TEMP_EXTENSIONS,
+  TEMP_FILE_EXPIRY_OPTIONS,
+  DEFAULT_TEMP_FILE_EXPIRY,
   tempFileExt,
 } from '@/lib/tempFileRules';
 import {
@@ -23,6 +25,7 @@ interface TempFileResult {
   expiresAt: string;
   nextUploadAt: string;
   clockOffset: number;
+  expiry?: string;
 }
 
 interface TextShareResult {
@@ -30,12 +33,13 @@ interface TextShareResult {
   expiresAt: string;
   nextShareAt: string;
   clockOffset: number;
+  expiry?: string;
 }
 
 interface StoredToolsState {
   shortener?: { shortUrl: string; expiresAt: string; clockOffset: number };
-  fileTransfer?: { url: string; expiresAt: string; nextAllowedAt: string; clockOffset: number };
-  textShare?: { url: string; expiresAt: string; nextAllowedAt: string; clockOffset: number };
+  fileTransfer?: { url: string; expiresAt: string; nextAllowedAt: string; clockOffset: number; expiry?: string };
+  textShare?: { url: string; expiresAt: string; nextAllowedAt: string; clockOffset: number; expiry?: string };
 }
 
 const TOOLS_STATE_KEY = 'lnkzoo_tools_state';
@@ -80,6 +84,7 @@ export default function Tools() {
   const [tfDragging, setTfDragging] = useState(false);
   const [tfUploading, setTfUploading] = useState(false);
   const [tfResult, setTfResult] = useState<TempFileResult | null>(null);
+  const [tfExpiry, setTfExpiry] = useState<string>(DEFAULT_TEMP_FILE_EXPIRY);
   const [tfCopied, setTfCopied] = useState(false);
   const [tfCooldownSecs, setTfCooldownSecs] = useState(0);
   const [tfDestroySecs, setTfDestroySecs] = useState(0);
@@ -92,6 +97,9 @@ export default function Tools() {
   const [tsCopied, setTsCopied] = useState(false);
   const [tsCooldownSecs, setTsCooldownSecs] = useState(0);
   const [tsDestroySecs, setTsDestroySecs] = useState(0);
+
+  const tfExpiryLabel =
+    TEMP_FILE_EXPIRY_OPTIONS.find((o) => o.id === tfExpiry)?.label ?? '5 min';
 
   const handleShorten = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -148,6 +156,7 @@ export default function Tools() {
     try {
       const fd = new FormData();
       fd.append('file', file);
+      fd.append('expiry', tfExpiry);
       const res = await fetch('/api/tools/upload-temp-file', {
         method: 'POST',
         body: fd,
@@ -155,7 +164,7 @@ export default function Tools() {
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
         const clockOffset = captureClockOffset(data.serverTime);
-        setTfResult({ ...data, clockOffset });
+        setTfResult({ ...data, clockOffset, expiry: tfExpiry });
         setTfDestroySecs(
           Math.max(1, remainingSecs(data.expiresAt, clockOffset))
         );
@@ -168,9 +177,10 @@ export default function Tools() {
             expiresAt: data.expiresAt,
             nextAllowedAt: data.nextUploadAt,
             clockOffset,
+            expiry: tfExpiry,
           },
         });
-        addToast('File uploaded! It self-destructs in 5 minutes.', 'success');
+        addToast(`File uploaded! It self-destructs in ${tfExpiryLabel}.`, 'success');
       } else if (res.status === 429 && data.retryAfterMs) {
         setTfCooldownSecs(Math.ceil(data.retryAfterMs / 1000));
         addToast('Rate limited — one upload per minute', 'error');
@@ -217,7 +227,7 @@ export default function Tools() {
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
         const clockOffset = captureClockOffset(data.serverTime);
-        setTsResult({ ...data, clockOffset });
+        setTsResult({ ...data, clockOffset, expiry: tsExpiry });
         setTsDestroySecs(
           Math.max(1, remainingSecs(data.expiresAt, clockOffset))
         );
@@ -230,6 +240,7 @@ export default function Tools() {
             expiresAt: data.expiresAt,
             nextAllowedAt: data.nextShareAt,
             clockOffset,
+            expiry: tsExpiry,
           },
         });
         addToast('Text shared! It self-destructs soon.', 'success');
@@ -330,6 +341,8 @@ export default function Tools() {
       const off = state.fileTransfer.clockOffset ?? 0;
       const now = Date.now() + off;
       if (new Date(state.fileTransfer.expiresAt).getTime() > now) {
+        const expiry = state.fileTransfer.expiry ?? DEFAULT_TEMP_FILE_EXPIRY;
+        setTfExpiry(expiry);
         setTfResult({
           url: state.fileTransfer.url,
           fileName: '',
@@ -337,6 +350,7 @@ export default function Tools() {
           expiresAt: state.fileTransfer.expiresAt,
           nextUploadAt: state.fileTransfer.nextAllowedAt ?? state.fileTransfer.expiresAt,
           clockOffset: off,
+          expiry,
         });
         setTfDestroySecs(
           Math.max(1, remainingSecs(state.fileTransfer.expiresAt, off))
@@ -357,11 +371,14 @@ export default function Tools() {
       const off = state.textShare.clockOffset ?? 0;
       const now = Date.now() + off;
       if (new Date(state.textShare.expiresAt).getTime() > now) {
+        const expiry = state.textShare.expiry ?? '5m';
+        setTsExpiry(expiry);
         setTsResult({
           url: state.textShare.url,
           expiresAt: state.textShare.expiresAt,
           nextShareAt: state.textShare.nextAllowedAt ?? state.textShare.expiresAt,
           clockOffset: off,
+          expiry,
         });
         setTsDestroySecs(
           Math.max(1, remainingSecs(state.textShare.expiresAt, off))
@@ -442,12 +459,14 @@ export default function Tools() {
 
           <div className="tool-card" id="file-transfer">
             <h2 className="tool-title">Low Weight File Transfer</h2>
-            <p className="tool-desc">Share files that self-destruct in 5 minutes. Max 3MB · 1 upload per minute per IP · always served as a download, never executed.</p>
+            <p className="tool-desc">Share files that self-destruct in 5 minutes, 1 hour, or 24 hours. Max 3MB · 1 upload per minute per IP · always served as a download, never executed.</p>
 
             {tfResult ? (
               <div className="tool-result">
                 <div className="result-label">Your file link:</div>
-                <div className="result-expiry">Expires in 5 minutes · downloads automatically</div>
+                <div className="result-expiry">
+                  Expires in {TEMP_FILE_EXPIRY_OPTIONS.find((o) => o.id === (tfResult.expiry ?? tfExpiry))?.label} · downloads automatically
+                </div>
                 <div className="result-box">
                   <span className="result-link">{tfResult.url}</span>
                   <button className={`short-copy-btn ${tfCopied ? 'copied' : ''}`} onClick={handleCopyTf}>
@@ -502,6 +521,20 @@ export default function Tools() {
                     e.target.value = '';
                   }}
                 />
+
+                <div className="expiry-options tf-expiry-options">
+                  {TEMP_FILE_EXPIRY_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      className={`expiry-btn ${tfExpiry === opt.id ? 'active' : ''}`}
+                      onClick={() => setTfExpiry(opt.id)}
+                      disabled={dropzoneDisabled}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
 
                 {tfCooldownSecs > 0 && (
                   <div className="tf-limit-note">

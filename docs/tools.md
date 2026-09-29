@@ -7,7 +7,7 @@ Cards: **URL Shortener** · **Low Weight File Transfer** · **Text Share** · Me
 All three share the same result UX: a `.result-box` with the link + Copy button, a `ShortUrlQR` (160×160 white-card QR + "Download QR" PNG export), and live countdowns rendered from server timestamps (`formatCountdown` in `lib/textShareRules.ts` — `MM:SS`, or `H:MM:SS` for ≥ 1 hour).
 
 ### Persistence across refresh
-Results survive page refreshes via `localStorage` (`lnkzoo_tools_state`, keyed per tool — last result of each tool). On load, entries whose `expiresAt` has not yet passed are restored with correct state: the destroy countdown resumes from the real server timestamp and the rate-limit cooldown ("Next request in…") restores from the stored `nextAllowedAt`. Expired entries are skipped and purged — results are destroyed only by their actual TTL, never by a refresh. Live destruction (countdown hitting 0) also removes the stored entry.
+Results survive page refreshes via `localStorage` (`lnkzoo_tools_state`, keyed per tool — last result of each tool). On load, entries whose `expiresAt` has not yet passed are restored with correct state: the destroy countdown resumes from the real server timestamp and the rate-limit cooldown ("Next request in…") restores from the stored `nextAllowedAt`. Expired entries are skipped and purged — results are destroyed only by their actual TTL, never by a refresh. Live destruction (countdown hitting 0) also removes the stored entry. The chosen expiry id is stored alongside the result too, so the restored card reports the right TTL instead of falling back to the default.
 
 ### "Make another" reset buttons
 Each tool's result has a reset button that clears **only that tool** (result, countdown, storage entry) while other tools keep their state:
@@ -34,20 +34,21 @@ Returns `{ shortCode, shortUrl, expiresAt }` — link is `<appUrl>/s/<code>` and
 
 | | |
 |---|---|
-| Endpoint | `POST /api/tools/upload-temp-file` (multipart `FormData`, field `file`) |
+| Endpoint | `POST /api/tools/upload-temp-file` (multipart `FormData`, fields `file` + `expiry`) |
 | Access | Public — no auth, works for guests |
 | Size cap | 3 MB — rejected early via `content-length` (413), re-checked after parse |
+| Expiry | `5m` (5 min) · `1h` (1 hour) · `24h` (24 hours) — server-side allowlist, invalid → 400 |
 | Rate limit | **1 upload / minute / IP** — DB-backed (`temp_file_limits`), returns `retryAfterMs` on 429 |
-| TTL | 5 minutes (`temp_files.expires_at`), UI: "This file will be destroyed in MM:SS" |
+| UI | "This file will be destroyed in MM:SS" (hour-aware `H:MM:SS` for 24h) |
 | QR | `ShortUrlQR` encodes `<appUrl>/f/<code>` |
 | Files | `lib/tempFiles.ts`, `lib/tempFileRules.ts`, `styles/ui/temp-file.css` |
 | DB | `docs/db/temp-file-transfer.md` |
 
 ### Flow
-1. Client pre-checks (size, blocked extension) → `FormData` POST.
-2. Server: rate limit → size → type blocklist → lazy prune of expired rows.
+1. Client pre-checks (size, blocked extension), picks an expiry (5 min / 1 hour / 24 hours) → `FormData` POST with `file` + `expiry`.
+2. Server: rate limit → `content-length` cap → parse `FormData` → expiry allowlist → size re-check → type blocklist → lazy prune of expired rows.
 3. Uploaded to Cloudinary as `resource_type: 'raw'` base64 data URI (folder `lnkzoo_temp`) — the file **never touches server disk** and is never executed.
-4. Row inserted with a random 10-char code; `expires_at = NOW() + 5 minutes`.
+4. Row inserted with a random 10-char code; `expires_at = now + chosen TTL`.
 5. `GET /f/[code]` proxies the file from Cloudinary with `Content-Disposition: attachment` using the **original filename** (UTF-8 fallback) and the stored `Content-Type`, plus `X-Content-Type-Options: nosniff`. Expired/missing codes self-heal (Cloudinary asset destroyed + row deleted) then 404.
 
 ### Security model
@@ -86,6 +87,7 @@ Returns `{ shortCode, shortUrl, expiresAt }` — link is `<appUrl>/s/<code>` and
 
 - **`components/common/ShortUrlQR.tsx`** — `qrcode.react` `<QRCodeCanvas>` (160×160, black on white so it scans in dark mode) in a fixed 180×180 white card + "Download QR" button (canvas → PNG). Centered; `styles/ui/qr.css`.
 - **`lib/textShareRules.ts`** — shared pure constants/helpers used by client and server: `MAX_SHARED_TEXT_CHARS`, `TEXT_SHARE_EXPIRY_OPTIONS`, `formatCountdown`.
+- **`lib/tempFileRules.ts`** — shared pure constants/helpers: `MAX_TEMP_FILE_BYTES`, `TEMP_FILE_EXPIRY_OPTIONS`, `DEFAULT_TEMP_FILE_EXPIRY`, blocked extension/MIME lists, `tempFileExt`, `isBlockedTempFile`, `formatBytes`.
 
 ## Environment
 

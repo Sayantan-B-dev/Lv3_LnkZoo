@@ -106,7 +106,7 @@
 ## Developer Tools (`/tools`)
 - **Fully public** — every tool, API, and QR works without login (guests included)
 - **URL Shortener** — 24h expiring short links (`/s/[code]`), in-memory rate limit (10/min guests, 30/min users), QR code + download under the result
-- **Low Weight File Transfer** — drag-drop or browse files up to 3MB; self-destructs after 5 min; 1 upload/min/IP (DB-backed); always served as a forced download with the original filename; QR + "Download QR"; HTML/SVG/JS blocked with a "zip it" hint
+- **Low Weight File Transfer** — drag-drop or browse files up to 3MB; self-destructs after 5 min / 1 hour / 24 hours (chosen per upload); 1 upload/min/IP (DB-backed); always served as a forced download with the original filename; QR + "Download QR"; HTML/SVG/JS blocked with a "zip it" hint
 - **Text Share** — self-destructing text snippets (10k chars max) with expiry choices 5 min / 1 hour / 24 hours; 1 share/min/IP (DB-backed); QR + hour-aware live countdown; text rendered escaped, never indexed
 - **QR everywhere** — `ShortUrlQR` component (qrcode.react) renders a centered 160×160 white-card QR with PNG download; used by all three tools and the link detail page short-URL result
 - **Live countdowns** — "This file/text will be destroyed in MM:SS" and "Next request in MM:SS" (H:MM:SS for ≥1h) ticked from server timestamps; cards reset at expiry
@@ -174,6 +174,11 @@
 - API route ownership guards (delete/update only own resources)
 
 ## Changelog — 2026-08-10 → present
+
+### 2026-09-29 — File Transfer expiry picker
+- **Low Weight File Transfer now takes an expiry** — 5 min / 1 hour / 24 hours, mirroring Text Share. `TEMP_FILE_EXPIRY_OPTIONS` + `DEFAULT_TEMP_FILE_EXPIRY` live in `lib/tempFileRules.ts` (the unused `TEMP_FILE_TTL_MS` constant is gone); `createTempFile(file, ttlSeconds, ip)` computes `expires_at` in JS instead of the hardcoded `NOW() + INTERVAL '5 minutes'`, and the POST route validates the `expiry` FormData field against the allowlist (invalid → 400).
+- **UI** — segmented `5 min / 1 hour / 24 hours` picker under the dropzone (reuses `.expiry-btn`, `.tf-expiry-options` adds the spacing), the result card reports the chosen TTL, and the success toast names it. The choice is persisted in `lnkzoo_tools_state` and restored on refresh.
+- **Restore fix** — persisted results now carry the expiry id for both File Transfer and Text Share, so a refreshed card shows its real TTL instead of defaulting to 5 min.
 
 ### 2026-09-29 — Hero showcases all tools
 - **Hero tool showcase** (`HeroTools.tsx`) — the scrolling marquee pill is replaced by a visible 2×2 grid of tool cards right in the hero: URL Shortener (`/tools#url-shortener`), File Transfer (`/tools#file-transfer`), Text Share (`/tools#text-share`), and Meta Scraper marked with a "Soon" badge. Each card shows an icon, name, and one-line description with a staggered fade-up entrance; "View all →" links to `/tools`. Stacks to a single column at ≤480px.

@@ -69,6 +69,7 @@ export async function destroyTempFileByCode(code: string): Promise<void> {
 
 export async function createTempFile(
   file: { name: string; mime: string; size: number; buffer: Buffer },
+  ttlSeconds: number,
   ip: string
 ): Promise<{
   code: string;
@@ -90,11 +91,12 @@ export async function createTempFile(
 
   const fileName = sanitizeFileName(file.name);
   const code = generateShortCode(TEMP_FILE_CODE_LENGTH);
+  const expiresAt = new Date(Date.now() + ttlSeconds * 1000);
   const nextUploadAt = new Date(Date.now() + TEMP_UPLOAD_WINDOW_MS);
 
   const [row] = await sql`
     INSERT INTO temp_files (id, code, public_id, file_name, size_bytes, mime_type, expires_at)
-    VALUES (${code}, ${code}, ${uploadResult.public_id}, ${fileName}, ${file.size}, ${file.mime}, NOW() + INTERVAL '5 minutes')
+    VALUES (${code}, ${code}, ${uploadResult.public_id}, ${fileName}, ${file.size}, ${file.mime}, ${expiresAt})
     RETURNING expires_at
   `;
 

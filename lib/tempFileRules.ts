@@ -1,6 +1,13 @@
 export const MAX_TEMP_FILE_BYTES = 3 * 1024 * 1024;
-export const TEMP_FILE_TTL_MS = 5 * 60 * 1000;
 export const TEMP_UPLOAD_WINDOW_MS = 60 * 1000;
+
+export const TEMP_FILE_EXPIRY_OPTIONS = [
+  { id: '5m', label: '5 min', seconds: 5 * 60 },
+  { id: '1h', label: '1 hour', seconds: 60 * 60 },
+  { id: '24h', label: '24 hours', seconds: 24 * 60 * 60 },
+] as const;
+
+export const DEFAULT_TEMP_FILE_EXPIRY = '5m';
 
 export const BLOCKED_TEMP_EXTENSIONS = [
   'html',

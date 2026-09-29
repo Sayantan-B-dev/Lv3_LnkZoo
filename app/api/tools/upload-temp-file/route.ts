@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { apiHandler } from '@/lib/api-utils';
 import {
   MAX_TEMP_FILE_BYTES,
+  TEMP_FILE_EXPIRY_OPTIONS,
   isBlockedTempFile,
 } from '@/lib/tempFileRules';
 import {
@@ -38,6 +39,14 @@ export const POST = apiHandler(async (req: NextRequest) => {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
+    const expiry = form.get('expiry');
+    const option = TEMP_FILE_EXPIRY_OPTIONS.find(
+      (o) => o.id === (typeof expiry === 'string' ? expiry : '')
+    );
+    if (!option) {
+      return NextResponse.json({ error: 'Invalid expiry option' }, { status: 400 });
+    }
+
     if (file.size > MAX_TEMP_FILE_BYTES) {
       return NextResponse.json(
         { error: 'File must be 3MB or less' },
@@ -65,6 +74,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
         size: file.size,
         buffer: Buffer.from(await file.arrayBuffer()),
       },
+      option.seconds,
       ip
     );
 

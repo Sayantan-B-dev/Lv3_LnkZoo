@@ -42,6 +42,10 @@
     line-height: 1.5;
 }
 
+.tf-expiry-options {
+    margin-top: 12px;
+}
+
 .tf-limit-note {
     margin-top: 10px;
     text-align: center;

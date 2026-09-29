@@ -6,7 +6,7 @@ import { ShortenIcon, FileTransferIcon, TextShareIcon, MetaScraperIcon } from '.
 
 const HERO_TOOLS = [
   { icon: ShortenIcon, name: 'URL Shortener', desc: 'Short links + QR', href: '/tools#url-shortener', soon: false },
-  { icon: FileTransferIcon, name: 'File Transfer', desc: 'Self-destructs in 5 min', href: '/tools#file-transfer', soon: false },
+  { icon: FileTransferIcon, name: 'File Transfer', desc: 'Self-destructing files', href: '/tools#file-transfer', soon: false },
   { icon: TextShareIcon, name: 'Text Share', desc: 'Expiring secret text', href: '/tools#text-share', soon: false },
   { icon: MetaScraperIcon, name: 'Meta Scraper', desc: 'OG tags & metadata', href: '/tools', soon: true },
 ];

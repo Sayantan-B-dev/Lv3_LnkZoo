@@ -34,7 +34,7 @@ Used by `lib/tempFiles.ts` (`checkTempUploadLimit` / `recordTempUpload`). Stored
 
 ## How the API uses them
 
-- `POST /api/tools/upload-temp-file` — `SELECT last_upload_at FROM temp_file_limits WHERE ip = $1` → allow/429; on success `INSERT ... ON CONFLICT (ip) DO UPDATE SET last_upload_at = NOW()` and `INSERT INTO temp_files (id, code, public_id, file_name, size_bytes, mime_type, expires_at) VALUES (..., NOW() + INTERVAL '5 minutes')`.
+- `POST /api/tools/upload-temp-file` — `SELECT last_upload_at FROM temp_file_limits WHERE ip = $1` → allow/429; on success `INSERT ... ON CONFLICT (ip) DO UPDATE SET last_upload_at = NOW()` and `INSERT INTO temp_files (id, code, public_id, file_name, size_bytes, mime_type, expires_at) VALUES (..., $expiresAt)`, where `expiresAt` is computed from the client-selected `expiry` (`5m` / `1h` / `24h`, allowlisted server-side) as `now + TTL`.
 - `GET /f/[code]` (route handler) — `SELECT public_id, file_name, size_bytes, mime_type, expires_at FROM temp_files WHERE code = $1 LIMIT 1`; expired or missing → `DELETE FROM temp_files WHERE code = $1` (plus `cloudinary.uploader.destroy`).
 - `GET /api/cron/cleanup-temp-files` — `SELECT code, public_id FROM temp_files WHERE expires_at <= NOW()` → destroys each Cloudinary asset → `DELETE FROM temp_files WHERE code = $1`. Protected by `x-cron-secret` (see `CRON_SECRET` env).
 
