@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { apiHandler } from '@/lib/api-utils';
-import { getSessionFromRequest } from '@/lib/auth';
+import { isAdminRole, requireAdmin, requireSession } from '@/lib/policies';
 import { rateLimit } from '@/lib/rate-limit';
 import {
   FEEDBACK_WRITE_MAX_PER_USER,
@@ -19,10 +19,9 @@ function parseId(raw: string): number | null {
 /** Triage: admins move a report between statuses. */
 export const PATCH = apiHandler(
   async (req: NextRequest, { params }: { params: { id: string } }) => {
-    const session = await getSessionFromRequest(req);
-    if (session?.role !== 'admin') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
-    }
+    const guard = await requireAdmin(req);
+    if (!guard.ok) return guard.response;
+    const { session } = guard;
 
     if (
       !rateLimit(
@@ -56,10 +55,9 @@ export const PATCH = apiHandler(
 /** Admins can remove any report; a user can remove their own. */
 export const DELETE = apiHandler(
   async (req: NextRequest, { params }: { params: { id: string } }) => {
-    const session = await getSessionFromRequest(req);
-    if (!session) {
-      return NextResponse.json({ error: 'Please sign in' }, { status: 401 });
-    }
+    const guard = await requireSession(req);
+    if (!guard.ok) return guard.response;
+    const { session } = guard;
 
     if (
       !rateLimit(
@@ -76,7 +74,7 @@ export const DELETE = apiHandler(
       return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
     }
 
-    const deleted = await deleteFeedback(id, session.user_id, session.role === 'admin');
+    const deleted = await deleteFeedback(id, session.user_id, isAdminRole(session.role));
     if (!deleted) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }

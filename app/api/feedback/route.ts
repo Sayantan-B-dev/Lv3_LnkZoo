@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { apiHandler } from '@/lib/api-utils';
 import { getSessionFromRequest } from '@/lib/auth';
+import { clientIp, requireSession } from '@/lib/policies';
 import { rateLimit } from '@/lib/rate-limit';
 import {
   FEEDBACK_ALLOWED_IMAGE_MIMES,
@@ -29,10 +30,6 @@ import {
 
 export const dynamic = 'force-dynamic';
 
-function clientIp(req: NextRequest): string {
-  return req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
-}
-
 /**
  * Submit a bug report. Signed-in only, doubly rate-limited (per IP and per
  * user), size-capped before the body is read, and the screenshot is validated
@@ -40,10 +37,9 @@ function clientIp(req: NextRequest): string {
  * script. Nothing here fetches a user-supplied URL.
  */
 export const POST = apiHandler(async (req: NextRequest) => {
-  const session = await getSessionFromRequest(req);
-  if (!session) {
-    return NextResponse.json({ error: 'Please sign in to send feedback' }, { status: 401 });
-  }
+  const guard = await requireSession(req);
+  if (!guard.ok) return guard.response;
+  const { session } = guard;
 
   const contentLength = Number(req.headers.get('content-length') ?? '0');
   if (contentLength > FEEDBACK_MAX_SCREENSHOT_BYTES + FEEDBACK_MULTIPART_OVERHEAD) {
