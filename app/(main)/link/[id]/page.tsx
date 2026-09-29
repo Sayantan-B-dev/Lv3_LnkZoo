@@ -352,6 +352,10 @@ export default function LinkDetailPage({ params }: { params: Promise<{ id: strin
   }
 
   const previewSrc = imgError || !link.preview_image ? FALLBACK_IMG : link.preview_image;
+  // Topic colour drives the card border; fall back to the badge's default when absent.
+  const detailStyle = link.topic_color
+    ? ({ '--topic-color': link.topic_color } as React.CSSProperties)
+    : undefined;
 
   const navPill = (navPrev || navNext) ? (
     <div className="link-nav-pill" role="navigation" aria-label="Adjacent links">
@@ -387,7 +391,7 @@ export default function LinkDetailPage({ params }: { params: Promise<{ id: strin
       <div id="content" className="link-detail-layout fade-in">
         <div className="link-detail-main">
           <div className="link-detail-card-wrap">
-            <div className="link-detail-card">
+            <div className="link-detail-card" style={detailStyle}>
               {link.preview_image && (
                 <div className="link-detail-img">
                   <img src={previewSrc} alt={link.title} onError={() => setImgError(true)} />

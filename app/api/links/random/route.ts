@@ -14,6 +14,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
   try {
     const rows = await sql`
       SELECT l.*, u.username, u.avatar_url,
+             t3.slug AS topic, t3.name AS topic_name, t3.color AS topic_color,
              EXISTS (
                SELECT 1 FROM link_likes ll
                WHERE ll.link_id = l.id AND ll.user_id = ${uid}
@@ -25,6 +26,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
              (SELECT ARRAY_AGG(t.name) FROM link_tags lt JOIN tags t ON lt.tag_id = t.id WHERE lt.link_id = l.id) as tags
       FROM links l
       JOIN users u ON l.user_id = u.id
+      LEFT JOIN topics t3 ON t3.id = l.topic_id
       WHERE l.visibility = 'public'
       AND ((${excludeId}::text) IS NULL OR l.id::text != (${excludeId}::text))
       ORDER BY RANDOM()
@@ -34,6 +36,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
     if (!rows.length) {
       const fallback = await sql`
         SELECT l.*, u.username, u.avatar_url,
+               t3.slug AS topic, t3.name AS topic_name, t3.color AS topic_color,
                EXISTS (
                  SELECT 1 FROM link_likes ll
                  WHERE ll.link_id = l.id AND ll.user_id = ${uid}
@@ -45,6 +48,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
                (SELECT ARRAY_AGG(t.name) FROM link_tags lt JOIN tags t ON lt.tag_id = t.id WHERE lt.link_id = l.id) as tags
         FROM links l
         JOIN users u ON l.user_id = u.id
+        LEFT JOIN topics t3 ON t3.id = l.topic_id
         WHERE l.visibility = 'public'
         ORDER BY RANDOM()
         LIMIT ${limit}

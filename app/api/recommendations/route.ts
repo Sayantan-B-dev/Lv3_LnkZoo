@@ -11,16 +11,18 @@ export const GET = apiHandler(async (req: NextRequest) => {
     const rows = await sql`
       SELECT l.id, l.title, l.description, l.original_url, l.short_code,
              l.preview_image, l.is_anonymous, l.like_count, l.visibility,
+             t3.slug AS topic, t3.name AS topic_name, t3.color AS topic_color,
              EXISTS (SELECT 1 FROM saved_links sl WHERE sl.link_id = l.id AND sl.user_id = ${uid}) AS bookmarked_by_user,
              l.comment_count, l.view_count, l.created_at,
              u.username, u.avatar_url,
              ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) AS tags
       FROM links l
       JOIN users u ON l.user_id = u.id
+      LEFT JOIN topics t3 ON t3.id = l.topic_id
       LEFT JOIN link_tags lt ON lt.link_id = l.id
       LEFT JOIN tags t ON t.id = lt.tag_id
       WHERE l.visibility = 'public'
-      GROUP BY l.id, u.username, u.avatar_url
+      GROUP BY l.id, u.username, u.avatar_url, t3.slug, t3.name, t3.color
       ORDER BY l.like_count DESC
       LIMIT 20
     `;
@@ -34,18 +36,20 @@ export const GET = apiHandler(async (req: NextRequest) => {
     const rows = await sql`
       SELECT l.id, l.title, l.description, l.original_url, l.short_code,
              l.preview_image, l.is_anonymous, l.like_count, l.visibility,
+             t3.slug AS topic, t3.name AS topic_name, t3.color AS topic_color,
              EXISTS (SELECT 1 FROM saved_links sl WHERE sl.link_id = l.id AND sl.user_id = ${uid}) AS bookmarked_by_user,
              l.comment_count, l.view_count, l.created_at,
              u.username, u.avatar_url,
              ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) AS tags
       FROM links l
       JOIN users u ON l.user_id = u.id
+      LEFT JOIN topics t3 ON t3.id = l.topic_id
       LEFT JOIN link_tags lt ON lt.link_id = l.id
       LEFT JOIN tags t ON t.id = lt.tag_id
       WHERE (l.visibility = 'public'
           OR (l.visibility = 'followers' AND EXISTS (SELECT 1 FROM follows WHERE follower_id = ${uid} AND followee_id = l.user_id))
           OR (l.visibility = 'private' AND l.user_id = ${uid}))
-      GROUP BY l.id, u.username, u.avatar_url
+      GROUP BY l.id, u.username, u.avatar_url, t3.slug, t3.name, t3.color
       ORDER BY l.like_count DESC
       LIMIT 20
     `;
@@ -55,6 +59,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
   const rows = await sql`
     SELECT l.id, l.title, l.description, l.original_url, l.short_code,
            l.preview_image, l.is_anonymous, l.like_count, l.visibility,
+           t3.slug AS topic, t3.name AS topic_name, t3.color AS topic_color,
            EXISTS (SELECT 1 FROM saved_links sl WHERE sl.link_id = l.id AND sl.user_id = ${uid}) AS bookmarked_by_user,
            l.comment_count, l.view_count, l.created_at,
            u.username, u.avatar_url,
@@ -62,12 +67,13 @@ export const GET = apiHandler(async (req: NextRequest) => {
            COUNT(DISTINCT CASE WHEN t.normalized_name = ANY(${interests}) THEN t.id END) AS interest_match
     FROM links l
     JOIN users u ON l.user_id = u.id
+    LEFT JOIN topics t3 ON t3.id = l.topic_id
     LEFT JOIN link_tags lt ON lt.link_id = l.id
     LEFT JOIN tags t ON t.id = lt.tag_id
     WHERE (l.visibility = 'public'
         OR (l.visibility = 'followers' AND EXISTS (SELECT 1 FROM follows WHERE follower_id = ${uid} AND followee_id = l.user_id))
         OR (l.visibility = 'private' AND l.user_id = ${uid}))
-    GROUP BY l.id, u.username, u.avatar_url
+    GROUP BY l.id, u.username, u.avatar_url, t3.slug, t3.name, t3.color
     ORDER BY interest_match DESC, l.like_count DESC
     LIMIT 20
   `;

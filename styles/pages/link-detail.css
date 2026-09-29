@@ -29,12 +29,14 @@
 }
 
 .link-detail-card {
+  /* Same topic-colour border treatment as .link-card (page sets --topic-color). */
+  --topic-color: var(--text-3, #8a8a86);
   display: flex;
   flex-direction: column;
   flex: 1;
   background: color-mix(in srgb, var(--bg-1) 55%, transparent);
   backdrop-filter: blur(8px);
-  border: 2px solid color-mix(in srgb, var(--accent) 18%, var(--border));
+  border: 2px solid color-mix(in srgb, var(--topic-color) 30%, var(--border));
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 2px 16px rgba(0,0,0,0.06), 0 0 0 1px color-mix(in srgb, var(--accent) 5%, transparent);
@@ -42,7 +44,7 @@
 }
 
 .link-detail-card:hover {
-  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  border-color: color-mix(in srgb, var(--topic-color) 30%, var(--text));
   box-shadow:
     0 4px 20px rgba(0, 0, 0, 0.08),
     0 8px 32px rgba(0, 0, 0, 0.05),

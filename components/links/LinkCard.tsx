@@ -206,6 +206,11 @@ export default function LinkCard({
   const domain = new URL(link.original_url).hostname;
   const date = new Date(link.created_at).toLocaleDateString();
 
+  // Topic colour tints the card border (dim at rest, brighter on hover via CSS).
+  const cardStyle = link.topic_color
+    ? ({ '--topic-color': link.topic_color } as React.CSSProperties)
+    : undefined;
+
   const renderTopic = () =>
     link.topic ? (
       <Link
@@ -270,7 +275,7 @@ export default function LinkCard({
       <div
         className={`link-card${navigating ? ' navigating' : ''}`}
         onClick={handleCardClick}
-        style={{ cursor: isClickable ? 'pointer' : 'default' }}
+        style={{ cursor: isClickable ? 'pointer' : 'default', ...cardStyle }}
       >
         {navigating && <CardSpinner />}
         {/* {showVotes && (
@@ -360,7 +365,7 @@ export default function LinkCard({
   // Mini variant - compact card
   if (variant === 'mini') {
     return (
-      <div className={`link-card mini${navigating ? ' navigating' : ''}`} onClick={handleCardClick} style={{ cursor: isClickable ? 'pointer' : 'default' }}>
+      <div className={`link-card mini${navigating ? ' navigating' : ''}`} onClick={handleCardClick} style={{ cursor: isClickable ? 'pointer' : 'default', ...cardStyle }}>
         {navigating && <CardSpinner />}
         <div className="card-body">
           <div className="card-meta">
@@ -430,7 +435,7 @@ export default function LinkCard({
   // Profile variant - simplified card
   if (variant === 'profile') {
     return (
-      <div className={`link-card${navigating ? ' navigating' : ''}`} onClick={() => navigateToLink()} style={{ cursor: 'pointer' }}>
+      <div className={`link-card${navigating ? ' navigating' : ''}`} onClick={() => navigateToLink()} style={{ cursor: 'pointer', ...cardStyle }}>
         {navigating && <CardSpinner />}
         <div className="card-body">
                     <div className="card-meta">
@@ -501,7 +506,7 @@ export default function LinkCard({
     return (
       <div className="dose-card">
         {doseNumber && <div className="dose-number">0{doseNumber}</div>}
-        <div className={`link-card${navigating ? ' navigating' : ''}`} style={{ flex: 1, marginBottom: 0 }} onClick={() => navigateToLink()}>
+        <div className={`link-card${navigating ? ' navigating' : ''}`} style={{ flex: 1, marginBottom: 0, ...cardStyle }} onClick={() => navigateToLink()}>
           {navigating && <CardSpinner />}
           <div className="card-body">
           <div className="card-meta">

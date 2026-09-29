@@ -10,6 +10,7 @@ export const GET = apiHandler(async (req: NextRequest, { params }: { params: { n
     SELECT l.id, l.original_url, l.title, l.description, l.preview_image,
            l.like_count, l.comment_count, l.view_count, l.created_at,
            u.username, u.avatar_url,
+           t3.slug AS topic, t3.name AS topic_name, t3.color AS topic_color,
            COALESCE(
              (SELECT json_agg(t.name) FROM link_tags lt JOIN tags t ON t.id = lt.tag_id WHERE lt.link_id = l.id),
              '[]'::json
@@ -22,6 +23,7 @@ export const GET = apiHandler(async (req: NextRequest, { params }: { params: { n
            ) as bookmarked_by_user
     FROM links l
     JOIN users u ON u.id = l.user_id
+    LEFT JOIN topics t3 ON t3.id = l.topic_id
     JOIN link_tags lt ON lt.link_id = l.id
     JOIN tags t ON t.id = lt.tag_id
     WHERE t.normalized_name = LOWER(TRIM(${params.name}))

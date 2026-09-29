@@ -60,6 +60,7 @@ export const GET = apiHandler(async (req: NextRequest, { params }: { params: { u
     const rows = await query(
       `SELECT l.id, l.title, l.description, l.original_url, l.short_code,
               l.preview_image, l.is_anonymous, l.like_count, l.visibility,
+              t3.slug AS topic, t3.name AS topic_name, t3.color AS topic_color,
               EXISTS (SELECT 1 FROM link_likes ll WHERE ll.link_id = l.id AND ll.user_id = $${n + 1}) AS liked_by_user,
               EXISTS (SELECT 1 FROM saved_links sl WHERE sl.link_id = l.id AND sl.user_id = $${n + 1}) AS bookmarked_by_user,
               l.comment_count, l.view_count, l.created_at,
@@ -67,10 +68,11 @@ export const GET = apiHandler(async (req: NextRequest, { params }: { params: { u
               ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) AS tags
        FROM links l
        JOIN users u ON l.user_id = u.id
+       LEFT JOIN topics t3 ON t3.id = l.topic_id
        LEFT JOIN link_tags lt ON lt.link_id = l.id
        LEFT JOIN tags t ON t.id = lt.tag_id
        WHERE ${where}
-       GROUP BY l.id, u.username, u.avatar_url
+       GROUP BY l.id, u.username, u.avatar_url, t3.slug, t3.name, t3.color
        ORDER BY ${orderBy}
        LIMIT $${n + 2} OFFSET $${n + 3}`,
       dataParams

@@ -10,14 +10,16 @@ export const GET = apiHandler(async (_req: NextRequest) => {
            l.preview_image, l.is_anonymous, l.like_count, l.visibility,
            l.comment_count, l.view_count, l.created_at,
            u.username, u.avatar_url,
+           t3.slug AS topic, t3.name AS topic_name, t3.color AS topic_color,
            ARRAY_AGG(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL) AS tags
     FROM links l
     JOIN users u ON l.user_id = u.id
+    LEFT JOIN topics t3 ON t3.id = l.topic_id
     LEFT JOIN link_tags lt ON lt.link_id = l.id
     LEFT JOIN tags t ON t.id = lt.tag_id
     WHERE l.visibility = 'public'
       AND l.created_at >= NOW() - INTERVAL '24 hours'
-    GROUP BY l.id, u.username, u.avatar_url
+    GROUP BY l.id, u.username, u.avatar_url, t3.slug, t3.name, t3.color
     ORDER BY l.like_count DESC
     LIMIT 5
   `;
