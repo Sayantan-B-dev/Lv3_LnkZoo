@@ -9,36 +9,41 @@ export default function PrivacyPage() {
       <Topbar title="Privacy Policy" />
       <div id="content" className="legal-page fade-in">
         <h1>Privacy Policy</h1>
-        <p className="legal-date">Last updated: June 5, 2026</p>
+        <p className="legal-date">Last updated: September 30, 2026</p>
 
         <section>
           <h2>Information We Collect</h2>
-          <p>When you use LnkZoo, we collect information you provide directly, such as your email address and username when creating an account, and any links you submit or save. We also collect usage data including pages visited and interactions with content.</p>
+          <p>When you create an account we store your email address, username, password hash and, if you upload them, your avatar and cover images. If you sign in with Google, we receive your name, email and profile picture from Google. Content you post — links, comments, tags, and feedback reports — is stored along with your account. When you use the developer tools we keep the generated short link, transferred file or shared text, optionally linked to your account so you can manage it from your profile.</p>
         </section>
 
         <section>
-          <h2>How We Use Your Information</h2>
-          <p>Your information is used to operate and improve LnkZoo, personalize your experience, communicate with you about service updates, and enforce our terms. We never sell your personal data to third parties.</p>
+          <h2>Public Content</h2>
+          <p>Links you post as public, and feedback reports you post as public, are visible to everyone, including signed-out visitors — including your username as the author. Private feedback reports are visible only to you and the site maintainers. Tool output (short links, transferred files, shared texts) is accessible to anyone who has the link, and expires automatically: short links after 24 hours, transferred files and shared texts after the lifetime you chose when creating them.</p>
         </section>
 
         <section>
-          <h2>Data Storage & Security</h2>
-          <p>We implement industry-standard security measures including encryption at rest and in transit. Your data is stored securely on our servers and retained only as long as necessary to provide our services.</p>
-        </section>
-
-        <section>
-          <h2>Your Rights</h2>
-          <p>You may request access to, correction of, or deletion of your personal data at any time by contacting us. You can also export your data from your account settings.</p>
+          <h2>Analytics</h2>
+          <p>We record view and click events for links on the platform (which link was viewed or clicked and when) to power dashboards and leaderboards. These events are first-party, tied to the content rather than to a persistent profile of you, and are not shared with advertising networks. We do not sell your personal data to anyone.</p>
         </section>
 
         <section>
           <h2>Third-Party Services</h2>
-          <p>LnkZoo may contain links to external websites. We are not responsible for the privacy practices of these third parties. We encourage you to review their policies before providing any personal information.</p>
+          <p>We rely on a small number of processors to run the platform: Neon for the database, Cloudinary for image storage (avatars, covers, feedback screenshots and transferred files), and Google for sign-in. Fonts are loaded from Google Fonts. These services receive only what is needed to provide their function. Embedded content on external sites you navigate to is governed by those sites&apos; own policies.</p>
+        </section>
+
+        <section>
+          <h2>Data Storage &amp; Security</h2>
+          <p>Passwords are stored only as hashes. Sessions use a signed, httpOnly cookie. Data is encrypted in transit and at rest by our infrastructure providers, and is retained only as long as your account is active or the content itself has not expired.</p>
+        </section>
+
+        <section>
+          <h2>Deletion</h2>
+          <p>You can delete your own content at any time: links, comments, feedback reports and tool output from your profile. Deleting a feedback report also removes its screenshot. When your account is deleted, content you posted is kept but unattributed — it stops showing your username.</p>
         </section>
 
         <section>
           <h2>Contact</h2>
-          <p>If you have questions about this Privacy Policy, please reach out to our support team.</p>
+          <p>If you have questions about this Privacy Policy, or want to exercise access, correction or deletion rights, please reach out to our support team.</p>
         </section>
       </div>
     </>
