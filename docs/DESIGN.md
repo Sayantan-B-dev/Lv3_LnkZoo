@@ -10,7 +10,7 @@ Route groups: `(main)` = public/user shell (sidebar+topbar), `admin` = admin she
 - Root: `layout.tsx` (imports globals + providers) · `loading.tsx` · `not-found.tsx`.
 - Auth: `login/`, `register/`.
 - Short-link resolver: `s/[code]/`.
-- **(main)** user app: `page.tsx` (home) · `explore/` · `topics/` + `topics/[topic]/` · `tags/` + `tags/[tag]/` · `categories/` + `categories/[category]/` · `link/[id]/` · `submit/` + `submit/bulk/` · `manage/links/` · `profile/` + `profile/[username]/` · `bookmarks/` · `daily-dose/` · `random/` · `leaderboard/` · `users/` · `notifications/` · `settings/` · `tools/` · legal (`privacy`,`terms`,`cookies`).
+- **(main)** user app: `page.tsx` (home) · `explore/` · `topics/` + `topics/[topic]/` · `tags/` + `tags/[tag]/` · `categories/` + `categories/[category]/` · `link/[id]/` · `submit/` + `submit/bulk/` · `manage/links/` · `profile/` + `profile/[username]/` · `bookmarks/` · `daily-dose/` · `random/` · `leaderboard/` · `users/` · `notifications/` · `settings/` · `tools/` · `feedback/` (bug report inbox, locked in `proxy.ts`; see `feedback.md`) · legal (`privacy`,`terms`,`cookies`).
 - Home is composed of `app/(main)/home-components/*` (Hero, HeroTools, About, Features, HowItWorks, Metrics, Feed, FAQ, Tutorial, CTA, Marquee, Reveal, CounterStat, icons). Hero now embeds `HeroTools` — a 2×2 grid of all four tool cards (URL Shortener, File Transfer, Text Share → `/tools#<anchor>`; Meta Scraper marked "Soon"). HowItWorks explains category/topic/tag distinction. Tutorial is a 7-tab platform-wide step-by-step guide.
 - **admin**: `layout.tsx` (shell + `navLinks` array — add nav entries here) · `dashboard/` · `users/` · `topics/` · `forbidden/`. Admin charts: `app/admin/components/*` (MetricCard, Sparkline, TrendChart, DualTrendChart, DonutChart, PieChart, HorizBarChart, BucketBar, StatTable, FlaggedPanel, RangeSelector, ChartEmpty). Dashboard is sectioned + range-driven: `/api/admin/stats?range=7|30|90|all` returns gap-filled series; charts show `ChartEmpty` when no data.
 
@@ -32,6 +32,7 @@ Route groups: `(main)` = public/user shell (sidebar+topbar), `admin` = admin she
 - Migrations: `database/*.sql` (dir is gitignored — force-add). Apply via `node _dbmigrate.js local|neon` or `node scripts/run-sql.js <local|neon> <file>`.
 - Short links (`shortened_links` table): auto-expire after 24h; cleanup runs on shorten-API call + dedicated cron `GET /api/cron/cleanup-short-links`. Rate-limited: 10/min anonymous, 30/min logged-in.
 - Tool ownership: `GET /api/tools/items` + `DELETE /api/tools/items/[type]/[code]` (`services/toolItems.service.ts`) list and destroy the caller's own tool output; requires `database/migrate_tool_items_user.sql` (`temp_files.user_id`, `shared_texts.user_id`; `shortened_links.user_id` already existed).
+- Feedback (`feedback` table, `services/feedback.service.ts`): bug reports with an optional Cloudinary screenshot; users see their own, admins see all and set a status. Requires `database/migrate_feedback.sql`. Details in `feedback.md`.
 - Analytics tables: `link_view_events`, `link_click_events`, `daily_activity`, `saved_links` — fire-and-forget inserts for dashboard charts.
 
 ## Feature: Topics taxonomy (reference example)

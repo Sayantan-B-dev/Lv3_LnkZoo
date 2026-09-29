@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionFromRequest } from '@/lib/auth';
 
-const PROTECTED = ['/submit', '/profile', '/notifications'];
+const PROTECTED = ['/submit', '/profile', '/notifications', '/feedback'];
 const ADMIN_ONLY = ['/admin'];
 
 export async function proxy(req: NextRequest) {
@@ -31,5 +31,5 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/submit', '/profile/:path*', '/notifications', '/admin/:path*'],
+  matcher: ['/submit', '/profile/:path*', '/notifications', '/feedback', '/admin/:path*'],
 };

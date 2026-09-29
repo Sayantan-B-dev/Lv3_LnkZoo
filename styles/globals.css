@@ -45,6 +45,7 @@
 @import './pages/notifications.css';
 @import './pages/users.css';
 @import './pages/legal.css';
+@import './pages/feedback.css';
 
 @import './components/common.css';
 @import './pages/home-component-css/footer.css';
