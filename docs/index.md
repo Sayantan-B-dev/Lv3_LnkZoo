@@ -8,6 +8,7 @@
 | `DESIGN.md` | Route/component/data-layer map ("where's what") |
 | `policies.md` | Access & security policy matrix: page/route/row layers, abuse limits, SSRF guard |
 | `all_current_features.md` | Full feature list + changelog |
+| `all_features.md` | Every feature by date, from the full git history (2026-04-29 → today) |
 | `tools.md` | Developer Tools page: URL Shortener, Low Weight File Transfer, Text Share |
 | `next_tools.md` | Backlog of candidate `/tools` additions + the SSRF guard any URL-fetching tool needs |
 | `userdashboard.md` | User dashboard (`/manage/links`) notes |
