@@ -136,6 +136,19 @@ not.
   name-based guard, not DNS-rebinding-proof, and it cannot see through DNS to
   catch a hostname resolving to a private address at request time.
 
+## Database row-level security
+
+`database/migrate_rls_user_tables.sql` enables RLS on `feedback`, `temp_files`,
+`shared_texts` and `shortened_links`, with policies that mirror the rules above
+(via `app.current_user_id()` / `app.is_admin()` session helpers).
+
+It is a safety net, **not** a second enforcement point: the server role owns the
+tables and bypasses RLS, by design — the app reads anonymously and keeps its
+authorization in the JWT. Any other role granted table access inherits these
+row rules instead. Do **not** add `FORCE ROW LEVEL SECURITY` without also
+setting `app.current_user_id` / `app.current_role_setting` per transaction —
+forced RLS with the variables unset makes every query silently return zero rows.
+
 ## Known gaps / TODO
 
 - `/api/cron/*` routes have no shared secret — anyone can trigger cleanup or
@@ -143,3 +156,7 @@ not.
 - The limiter is per-process; horizontal scaling needs a shared store.
 - `linkParser.service.ts` resolves hostnames through the OS resolver, so DNS
   rebinding is out of scope for the current name-based guard.
+- The CSP still allows inline scripts (theme bootstrap, Next hydration);
+  closing it means nonce-per-request through middleware.
+- Only the four user-owned tables carry RLS policies; `links` visibility is
+  still API-only.
