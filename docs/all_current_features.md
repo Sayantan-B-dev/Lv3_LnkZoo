@@ -108,6 +108,7 @@
 - **URL Shortener** — 24h expiring short links (`/s/[code]`), in-memory rate limit (10/min guests, 30/min users), QR code + download under the result
 - **Low Weight File Transfer** — drag-drop or browse files up to 3MB; self-destructs after 5 min / 1 hour / 24 hours (chosen per upload); 1 upload/min/IP (DB-backed); always served as a forced download with the original filename; QR + "Download QR"; HTML/SVG/JS blocked with a "zip it" hint
 - **Text Share** — self-destructing text snippets (10k chars max) with expiry choices 5 min / 1 hour / 24 hours; 1 share/min/IP (DB-backed); QR + hour-aware live countdown; text rendered escaped, never indexed
+- **Tool Links (profile)** — anything you create with the three tools while signed in is listed on your own profile with its tool, link, live countdown and a Destroy button; expiry still happens automatically, and destroying early frees the row (and the Cloudinary asset for files). Guests are never tracked.
 - **QR everywhere** — `ShortUrlQR` component (qrcode.react) renders a centered 160×160 white-card QR with PNG download; used by all three tools and the link detail page short-URL result
 - **Live countdowns** — "This file/text will be destroyed in MM:SS" and "Next request in MM:SS" (H:MM:SS for ≥1h) ticked from server timestamps; cards reset at expiry
 - **Refresh-proof results** — generated links survive page refreshes via `localStorage` (`lnkzoo_tools_state`); countdowns and rate-limit cooldowns resume correctly from server timestamps; results are destroyed only by their real TTL, never by a refresh
@@ -174,6 +175,13 @@
 - API route ownership guards (delete/update only own resources)
 
 ## Changelog — 2026-08-10 → present
+
+### 2026-09-29 — Profile "Tool Links" section
+- **Tool output is now owned by its creator.** `temp_files` and `shared_texts` gained a nullable `user_id` (`database/migrate_tool_items_user.sql`; `shortened_links.user_id` already existed). All three tool POST routes resolve the session and record it; guests keep writing `NULL` and stay completely untracked, so anonymous tool use is unchanged. `ON DELETE SET NULL` (not `CASCADE`) so deleting a user never orphans a Cloudinary asset.
+- **New profile section** — `components/profile/ToolItems.tsx` renders a **Tool Links** card on your own profile (`/profile/[username]`, own-profile only) listing every active item with the tool it came from (URL Shortener / File Transfer / Text Share), its link, type-specific detail (clicks, file size, text preview) and a live `MM:SS` / `H:MM:SS` countdown from one shared 1s ticker. Expired rows drop off the list by themselves; each row has a **Destroy** button.
+- **New endpoints** — `GET /api/tools/items` (401 for guests) returns active items newest-first via a `UNION ALL` over the three tables; `DELETE /api/tools/items/[type]/[code]` destroys one item. Destroying is owner-scoped (`AND user_id = $me` in every statement, so a guessed code cannot touch another user's row), rate-limited 30/min, and reuses the existing teardown: a file also destroys its Cloudinary asset, a short link stops resolving, a shared text drops its row. 404 when not owned or already gone.
+- **Short-link claiming** — short links dedupe by URL, so a signed-in caller now claims a live row that has no owner yet (`UPDATE ... WHERE user_id IS NULL`); an owned row is never reassigned. The expired-row reactivation sets `user_id` to the current caller.
+- **Profile CSS** — `styles/pages/profile.css` gains the `.profile-tools` / `.tool-item*` block, with the row stacking and a full-width Destroy button at ≤480px.
 
 ### 2026-09-29 — File Transfer expiry picker
 - **Low Weight File Transfer now takes an expiry** — 5 min / 1 hour / 24 hours, mirroring Text Share. `TEMP_FILE_EXPIRY_OPTIONS` + `DEFAULT_TEMP_FILE_EXPIRY` live in `lib/tempFileRules.ts` (the unused `TEMP_FILE_TTL_MS` constant is gone); `createTempFile(file, ttlSeconds, ip)` computes `expires_at` in JS instead of the hardcoded `NOW() + INTERVAL '5 minutes'`, and the POST route validates the `expiry` FormData field against the allowlist (invalid → 400).

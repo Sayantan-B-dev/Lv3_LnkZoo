@@ -152,6 +152,183 @@
     padding: 40px;
 }
 
+/* ── Profile: Tool Links ─────────────────────
+   Items created with the /tools page while signed in. */
+.profile-tools {
+    padding: 40px 40px 0;
+}
+
+.tool-items-refresh {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-3);
+    font-size: 11px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: color var(--t), border-color var(--t);
+}
+
+.tool-items-refresh:hover:not(:disabled) {
+    color: var(--text);
+    border-color: var(--border-md);
+}
+
+.tool-items-refresh:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.tool-items-list,
+.tool-items-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tool-items-empty {
+    padding: 20px;
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    color: var(--text-4);
+    font-size: 12px;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.tool-items-retry {
+    background: none;
+    border: none;
+    color: var(--text-2);
+    font-size: 12px;
+    padding: 0;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.tool-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    transition: border-color var(--t), background var(--t);
+}
+
+.tool-item:hover {
+    border-color: var(--border-md);
+    background: var(--bg-2);
+}
+
+.tool-item-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    color: var(--text-3);
+}
+
+.tool-item-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.tool-item-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.tool-item-type {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-3);
+}
+
+.tool-item-extra {
+    font-size: 11px;
+    color: var(--text-4);
+}
+
+.tool-item-expiry {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    color: var(--text-4);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    margin-left: auto;
+}
+
+.tool-item-sub {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.tool-item-url {
+    font-size: 12px;
+    color: var(--text-2);
+    text-decoration: none;
+    flex-shrink: 0;
+    max-width: 45%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tool-item-url:hover {
+    color: var(--text);
+    text-decoration: underline;
+}
+
+.tool-item-name {
+    font-size: 11px;
+    color: var(--text-4);
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tool-item-destroy {
+    flex-shrink: 0;
+    background: none;
+    border: 1px solid color-mix(in srgb, #ef4444 30%, var(--border));
+    border-radius: 6px;
+    color: #ef4444;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: background var(--t), border-color var(--t);
+}
+
+.tool-item-destroy:hover:not(:disabled) {
+    background: color-mix(in srgb, #ef4444 12%, transparent);
+    border-color: #ef4444;
+}
+
+.tool-item-destroy:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
 .links-grid {
     display: flex;
     flex-direction: column;
@@ -320,6 +497,9 @@
   .avatar.large { width: 72px; height: 72px; font-size: 24px; }
   .profile-name { font-size: 20px; }
   .profile-feed { padding: 20px; }
+  .profile-tools { padding: 20px 20px 0; }
+  .tool-item-url { max-width: 100%; }
+  .tool-item-sub { flex-wrap: wrap; gap: 4px 10px; }
 }
 
 @media (max-width: 480px) {
@@ -331,6 +511,10 @@
   .stat-item { font-size: 12px; }
   .edit-btn, .logout-btn, .follow-btn { padding: 6px 14px; font-size: 11px; }
   .profile-feed { padding: 12px; }
+  .profile-tools { padding: 12px 12px 0; }
+  .tool-item { flex-wrap: wrap; }
+  .tool-item-expiry { margin-left: 0; }
+  .tool-item-destroy { width: 100%; }
 }
 
 @keyframes slideUp {

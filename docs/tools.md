@@ -9,6 +9,14 @@ All three share the same result UX: a `.result-box` with the link + Copy button,
 ### Persistence across refresh
 Results survive page refreshes via `localStorage` (`lnkzoo_tools_state`, keyed per tool — last result of each tool). On load, entries whose `expiresAt` has not yet passed are restored with correct state: the destroy countdown resumes from the real server timestamp and the rate-limit cooldown ("Next request in…") restores from the stored `nextAllowedAt`. Expired entries are skipped and purged — results are destroyed only by their actual TTL, never by a refresh. Live destruction (countdown hitting 0) also removes the stored entry. The chosen expiry id is stored alongside the result too, so the restored card reports the right TTL instead of falling back to the default.
 
+### Ownership for signed-in users
+All three tools stay public, but a signed-in caller's output is recorded against their account (`user_id` on `shortened_links` / `temp_files` / `shared_texts`) and listed in the **Tool Links** section of their own profile with a live countdown and a Destroy button. Guests create the same rows with `user_id = NULL` and are never listed — anonymous use is unchanged and untracked.
+
+- `GET /api/tools/items` — the caller's active items (short links, temp files, shared texts), newest first. 401 for guests.
+- `DELETE /api/tools/items/[type]/[code]` — `type` is `short` | `file` | `text`. Owner-scoped: every statement carries `AND user_id = $me`, so a guessed code can never touch someone else's row. A file also destroys its Cloudinary asset, a short link stops resolving. 404 when not owned or already gone.
+- Expiry is unchanged and still automatic; destroying early just frees the row (and the asset) sooner. Expired items drop out of the list on their own.
+- Short links are deduplicated by URL, so a signed-in caller **claims** a live row that has no owner yet (`user_id IS NULL`); it never steals a row that already has one.
+
 ### "Make another" reset buttons
 Each tool's result has a reset button that clears **only that tool** (result, countdown, storage entry) while other tools keep their state:
 - URL Shortener → **Shorten another URL**
@@ -88,6 +96,8 @@ Returns `{ shortCode, shortUrl, expiresAt }` — link is `<appUrl>/s/<code>` and
 - **`components/common/ShortUrlQR.tsx`** — `qrcode.react` `<QRCodeCanvas>` (160×160, black on white so it scans in dark mode) in a fixed 180×180 white card + "Download QR" button (canvas → PNG). Centered; `styles/ui/qr.css`.
 - **`lib/textShareRules.ts`** — shared pure constants/helpers used by client and server: `MAX_SHARED_TEXT_CHARS`, `TEXT_SHARE_EXPIRY_OPTIONS`, `formatCountdown`.
 - **`lib/tempFileRules.ts`** — shared pure constants/helpers: `MAX_TEMP_FILE_BYTES`, `TEMP_FILE_EXPIRY_OPTIONS`, `DEFAULT_TEMP_FILE_EXPIRY`, blocked extension/MIME lists, `tempFileExt`, `isBlockedTempFile`, `formatBytes`.
+- **`services/toolItems.service.ts`** — `listToolItems(userId)` (UNION ALL over the three tables) and `destroyToolItem(userId, type, code)` (owner-scoped destroy).
+- **`components/profile/ToolItems.tsx`** — the profile **Tool Links** section (own profile only), with one shared 1s ticker driving every countdown.
 
 ## Environment
 

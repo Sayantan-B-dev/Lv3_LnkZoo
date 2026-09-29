@@ -46,6 +46,14 @@ export const POST = apiHandler(async (req: NextRequest) => {
       ORDER BY created_at DESC LIMIT 1
     `;
     if (existing) {
+      // Reusing someone else's live short code: a signed-in caller claims it so
+      // it shows up in their profile. Never steals a row that already has an owner.
+      if (session) {
+        await sql`
+          UPDATE shortened_links SET user_id = ${session.user_id}
+          WHERE short_code = ${existing.short_code} AND user_id IS NULL
+        `.catch(() => {});
+      }
       return NextResponse.json({
         shortCode: existing.short_code,
         shortUrl: `${appUrl}/s/${existing.short_code}`,
@@ -56,7 +64,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
 
     const [expired] = await sql`
       UPDATE shortened_links
-      SET created_at = NOW(), click_count = 0
+      SET created_at = NOW(), click_count = 0, user_id = ${session?.user_id ?? null}
       WHERE original_url = ${url} AND created_at <= NOW() - INTERVAL '1 day'
       RETURNING short_code
     `;

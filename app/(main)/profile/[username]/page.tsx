@@ -7,6 +7,7 @@ import NotificationPanel from '@/components/common/NotificationPanel';
 import LoadingGlobe from '@/components/common/LoadingGlobe';
 import SortDropdown from '@/components/common/SortDropdown';
 import ScatteredLinks from '@/components/react-bits/ScatteredLinks';
+import ToolItems from '@/components/profile/ToolItems';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import Cropper from 'react-easy-crop';
@@ -375,6 +376,8 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
             </div>
           </div>
         )}
+
+        {!isEditing && currentUser?.username === profile.username && <ToolItems />}
 
         <div className="profile-feed">
           <div className="section-header-row">

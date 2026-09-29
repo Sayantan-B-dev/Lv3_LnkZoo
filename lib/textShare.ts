@@ -43,7 +43,8 @@ export async function destroyTextShareByCode(code: string): Promise<void> {
 export async function createTextShare(
   content: string,
   ttlSeconds: number,
-  ip: string
+  ip: string,
+  userId: string | null = null
 ): Promise<{
   code: string;
   url: string;
@@ -57,8 +58,8 @@ export async function createTextShare(
   const nextShareAt = new Date(Date.now() + TEXT_SHARE_WINDOW_MS);
 
   const [row] = await sql`
-    INSERT INTO shared_texts (id, code, content, expires_at)
-    VALUES (${code}, ${code}, ${content}, ${expiresAt})
+    INSERT INTO shared_texts (id, code, content, expires_at, user_id)
+    VALUES (${code}, ${code}, ${content}, ${expiresAt}, ${userId})
     RETURNING expires_at
   `;
 

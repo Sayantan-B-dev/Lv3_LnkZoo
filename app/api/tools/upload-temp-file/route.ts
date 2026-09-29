@@ -5,6 +5,7 @@ import {
   TEMP_FILE_EXPIRY_OPTIONS,
   isBlockedTempFile,
 } from '@/lib/tempFileRules';
+import { getSessionFromRequest } from '@/lib/auth';
 import {
   clientIp,
   checkTempUploadLimit,
@@ -67,6 +68,8 @@ export const POST = apiHandler(async (req: NextRequest) => {
 
     await pruneExpiredTempFiles();
 
+    const session = await getSessionFromRequest(req);
+
     const result = await createTempFile(
       {
         name: file.name,
@@ -75,7 +78,8 @@ export const POST = apiHandler(async (req: NextRequest) => {
         buffer: Buffer.from(await file.arrayBuffer()),
       },
       option.seconds,
-      ip
+      ip,
+      session?.user_id ?? null
     );
 
     return NextResponse.json({ ...result, serverTime: Date.now() });

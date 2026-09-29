@@ -16,6 +16,7 @@ Route groups: `(main)` = public/user shell (sidebar+topbar), `admin` = admin she
 
 ## Shared components — `components/`
 - **common/**: `Navbar`, `Sidebar` (main nav entries here), `Topbar`, `Footer`, `ToastContainer`, `ConfirmModal`, `LoadingSpinner`, `LoadingGlobe`, `ErrorMessage`, `SignInPrompt`, `PasswordInput`, `SortDropdown`, `TopicSelect` (searchable grouped topic picker), `NotificationBell`, `NotificationPanel`, `CustomCursor`, `AnimatedBg`.
+- **profile/**: `ToolItems` — "Tool Links" section on your own profile listing active short links / temp files / shared texts with a countdown and Destroy button.
 - **links/**: `LinkCard` (4 variants; `renderTopic()` badge), `LinkForm`, `LinkPreview`, `TagBadge`.
 - **manage/**: `LinkTable`, `BulkActionBar`, `BulkTagModal`, `Pagination`, `StatsCards`.
 - **comments/**: `CommentThread`, `CommentItem`, `CommentForm`.
@@ -30,6 +31,7 @@ Route groups: `(main)` = public/user shell (sidebar+topbar), `admin` = admin she
 - DB: `lib/db.ts` exports tagged-template `sql`. **Constraint: the local pg shim + neon driver do NOT support `sql` fragment composition** (nesting `sql\`...\`` fragments). Write per-branch full queries, not composed `whereFrag`/`joinFrag`.
 - Migrations: `database/*.sql` (dir is gitignored — force-add). Apply via `node _dbmigrate.js local|neon` or `node scripts/run-sql.js <local|neon> <file>`.
 - Short links (`shortened_links` table): auto-expire after 24h; cleanup runs on shorten-API call + dedicated cron `GET /api/cron/cleanup-short-links`. Rate-limited: 10/min anonymous, 30/min logged-in.
+- Tool ownership: `GET /api/tools/items` + `DELETE /api/tools/items/[type]/[code]` (`services/toolItems.service.ts`) list and destroy the caller's own tool output; requires `database/migrate_tool_items_user.sql` (`temp_files.user_id`, `shared_texts.user_id`; `shortened_links.user_id` already existed).
 - Analytics tables: `link_view_events`, `link_click_events`, `daily_activity`, `saved_links` — fire-and-forget inserts for dashboard charts.
 
 ## Feature: Topics taxonomy (reference example)

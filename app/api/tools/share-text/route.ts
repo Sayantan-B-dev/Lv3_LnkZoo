@@ -4,6 +4,7 @@ import {
   MAX_SHARED_TEXT_CHARS,
   TEXT_SHARE_EXPIRY_OPTIONS,
 } from '@/lib/textShareRules';
+import { getSessionFromRequest } from '@/lib/auth';
 import {
   clientIp,
   checkTextShareLimit,
@@ -41,7 +42,13 @@ export const POST = apiHandler(async (req: NextRequest) => {
 
     await pruneExpiredTextShares();
 
-    const result = await createTextShare(content.trim(), option.seconds, ip);
+    const session = await getSessionFromRequest(req);
+    const result = await createTextShare(
+      content.trim(),
+      option.seconds,
+      ip,
+      session?.user_id ?? null
+    );
 
     return NextResponse.json({ ...result, serverTime: Date.now() });
   } catch (err) {
