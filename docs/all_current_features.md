@@ -173,8 +173,19 @@
 - Input validation (password max 128 chars, open redirect check)
 - Consistent error responses (no stack traces leaked)
 - API route ownership guards (delete/update only own resources)
+- Per-record visibility enforced in SQL (`feedback`, links) — filters narrow the caller's allowed set and can never widen it
+- Admin-only mutations verified against `session.role`, not a client-supplied flag
 
 ## Changelog — 2026-08-10 → present
+
+### 2026-09-29 — Feedback becomes a public board, with per-report visibility
+- **Public by default.** `/feedback` is now readable by anyone and is no longer in `proxy.ts` `PROTECTED`/`matcher`; the page renders signed-out with a sign-in prompt (`/login?from=/feedback`) where the composer would be. Posting is still gated in the API (401 for guests), so opening the page did not open the write path.
+- **Per-report visibility** — the author picks **Public** (everyone, default) or **Private** (author + admins) when posting. `FEEDBACK_VISIBILITIES`, `FeedbackVisibility` and `DEFAULT_FEEDBACK_VISIBILITY` live in `lib/feedbackRules.ts`; `POST /api/feedback` validates the `visibility` FormData field (400 on an unknown id) and `GET` accepts a `visibility` filter.
+- **Read policy in SQL, not in the client** — `visibilityCondition()` in `services/feedback.service.ts` gives admins no predicate, signed-in users `(visibility = 'public' OR user_id = $me)`, and signed-out visitors `visibility = 'public'`. The `status`/`visibility` filters are *appended* to that predicate so they can only narrow it, and `feedbackStatusCounts(viewerId, isAdmin)` reuses the same three branches so a chip counter can never reveal that a private report exists. `GET` no longer requires auth and the read limiter is bucketed per user or per IP (`feedback:list:<id>` / `feedback:list:ip:<ip>`).
+- **Admin quick-manage** — new `app/admin/components/FeedbackPanel.tsx`, rendered on `/admin/dashboard` after `FlaggedPanel`: one row per report with a colour-coded status `<select>` (change inline, no navigation), a report title plus a screenshot link, author, visibility badge, date and Delete, in a scrollable table above status filter chips showing live per-status counts.
+- **Board UI** — visibility picker in the composer, `Public`/`Private` badge per card (only rendered when it distinguishes something — always in the admin table), and admin-only status + visibility filter rows.
+- **Responsive** — the composer, picker, cards and admin table all reflow at ≤768px and ≤480px (single-column picker, full-width actions and status select, unwrapped table scroll).
+- **DB** — `database/migrate_feedback_visibility.sql` adds `visibility TEXT NOT NULL DEFAULT 'public'` + `idx_feedback_visibility`; existing rows backfill to `public` via the default. Run it **before** deploying this code.
 
 ### 2026-09-29 — Feedback inbox (`/feedback`)
 - **New page** — a bug-report inbox for signed-in users: title, description and an optional screenshot. Deliberately **not** a conversation — no replies, threads or votes. Guests are redirected to login (`/feedback` added to `proxy.ts` `PROTECTED` + `matcher`); sidebar entry under Account.
