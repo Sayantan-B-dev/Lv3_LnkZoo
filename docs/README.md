@@ -66,3 +66,16 @@ LnkZoo is a modern, high-performance community platform designed for sharing, di
 
 ## 🎨 Customizing the Background Physics
 You can customize the density, speed, repulsion, and visibility of the background particles in real-time. Simply click the **Settings icon** located in the bottom-left of the sidebar to access the advanced visual controls. These settings are saved locally to your device.
+
+## 📝 Commit Status
+
+To dump the last 30 days of commit history (date + full message) into `commits.txt` for reviews / LinkedIn updates / changelogs, run from the repo root:
+
+```bash
+git log --since="30 days ago" --format="%ad | %B" --date=short > commits.txt
+```
+
+- `--since="30 days ago"` — limits to the last 30 days (use `"3 months ago"` for a quarterly post).
+- `--format="%ad | %B"` — prints the short date, a pipe, then the full commit body.
+- `--date=short` — dates as `YYYY-MM-DD`.
+- `> commits.txt` — writes the output to `commits.txt` in the repo root (overwrites it each run).
