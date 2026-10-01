@@ -81,7 +81,7 @@
 - **Engagement** — daily activity dual-trend, engagement-mix donut, views & clicks trends, top-links & top-contributors tables
 - **Content** — topic & visibility distribution donuts, top-tags horizontal bars
 - **Community** — daily-active-users / likes / bookmarks trends, user-role & notification-type donuts, streak-distribution buckets
-- **Moderation** — flagged links panel with quick actions
+- **Moderation** — flagged links panel with quick actions + **Guest Pool** panel (every unowned tool row with type, link, clicks/size, created, live expiry and a Remove button; `user_id IS NULL` repeated in every statement so an owned item can never be deleted from here)
 - **Gap-filled time series** — every daily series backfills zero-count days for continuous charts
 - **Empty states** — `ChartEmpty` placeholder shown when a chart has no data
 - **Chart library** — d3-based MetricCard, Sparkline, TrendChart, DualTrendChart, DonutChart, PieChart, HorizBarChart, BucketBar, StatTable, RangeSelector, FlaggedPanel
@@ -110,6 +110,7 @@
 - **Low Weight File Transfer** — drag-drop or browse files up to 3MB; self-destructs after 5 min / 1 hour / 24 hours (chosen per upload); 1 upload/min/IP (DB-backed); always served as a forced download with the original filename; QR + "Download QR"; HTML/SVG/JS blocked with a "zip it" hint
 - **Text Share** — self-destructing text snippets (10k chars max) with expiry choices 5 min / 1 hour / 24 hours; 1 share/min/IP (DB-backed); QR + hour-aware live countdown; text rendered escaped, never indexed
 - **Tool Links (profile)** — anything you create with the three tools while signed in is listed on your own profile with its tool, link, live countdown and a Destroy button; expiry still happens automatically, and destroying early frees the row (and the Cloudinary asset for files). Guests are never tracked.
+- **Guest Pool (`/guest-pool`)** — public, read-only, paginated listing (sidebar → Discover) of everything **guests** create with the three tools, each with its own live countdown until its original expiry and a **Load more** button; filenames and text contents are never shown. No Destroy button (guests own nothing to scope one to), signed-in output never lands here, and a guest short link claimed by a signed-in user leaves the pool.
 - **QR everywhere** — `ShortUrlQR` component (qrcode.react) renders a centered 160×160 white-card QR with PNG download; used by all three tools and the link detail page short-URL result
 - **Live countdowns** — "This file/text will be destroyed in MM:SS" and "Next request in MM:SS" (H:MM:SS for ≥1h) ticked from server timestamps; cards reset at expiry
 - **Refresh-proof results** — generated links survive page refreshes via `localStorage` (`lnkzoo_tools_state`); countdowns and rate-limit cooldowns resume correctly from server timestamps; results are destroyed only by their real TTL, never by a refresh
@@ -137,6 +138,8 @@
 - **Particles** — `Particles.tsx` scales count by viewport: 60% below 768px, 80% below 1280px, 100% above (re-scaled on resize); used as fly-through background on link detail page
 - **Toast notifications** — fixed bottom-center, backdrop blur, auto-dismiss (success/error/info)
 - **Sidebar** — collapsible, grouped navigation (Feed/Discover/Create), mobile full-screen overlay with animated burger
+- **Sidebar route hints** — hovering any nav entry (expanded or collapsed) floats a small bubble above it with a one-line explanation of what that page is for; the copy comes from `lib/navRoutes.ts`, the same list the sidebar and the manual render from
+- **Manual (`/index`)** — the platform index: every sidebar route in one comparison table with what it does and who can open it, side by side for logged-out / logged-in / admin. Public to everyone, linked from the hero ("Read the manual") and from Discover → Manual
 - **Topbar** — fixed on mobile, responsive height
 - **Footer** — global layout, expand/collapse on mobile
 - **Mobile responsive** — all pages at 768px and 480px breakpoints
@@ -178,6 +181,26 @@
 - Admin-only mutations verified against `session.role`, not a client-supplied flag
 
 ## Changelog — 2026-08-10 → present
+
+### 2026-10-01 — Guest pool: open to everyone + admin moderation
+- **Everyone sees the same pool.** The page and `/api/tools/guest-pool` return identical data logged out or signed in — a guest link is meant to be reachable from anywhere, so the copy now says so plainly. Signed-in output still never appears there.
+- **Admin panel** — `app/admin/components/GuestPoolPanel.tsx` joins the dashboard's Moderation section (after Flagged, before Feedback): one row per pool entry with its type, link (plus the shortened target), clicks/size, created date and a live `MM:SS`/`H:MM:SS` expiry, an *N shown* counter and **Load more**; a **Remove** button deletes the row optimistically.
+- **Admin API** — `GET /api/admin/guest-pool` (paginated, same `hasMore` trick) and `DELETE /api/admin/guest-pool/[type]/[code]`, both behind `requireAdmin` (401/403) and rate-limited 60/min per admin. `destroyGuestToolItem()` in `services/toolItems.service.ts` carries `AND user_id IS NULL` in every statement, so an admin cannot remove a signed-in user's item; deleting a file still destroys its Cloudinary asset. Styles: `.gp-*` block in `styles/pages/admin.css`.
+
+### 2026-10-01 — The manual (`/index`), sidebar route hints, hero link
+- **`lib/navRoutes.ts` is the new single source of truth for navigation.** Every sidebar route now carries `label`, `href`, `hint` (one-liner), `about` (manual paragraph), `audience` (`guest` / `user` / `admin`), plus optional `guestNote` and `sidebar: false`. The sidebar builds its Feed / Discover / Create / Account / Admin sections from `PUBLIC_SECTIONS` + `USER_SECTIONS` (signed in) + `ADMIN_SECTIONS` (admin), so it no longer keeps its own hardcoded list — icons stay in `Sidebar.tsx` keyed by `id`.
+- **Hover bubbles on the sidebar.** Entering any nav entry (expanded *and* collapsed) measures it against `#sidebar` and floats a `.nav-tip` bubble above it — below it for the first rows — with the route's `hint`. The bubble lives outside the scrolling `.sidebar-nav` and is absolutely positioned inside `#sidebar` (which is the positioned ancestor anyway), so neither scroll clipping nor the sidebar's `backdrop-filter` can break it. Cleared on mouse-leave, scroll and click, and hidden entirely under `@media (hover: none)`.
+- **New public page `/index` — the manual.** Grouped by section, each route is one table row: route (linked, with its path in mono), what it actually does, and its access in a **Logged out** vs **Logged in** column (`Open` / `Sign-in required` / `Admins only`), with per-route caveats where reality is messier (e.g. `/feedback` reads publicly but only posts with a session, Profiles always need a session). A legend explains the badges and a header names the current viewer. Ungated in `proxy.ts` like `/feedback`.
+- **Hero + sidebar entry.** The hero gets a `.hero-manual` pill directly under the CTAs — "First time here? **Read the manual**" — and Discover gains a **Manual** entry, both pointing at `/index`.
+- **Responsive** — the manual's four-column table collapses into stacked cards below 768px (`data-label` headings), and the hero pill goes full-width.
+
+### 2026-10-01 — Guest Pool
+- **New public route** — `/guest-pool` (sidebar → Discover, visible to everyone including guests) lists the tool output that has **no owner**: every short link, temp file and shared text guests created on `/tools`, newest first, each with its own `MM:SS` / `H:MM:SS` countdown from one shared 1s ticker, an *N live* counter, and a Refresh button. Guests get their links back without an account, and nothing outlives its original TTL.
+- **Read-only by design** — there is no owner to scope a destroy to, so the pool renders no Destroy button and exposes no delete route; rows only ever die at their own expiry. A guest short link later **claimed** by a signed-in caller stops matching `user_id IS NULL` and drops out of the pool. Signed-in output is unaffected and still lives on its owner's profile.
+- **API** — `GET /api/tools/guest-pool?page=1&limit=30` (public, 60 reads/min per IP) returns the same `ToolItem` shape as `/api/tools/items`, one page at a time (`limit` hard-capped at 100) with `hasMore` derived from fetching one extra row instead of a second `COUNT`; `listGuestToolItems()` in `services/toolItems.service.ts` mirrors `listToolItems()` with a `user_id IS NULL` predicate (the two queries are intentionally separate — the Neon/pg shim cannot compose `sql` fragments).
+- **Trimmed fields** — the pool query selects `NULL::text` for `file_name` and the text preview, so a guest's filename and content never reach the public listing; only the link, size/clicks and countdown do. The page appends pages with **Load more**, de-duplicated by `type:code` so rows created between requests cannot repeat.
+- **Shared row component** — the profile Tool Links row is extracted to `components/tools/ToolItemRow.tsx` (icon, type extra, countdown, link, optional Destroy) and used by both `profile/ToolItems` and the new page, so the two listings cannot drift. Page styles in `styles/pages/guest-pool.css`, `@import`ed from `styles/globals.css`.
+- **Trade-off, deliberate** — a guest's *link* becomes discoverable by anyone who opens the pool, so guest tools are for things you don't mind being linked; filenames and contents are withheld, and full contents still require `/t/<code>` or `/f/<code>`.
 
 ### 2026-09-30 — Topic-tinted card borders
 - **Every link card takes its colour from its topic.** `LinkCard` sets `--topic-color` inline from `link.topic_color` (the seeded `topics.color` for the card's topic-type); the border is `color-mix(topic-color 28%, var(--border))` at rest — a dim version — and `color-mix(topic-color 30%, var(--text))` on hover, which reads as a brighter near-white tint in dark mode and a darker ink tint in light mode. Cards without a topic keep a neutral grey border. The link-detail card gets the same treatment via the page root. The topic badge now *inherits* the card's variable instead of defining its own, so badge and border always agree.

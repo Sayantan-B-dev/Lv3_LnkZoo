@@ -26,6 +26,8 @@ Middleware does not run for every request shape, so layer 2 never trusts layer 1
 | Path | Guest | Signed in | Admin |
 |---|---|---|---|
 | `/feedback` | ✅ public board | ✅ | ✅ |
+| `/guest-pool` | ✅ public pool (read-only) | ✅ | ✅ |
+| `/index` | ✅ the manual | ✅ | ✅ |
 | `/`, `/tools`, `/explore`, `/link/*`, … | ✅ | ✅ | ✅ |
 | `/submit`, `/profile/*`, `/notifications` | → `/login` | ✅ | ✅ |
 | `/admin/*` | → `/login` | → `/admin/forbidden` | ✅ |
@@ -56,6 +58,8 @@ a header, query param, or body field the caller controls.
 | `PATCH /api/feedback/[id]` | 403 | 403 | ✅ | Status triage |
 | `DELETE /api/feedback/[id]` | 401 | own only | ✅ | Ownership inside the `DELETE` |
 | `GET /api/tools/items` · `DELETE /api/tools/items/*` | 401 | ✅ own only | — | Ownership inside every statement |
+| `GET /api/tools/guest-pool` | ✅ | ✅ | ✅ | Public, read-only, paginated; `user_id IS NULL` rows only |
+| `GET` · `DELETE /api/admin/guest-pool/*` | 401 | 403 | ✅ | Moderation of the pool; same `user_id IS NULL` rows |
 | `POST /api/tools/parse` | ✅ | ✅ | ✅ | Rate limited 20/min/IP; SSRF-checked |
 | `POST /api/upload` | 401 | ✅ | ✅ | Folder allowlist, 5MB cap, data-URI only |
 | `POST /api/links`, `/api/links/bulk` | 401 | ✅ | ✅ | |
@@ -81,8 +85,17 @@ that a private report exists.
 **Tool output** (`temp_files`, `shared_texts`, `shortened_links`). Ownership
 lives in the statement: listing is `WHERE user_id = $me`, destroying is
 `DELETE ... WHERE code = $code AND user_id = $me`. Guests write `user_id NULL`
-and are simply never listed; a short link can be *claimed* by its creator
+and are never listed on a profile; a short link can be *claimed* by its creator
 (`UPDATE ... WHERE user_id IS NULL`) but never reassigned.
+
+The **guest pool** (`GET /api/tools/guest-pool`, `/guest-pool`) is the inverse
+listing — `WHERE user_id IS NULL` across the same three tables, public and
+**read-only**. No destroy route is offered for it: with no owner there is no
+predicate that could authorize a deletion, so those rows can only expire —
+the only way one leaves early is an admin (`/api/admin/guest-pool/*`, also
+`user_id IS NULL`). A claimed row drops out of the pool because it stops
+matching `user_id IS NULL`. The pool query also never selects `file_name` or a
+text preview, so the listing cannot surface anything beyond a link and its TTL.
 
 **Links.** Visibility `public` / `followers` / `private`; the feed query filters
 by it, and edit/delete routes are owner-or-admin with the ownership repeated in
@@ -102,6 +115,8 @@ enough for one Node process; move to Redis if we ever scale horizontally.
 | `tools:parse:ip:<ip>` | 20 / min |
 | `upload:<id>` | 20 / 10 min |
 | `toolitem:destroy:<id>` | 30 / min |
+| `guestpool:list:ip:<ip>` | 60 / min |
+| `guestpool:admin:destroy:<id>` | 60 / min |
 | Shorten / share-text | per-IP DB-backed windows (`temp_file_limits`, `shared_text_limits`) |
 
 Mutation routes cap the request **before** reading the body (`content-length`

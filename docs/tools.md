@@ -17,6 +17,17 @@ All three tools stay public, but a signed-in caller's output is recorded against
 - Expiry is unchanged and still automatic; destroying early just frees the row (and the asset) sooner. Expired items drop out of the list on their own.
 - Short links are deduplicated by URL, so a signed-in caller **claims** a live row that has no owner yet (`user_id IS NULL`); it never steals a row that already has one.
 
+### The Guest Pool (`/guest-pool`)
+Guest output is untracked per person, so it is pooled instead: anything created with the three tools while signed out lives in a **public, read-only** listing until it expires at its own TTL.
+
+- `GET /api/tools/guest-pool?page=1&limit=30` — active rows with `user_id IS NULL` across the three tables, newest first, **paginated** (`GUEST_POOL_PAGE_SIZE` 30, `limit` hard-capped at `GUEST_POOL_MAX_ITEMS` 100). `hasMore` comes from fetching one extra row, so there is no second COUNT query. 60 reads/min per IP; no session required.
+- **Trimmed by design** — the pool query never selects `file_name` or a text preview (both are `NULL::text` in its SQL), so a guest's filename and content never appear in the public listing; only the link, its type, the size/clicks and the countdown are shown. Full contents still require the code on `/t/<code>` or `/f/<code>`.
+- The page (`app/(main)/guest-pool/page.tsx`) mirrors the profile section — one shared 1s ticker, `MM:SS` / `H:MM:SS` countdowns, an *N live* counter, a Refresh button and a **Load more** button that appends the next page (de-duplicated by `type:code` in case rows appear between requests) — but renders **no Destroy button**: there is no owner to scope a destroy to, so guests' rows can only die by expiry.
+- A guest short link that later gets **claimed** by a signed-in caller (`UPDATE ... WHERE user_id IS NULL`) leaves the pool on the next read, as does any expired row.
+- **Everyone sees the same pool.** It is built for guests but open to all: logged out or signed in, the page and `/api/tools/guest-pool` return the identical list — a guest link is meant to be reachable from anywhere. Signed-in output never appears here; it stays on its owner's profile. Sidebar entry **Discover → Guest Pool**, visible to everyone.
+- **Admin management** — the dashboard's **Guest Pool** panel (`app/admin/components/GuestPoolPanel.tsx`, Moderation section) lists the same rows with type, link, clicks/size, created and expiry, and a **Remove** button per row. `GET /api/admin/guest-pool` (paginated) + `DELETE /api/admin/guest-pool/[type]/[code]`, both admin-guarded; the service repeats `user_id IS NULL` in every statement, so an admin cannot delete a signed-in user's item through it. Removing a file also destroys its Cloudinary asset.
+- Still a public surface: the guest's link itself is discoverable by anyone who opens the pool, so guest tools are for things you don't mind being linked publicly — but nothing about the filename or the content is.
+
 ### "Make another" reset buttons
 Each tool's result has a reset button that clears **only that tool** (result, countdown, storage entry) while other tools keep their state:
 - URL Shortener → **Shorten another URL**
@@ -96,8 +107,10 @@ Returns `{ shortCode, shortUrl, expiresAt }` — link is `<appUrl>/s/<code>` and
 - **`components/common/ShortUrlQR.tsx`** — `qrcode.react` `<QRCodeCanvas>` (160×160, black on white so it scans in dark mode) in a fixed 180×180 white card + "Download QR" button (canvas → PNG). Centered; `styles/ui/qr.css`.
 - **`lib/textShareRules.ts`** — shared pure constants/helpers used by client and server: `MAX_SHARED_TEXT_CHARS`, `TEXT_SHARE_EXPIRY_OPTIONS`, `formatCountdown`.
 - **`lib/tempFileRules.ts`** — shared pure constants/helpers: `MAX_TEMP_FILE_BYTES`, `TEMP_FILE_EXPIRY_OPTIONS`, `DEFAULT_TEMP_FILE_EXPIRY`, blocked extension/MIME lists, `tempFileExt`, `isBlockedTempFile`, `formatBytes`.
-- **`services/toolItems.service.ts`** — `listToolItems(userId)` (UNION ALL over the three tables) and `destroyToolItem(userId, type, code)` (owner-scoped destroy).
+- **`services/toolItems.service.ts`** — `listToolItems(userId)` (UNION ALL over the three tables), `listGuestToolItems()` (same shape, `user_id IS NULL` only) and `destroyToolItem(userId, type, code)` (owner-scoped destroy).
+- **`components/tools/ToolItemRow.tsx`** — the shared row (icon, type extra, countdown, link) plus the `ToolItem` type; `onDestroy` makes it an owner row, omitting it renders the read-only guest-pool variant.
 - **`components/profile/ToolItems.tsx`** — the profile **Tool Links** section (own profile only), with one shared 1s ticker driving every countdown.
+- **`app/(main)/guest-pool/page.tsx`** — the public guest pool listing (`styles/pages/guest-pool.css`).
 
 ## Environment
 
