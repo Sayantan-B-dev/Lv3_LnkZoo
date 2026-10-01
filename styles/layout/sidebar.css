@@ -132,6 +132,65 @@
   background: var(--border)
 }
 
+/* ── Route hint bubble ──────────────────────────────
+   Positioned by JS (`components/common/Sidebar.tsx`) relative to #sidebar:
+   absolute (not fixed) so the sidebar's backdrop-filter can't re-anchor it,
+   and outside .sidebar-nav so its scroll clipping can't cut it off. */
+.nav-tip {
+  position: absolute;
+  z-index: 300;
+  max-width: 220px;
+  width: max-content;
+  padding: 6px 9px;
+  border-radius: 7px;
+  border: 1px solid var(--border-md);
+  background: color-mix(in srgb, var(--bg-1) 92%, transparent);
+  backdrop-filter: blur(8px);
+  color: var(--text-2);
+  font-size: 11px;
+  line-height: 1.4;
+  text-align: left;
+  pointer-events: none;
+  transform: translate(-50%, -100%) translateY(-8px);
+  animation: tipIn 0.12s ease-out;
+}
+
+.nav-tip.below {
+  transform: translate(-50%, 0) translateY(8px);
+}
+
+.nav-tip::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -4px;
+  width: 7px;
+  height: 7px;
+  margin-left: -3.5px;
+  background: inherit;
+  border-right: 1px solid var(--border-md);
+  border-bottom: 1px solid var(--border-md);
+  transform: rotate(45deg);
+}
+
+.nav-tip.below::after {
+  bottom: auto;
+  top: -4px;
+  border: none;
+  border-left: 1px solid var(--border-md);
+  border-top: 1px solid var(--border-md);
+}
+
+@keyframes tipIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Touch devices have no hover — the bubble would just linger. */
+@media (hover: none) {
+  .nav-tip { display: none; }
+}
+
 .nav-section {
   margin-bottom: 4px
 }

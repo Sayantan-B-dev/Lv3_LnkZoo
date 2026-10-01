@@ -21,6 +21,13 @@ export function HeroSection({ stats, onShareClick }: { stats: any; onShareClick:
             <button className="hero-btn primary" onClick={onShareClick}>Share a Link</button>
             <Link href="/explore" className="hero-btn secondary">Explore Feed</Link>
           </div>
+          <Link href="/index" className="hero-manual">
+            <span className="hero-manual-tag">Manual</span>
+            <span className="hero-manual-text">
+              First time here? <b>Read the manual</b> — what every route does, for guests and members.
+            </span>
+            <span className="hero-manual-arrow">&rarr;</span>
+          </Link>
           <HeroTools />
         </div>
         <div className="hero-stats">
