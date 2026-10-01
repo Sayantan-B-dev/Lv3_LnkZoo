@@ -512,3 +512,128 @@
   .topic-adm-actions { margin-left: 0; width: 100%; }
   .topic-adm-create-row { flex-direction: column; align-items: stretch; }
 }
+
+/* ── Guest pool panel (inside /admin/dashboard) ── */
+.gp-note {
+  font-size: 11px;
+  color: var(--text-4);
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+.gp-note a {
+  color: var(--text-2);
+}
+
+.gp-scroll {
+  max-height: 420px;
+  overflow: auto;
+}
+
+/* Six columns cannot compress gracefully on a phone — scroll sideways. */
+.gp-scroll .adm-table {
+  min-width: 620px;
+}
+
+.gp-type {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-3);
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 7px;
+  white-space: nowrap;
+}
+
+.gp-link {
+  display: block;
+  font-size: 12px;
+  color: var(--text-2);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.gp-link:hover {
+  color: var(--text);
+  text-decoration: underline;
+}
+
+.gp-target {
+  display: block;
+  margin-top: 2px;
+  font-size: 10px;
+  color: var(--text-4);
+  max-width: 320px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gp-details,
+.gp-when {
+  font-size: 11px;
+  color: var(--text-4);
+  white-space: nowrap;
+}
+
+.gp-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.gp-remove {
+  padding: 4px 10px;
+  background: none;
+  border: 1px solid color-mix(in srgb, #ef4444 30%, var(--border));
+  border-radius: 5px;
+  color: #ef4444;
+  font-size: 10px;
+  cursor: pointer;
+  transition: background var(--t), border-color var(--t);
+}
+
+.gp-remove:hover:not(:disabled) {
+  background: color-mix(in srgb, #ef4444 12%, transparent);
+  border-color: #ef4444;
+}
+
+.gp-remove:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.gp-more {
+  display: flex;
+  justify-content: center;
+  padding-top: 14px;
+}
+
+.gp-more-btn {
+  padding: 8px 20px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-3);
+  font-size: 12px;
+  cursor: pointer;
+  transition: color var(--t), border-color var(--t);
+}
+
+.gp-more-btn:hover:not(:disabled) {
+  color: var(--text);
+  border-color: var(--border-md);
+}
+
+.gp-more-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+@media (max-width: 768px) {
+  .gp-scroll { max-height: none; }
+  .gp-more-btn { width: 100%; }
+}

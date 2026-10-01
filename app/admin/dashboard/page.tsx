@@ -11,6 +11,7 @@ import BucketBar from '../components/BucketBar';
 import StatTable from '../components/StatTable';
 import FlaggedPanel from '../components/FlaggedPanel';
 import FeedbackPanel from '../components/FeedbackPanel';
+import GuestPoolPanel from '../components/GuestPoolPanel';
 import RangeSelector, { Range } from '../components/RangeSelector';
 
 const c = {
@@ -191,6 +192,7 @@ export default function AdminDashboard() {
 
         <Section title="Moderation" />
         <FlaggedPanel flags={stats.recentFlags} />
+        <GuestPoolPanel />
         <FeedbackPanel />
       </div>
     </div>
