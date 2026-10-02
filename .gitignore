@@ -8,13 +8,13 @@ node_modules/
 out/
 build/
 
-# env files
+# env files (values never committed; the template IS committed)
 .env
-.env.*
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+!.env.example
 
 # logs
 npm-debug.log*
@@ -54,8 +54,7 @@ temp/
 uploads/
 public/uploads/
 
-# package manager locks (keep only one you use)
-package-lock.json
+# package manager locks (npm is used — its lockfile is committed for reproducible installs)
 yarn.lock
 pnpm-lock.yaml
 

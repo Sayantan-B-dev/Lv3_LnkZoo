@@ -2,13 +2,26 @@ import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 import * as jose from 'jose';
 
-const rawSecret = process.env.JWT_SECRET;
-if (process.env.NODE_ENV === 'production' && !rawSecret) {
-  throw new Error('JWT_SECRET is not set. Set it in your deployment environment.');
-}
-const JWT_SECRET = new TextEncoder().encode(rawSecret ?? 'development-insecure-secret');
 const COOKIE_NAME = 'lnkzoo_token';
 const MAX_AGE = 60 * 60 * 24 * 30; // 30 days
+
+let cachedSecret: Uint8Array | undefined;
+
+/**
+ * Resolved lazily (not at import time) so `next build` can collect page data
+ * / prerender without JWT_SECRET set. The throw only happens when a token is
+ * actually signed or verified in a production runtime without the secret.
+ */
+function getSecret(): Uint8Array {
+  if (!cachedSecret) {
+    const rawSecret = process.env.JWT_SECRET;
+    if (process.env.NODE_ENV === 'production' && !rawSecret) {
+      throw new Error('JWT_SECRET is not set. Set it in your deployment environment.');
+    }
+    cachedSecret = new TextEncoder().encode(rawSecret ?? 'development-insecure-secret');
+  }
+  return cachedSecret;
+}
 
 export interface JWTPayload {
   user_id: string;
@@ -21,12 +34,12 @@ export async function signToken(payload: JWTPayload): Promise<string> {
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime('30d')
-    .sign(JWT_SECRET);
+    .sign(getSecret());
 }
 
 export async function verifyToken(token: string): Promise<JWTPayload | null> {
   try {
-    const { payload } = await jose.jwtVerify(token, JWT_SECRET);
+    const { payload } = await jose.jwtVerify(token, getSecret());
     return payload as unknown as JWTPayload;
   } catch (err) {
     return null;
