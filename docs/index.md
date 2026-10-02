@@ -7,6 +7,7 @@
 | `STYLE.md` | CSS architecture, token map, class conventions |
 | `DESIGN.md` | Route/component/data-layer map ("where's what") |
 | `policies.md` | Access & security policy matrix: page/route/row layers, abuse limits, SSRF guard |
+| `vercel-deploy.md` | Oct 2026 deploy incident: 4 stacked Vercel failures, rules + checklist |
 | `all_current_features.md` | Full feature list + changelog |
 | `all_features.md` | Every feature by date, from the full git history (2026-04-29 → today) |
 | `tools.md` | Developer Tools page: URL Shortener, Low Weight File Transfer, Text Share |
