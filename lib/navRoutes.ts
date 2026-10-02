@@ -1,7 +1,7 @@
 /**
  * One source of truth for the sidebar's routes.
  *
- * The sidebar renders its sections from here and the `/index` manual builds its
+ * The sidebar renders its sections from here and the `/manual` manual builds its
  * comparison table from the same list, so a label, a hint and the documented
  * access level cannot drift apart. Icons stay in `components/common/Sidebar.tsx`
  * (they are JSX, this file is data) keyed by `id`.
@@ -153,12 +153,12 @@ export const PUBLIC_SECTIONS: NavSection[] = [
         guestNote: 'Built for guests, open to everyone. No account needed either way.',
       },
       {
-        id: 'index',
+        id: 'manual',
         label: 'Manual',
-        href: '/index',
+        href: '/manual',
         hint: 'This page — what every route does and who can open it.',
         about:
-          'The index: every sidebar route explained side by side for logged-out visitors and signed-in members, so you know where things live before hunting for them.',
+          'The manual: every sidebar route explained side by side for logged-out visitors and signed-in members, so you know where things live before hunting for them.',
         audience: 'guest',
       },
     ],

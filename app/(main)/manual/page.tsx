@@ -29,7 +29,7 @@ function accessClass(audience: NavAudience, signedIn: boolean): string {
   return audience === 'admin' ? 'admin' : 'open';
 }
 
-export default function IndexManual() {
+export default function ManualPage() {
   const { user } = useAuth();
   const signedIn = !!user;
 
