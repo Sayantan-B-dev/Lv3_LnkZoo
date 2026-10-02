@@ -10,7 +10,27 @@ import ToastContainer from '@/components/common/ToastContainer';
 // @ts-ignore: CSS side-effect import
 import './globals.css';
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://lnkzoo.vercel.app'
+const FALLBACK_BASE_URL = 'https://lnkzoo.vercel.app';
+
+/**
+ * Never throws: metadata is evaluated at build time for every route
+ * (including `/_not-found`), so a missing/scheme-less value — or a
+ * `[SENSITIVE]` placeholder from a local `vercel build` — must fall back
+ * instead of killing config collection with `TypeError: Invalid URL`.
+ */
+function resolveBaseUrl(): string {
+  const raw = (process.env.NEXT_PUBLIC_BASE_URL || '').trim();
+  if (/^https?:\/\//.test(raw)) {
+    try {
+      return new URL(raw).origin;
+    } catch {
+      /* fall through to fallback */
+    }
+  }
+  return FALLBACK_BASE_URL;
+}
+
+const baseUrl = resolveBaseUrl();
 
 export const metadata: Metadata = {
   title: { default: 'LnkZoo - share links, find the web', template: '%s | LnkZoo' },
