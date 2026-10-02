@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { v2 as cloudinary } from 'cloudinary';
+import { getCloudinary } from '@/lib/cloudinary';
 import sql from '@/lib/db';
 import { apiHandler } from '@/lib/api-utils';
 import { rateLimit } from '@/lib/rate-limit';
@@ -30,7 +30,7 @@ export const GET = apiHandler(
       return new NextResponse('Not found', { status: 404 });
     }
 
-    const fileUrl = cloudinary.url(row.public_id, {
+    const fileUrl = (await getCloudinary()).url(row.public_id, {
       resource_type: 'raw',
       type: 'upload',
     });

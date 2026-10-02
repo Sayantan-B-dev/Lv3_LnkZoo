@@ -1,4 +1,4 @@
-import { v2 as cloudinary } from 'cloudinary';
+import { getCloudinary } from '@/lib/cloudinary';
 import sql, { query } from '@/lib/db';
 import {
   DEFAULT_FEEDBACK_STATUS,
@@ -6,12 +6,6 @@ import {
   type FeedbackStatus,
   type FeedbackVisibility,
 } from '@/lib/feedbackRules';
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
 export const FEEDBACK_FOLDER = 'lnkzoo_feedback';
 
@@ -158,7 +152,7 @@ export async function createFeedback(input: {
 
   if (input.screenshot) {
     // Same data-URI approach as the temp-file tool, so nothing touches disk.
-    const uploaded = await cloudinary.uploader.upload(
+    const uploaded = await (await getCloudinary()).uploader.upload(
       `data:${input.screenshot.mime};base64,${input.screenshot.buffer.toString('base64')}`,
       {
         folder: FEEDBACK_FOLDER,
@@ -218,7 +212,7 @@ export async function deleteFeedback(
 
   const publicId = rows[0].screenshot_public_id;
   if (publicId) {
-    await cloudinary.uploader.destroy(publicId).catch(() => {});
+    await (await getCloudinary()).uploader.destroy(publicId).catch(() => {});
   }
   return true;
 }

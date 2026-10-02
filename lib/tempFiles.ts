@@ -1,14 +1,8 @@
 import { NextRequest } from 'next/server';
-import { v2 as cloudinary } from 'cloudinary';
+import { getCloudinary } from '@/lib/cloudinary';
 import sql from '@/lib/db';
 import { generateShortCode } from '@/lib/shortCode';
 import { TEMP_UPLOAD_WINDOW_MS } from '@/lib/tempFileRules';
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
 export const TEMP_FILE_FOLDER = 'lnkzoo_temp';
 export const TEMP_FILE_CODE_LENGTH = 10;
@@ -50,7 +44,7 @@ export async function pruneExpiredTempFiles(): Promise<number> {
     SELECT code, public_id FROM temp_files WHERE expires_at <= NOW()
   `;
   for (const row of rows) {
-    await cloudinary.uploader
+    await (await getCloudinary()).uploader
       .destroy(row.public_id, { resource_type: 'raw' })
       .catch(() => {});
     await sql`DELETE FROM temp_files WHERE code = ${row.code}`.catch(() => {});
@@ -61,7 +55,7 @@ export async function pruneExpiredTempFiles(): Promise<number> {
 export async function destroyTempFileByCode(code: string): Promise<void> {
   const [row] = await sql`SELECT public_id FROM temp_files WHERE code = ${code}`;
   if (!row) return;
-  await cloudinary.uploader
+  await (await getCloudinary()).uploader
     .destroy(row.public_id, { resource_type: 'raw' })
     .catch(() => {});
   await sql`DELETE FROM temp_files WHERE code = ${code}`.catch(() => {});
@@ -82,7 +76,7 @@ export async function createTempFile(
 }> {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
 
-  const uploadResult = await cloudinary.uploader.upload(
+  const uploadResult = await (await getCloudinary()).uploader.upload(
     `data:${file.mime};base64,${file.buffer.toString('base64')}`,
     {
       resource_type: 'raw',

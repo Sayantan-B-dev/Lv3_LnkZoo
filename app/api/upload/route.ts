@@ -1,14 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { v2 as cloudinary } from 'cloudinary';
+import { getCloudinary } from '@/lib/cloudinary';
 import { apiHandler } from '@/lib/api-utils';
 import { requireSession } from '@/lib/policies';
 import { rateLimit } from '@/lib/rate-limit';
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
 export const dynamic = 'force-dynamic';
 
@@ -70,7 +64,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
   const folder = ALLOWED_FOLDERS.includes(requestedFolder) ? requestedFolder : DEFAULT_FOLDER;
 
   try {
-    const result = await cloudinary.uploader.upload(image, {
+    const result = await (await getCloudinary()).uploader.upload(image, {
       folder,
       resource_type: 'image',
       upload_preset: 'ml_default',
