@@ -9,6 +9,8 @@
     "lint": "eslint . --max-warnings=1000"
   },
   "dependencies": {
+    "@hugeicons/core-free-icons": "^4.4.0",
+    "@hugeicons/react": "^1.1.10",
     "@neondatabase/serverless": "^0.9.3",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.10.0",
