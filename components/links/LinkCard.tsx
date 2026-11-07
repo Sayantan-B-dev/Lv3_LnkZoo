@@ -203,26 +203,19 @@ export default function LinkCard({
     }
   };
 
+  const handleCardKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleCardClick();
+    }
+  };
+
   const domain = new URL(link.original_url).hostname;
   const date = new Date(link.created_at).toLocaleDateString();
 
-  // Topic colour tints the card border (dim at rest, brighter on hover via CSS).
   const cardStyle = link.topic_color
     ? ({ '--topic-color': link.topic_color } as React.CSSProperties)
     : undefined;
-
-  const renderTopic = () =>
-    link.topic ? (
-      <Link
-        href={`/topics/${link.topic}`}
-        className="card-topic-badge"
-        onClick={(e) => e.stopPropagation()}
-        style={link.topic_color ? { '--topic-color': link.topic_color } as React.CSSProperties : undefined}
-        title={link.topic_name}
-      >
-        {link.topic_name}
-      </Link>
-    ) : null;
 
   const renderFooter = () => (
     <div className="card-footer">
@@ -231,6 +224,8 @@ export default function LinkCard({
         onClick={handleLike}
         type="button"
         title={likedByUser ? 'Unlike' : 'Like'}
+        aria-label={likedByUser ? 'Unlike this link' : 'Like this link'}
+        aria-pressed={likedByUser}
       >
         <svg width="14" height="14" fill={likedByUser ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.35-1.92-4.25-4.29-4.25-1.69 0-3.15.97-3.85 2.38A4.32 4.32 0 008.86 4C6.48 4 4.5 5.9 4.5 8.25c0 6.03 7.5 10.75 7.5 10.75s9-4.72 9-10.75z" />
@@ -245,23 +240,23 @@ export default function LinkCard({
           <span>{link.comment_count ?? 0}</span>
         </span>
       )}
-      <button className={`card-stat ${bookmarked ? 'active' : ''}`} onClick={handleBookmark} type="button" title={bookmarked ? 'Remove bookmark' : 'Bookmark'}>
+      <button className={`card-stat ${bookmarked ? 'active' : ''}`} onClick={handleBookmark} type="button" title={bookmarked ? 'Remove bookmark' : 'Bookmark'} aria-label={bookmarked ? 'Remove bookmark' : 'Bookmark this link'} aria-pressed={bookmarked}>
         <svg width="14" height="14" fill={bookmarked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
         </svg>
       </button>
-      <button className="card-stat" onClick={handleCopyLink} type="button" title="Copy link">
+      <button className="card-stat" onClick={handleCopyLink} type="button" title="Copy link" aria-label="Copy link">
         <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
           <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
           <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
         </svg>
       </button>
-      <button className="card-stat" onClick={handleShare} type="button" title="Share">
+      <button className="card-stat" onClick={handleShare} type="button" title="Share" aria-label="Share link">
         <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
         </svg>
       </button>
-      <button className="card-stat card-open-original" onClick={() => window.open(link.original_url, '_blank', 'noopener,noreferrer')} type="button" title="Open original">
+      <button className="card-stat card-open-original" onClick={() => window.open(link.original_url, '_blank', 'noopener,noreferrer')} type="button" title="Open original" aria-label="Open original site in a new tab">
         <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M7 7h10v10" />
         </svg>
@@ -269,90 +264,27 @@ export default function LinkCard({
     </div>
   );
 
-  // Full variant - complete card with votes and all info
+  const cardBody = (
+    <div className="card-body">
+      <div className="card-title">{link.title}</div>
+      {showDescription && <div className="card-desc">{link.description}</div>}
+      {renderFooter()}
+    </div>
+  );
+
+  // Full variant - title + description only
   if (variant === 'full') {
     return (
       <div
         className={`link-card${navigating ? ' navigating' : ''}`}
         onClick={handleCardClick}
+        onKeyDown={handleCardKeyDown}
+        role={isClickable ? 'link' : undefined}
+        tabIndex={isClickable ? 0 : undefined}
         style={{ cursor: isClickable ? 'pointer' : 'default', ...cardStyle }}
       >
         {navigating && <CardSpinner />}
-        {/* {showVotes && (
-          <div className="vote-col" onClick={(e) => e.stopPropagation()}>
-            <button className="vote-btn up" onClick={(e) => handleVote(e, 1)}>
-              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
-              </svg>
-            </button>
-            <span className="vote-count">{link.upvote_count - link.downvote_count}</span>
-            <button className="vote-btn down" onClick={(e) => handleVote(e, -1)}>
-              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-              </svg>
-            </button>
-          </div>
-        )} */}
-
-        <div className="card-body">
-          <div className="card-meta">
-            <span className="card-domain">{domain}</span>
-            <span className={`vis-badge vis-${currentVisibility}`} title={visibilityLabel(currentVisibility)}>
-              {visibilityIcon(currentVisibility)}
-            </span>
-            {renderTopic()}
-            {showPoster && (
-              <span className="card-poster" onClick={(e) => e.stopPropagation()}>
-                {link.is_anonymous ? (
-                  <span className="anon-badge">anon</span>
-                ) : (
-                  <Link href={`/profile/${link.username}`}>@{link.username}</Link>
-                )}
-              </span>
-            )}
-            <span className="card-time">{date}</span>
-            {isOwner && (
-              <div className="card-menu-wrap" ref={menuRef} onClick={(e) => e.stopPropagation()}>
-                <button className="card-menu-btn" onClick={() => setMenuOpen(!menuOpen)}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
-                  </svg>
-                </button>
-                {menuOpen && (
-                  <div className="card-menu-dropdown">
-                    {['public', 'followers', 'private'].map(v => (
-                      <button
-                        key={v}
-                        className={`card-menu-item ${currentVisibility === v ? 'active' : ''}`}
-                        onClick={() => changeVisibility(v)}
-                      >
-                        {visibilityIcon(v)} {visibilityLabel(v)}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          <div className="card-title" style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text)', marginBottom: '5px' }}>
-            {link.title}
-          </div>
-
-          {showDescription && <div className="card-desc">{link.description}</div>}
-
-          {showTags && link.tags && link.tags.length > 0 && (
-            <div className="card-tags" onClick={(e) => e.stopPropagation()}>
-              {link.tags.map((tag: string) => (
-                <Link key={tag} href={`/tags/${tag}`} className="tag">
-                  #{tag}
-                </Link>
-              ))}
-            </div>
-          )}
-
-          {renderFooter()}
-        </div>
+        {cardBody}
         {showPreview && link.preview_image && (
           <div className="card-preview right">
             <img src={link.preview_image} alt={link.title} />
@@ -365,64 +297,9 @@ export default function LinkCard({
   // Mini variant - compact card
   if (variant === 'mini') {
     return (
-      <div className={`link-card mini${navigating ? ' navigating' : ''}`} onClick={handleCardClick} style={{ cursor: isClickable ? 'pointer' : 'default', ...cardStyle }}>
+      <div className={`link-card mini${navigating ? ' navigating' : ''}`} onClick={handleCardClick} onKeyDown={handleCardKeyDown} role={isClickable ? 'link' : undefined} tabIndex={isClickable ? 0 : undefined} style={{ cursor: isClickable ? 'pointer' : 'default', ...cardStyle }}>
         {navigating && <CardSpinner />}
-        <div className="card-body">
-          <div className="card-meta">
-            <span className="card-domain">{domain}</span>
-            <span className={`vis-badge vis-${currentVisibility}`} title={visibilityLabel(currentVisibility)}>
-              {visibilityIcon(currentVisibility)}
-            </span>
-            {renderTopic()}
-            {showPoster && (
-              <span className="card-poster" onClick={(e) => e.stopPropagation()}>
-                {link.is_anonymous ? (
-                  <span className="anon-badge">anon</span>
-                ) : (
-                  <Link href={`/profile/${link.username}`}>@{link.username}</Link>
-                )}
-              </span>
-            )}
-            <span className="card-time">{date}</span>
-            {isOwner && (
-              <div className="card-menu-wrap" ref={menuRef} onClick={(e) => e.stopPropagation()}>
-                <button className="card-menu-btn" onClick={() => setMenuOpen(!menuOpen)}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
-                  </svg>
-                </button>
-                {menuOpen && (
-                  <div className="card-menu-dropdown">
-                    {['public', 'followers', 'private'].map(v => (
-                      <button
-                        key={v}
-                        className={`card-menu-item ${currentVisibility === v ? 'active' : ''}`}
-                        onClick={() => changeVisibility(v)}
-                      >
-                        {visibilityIcon(v)} {visibilityLabel(v)}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-          <Link href={`/link/${link.id}`} className="card-title" style={{ fontSize: '15px', fontWeight: '500', color: 'var(--text)', marginBottom: '5px', display: 'block' }} onClick={(e) => e.preventDefault()}>
-              {link.title}
-            </Link>
-          {showDescription && <div className="card-desc">{link.description}</div>}
-
-          {showTags && link.tags && link.tags.length > 0 && (
-            <div className="card-tags" onClick={(e) => e.stopPropagation()}>
-              {link.tags.map((tag: string) => (
-                <Link key={tag} href={`/tags/${tag}`} className="tag">
-                  #{tag}
-                </Link>
-              ))}
-            </div>
-          )}
-          {renderFooter()}
-        </div>
+        {cardBody}
         {showPreview && link.preview_image && (
           <div className="card-preview right">
             <img src={link.preview_image} alt={link.title} />
@@ -435,63 +312,9 @@ export default function LinkCard({
   // Profile variant - simplified card
   if (variant === 'profile') {
     return (
-      <div className={`link-card${navigating ? ' navigating' : ''}`} onClick={() => navigateToLink()} style={{ cursor: 'pointer', ...cardStyle }}>
+      <div className={`link-card${navigating ? ' navigating' : ''}`} onClick={() => navigateToLink()} onKeyDown={handleCardKeyDown} role="link" tabIndex={0} style={{ cursor: 'pointer', ...cardStyle }}>
         {navigating && <CardSpinner />}
-        <div className="card-body">
-                    <div className="card-meta">
-            <span className="card-domain">{domain}</span>
-            <span className={`vis-badge vis-${currentVisibility}`} title={visibilityLabel(currentVisibility)}>
-              {visibilityIcon(currentVisibility)}
-            </span>
-            {renderTopic()}
-            {showPoster && (
-              <span className="card-poster" onClick={(e) => e.stopPropagation()}>
-                {link.is_anonymous ? (
-                  <span className="anon-badge">anon</span>
-                ) : (
-                  <span onClick={(e) => { e.stopPropagation(); router.push(`/profile/${link.username}`); }} style={{ cursor: 'pointer' }}>@{link.username}</span>
-                )}
-              </span>
-            )}
-            <span className="card-time">{date}</span>
-            {isOwner && (
-              <div className="card-menu-wrap" ref={menuRef} onClick={(e) => e.stopPropagation()}>
-                <button className="card-menu-btn" onClick={() => setMenuOpen(!menuOpen)}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
-                  </svg>
-                </button>
-                {menuOpen && (
-                  <div className="card-menu-dropdown">
-                    {['public', 'followers', 'private'].map(v => (
-                      <button
-                        key={v}
-                        className={`card-menu-item ${currentVisibility === v ? 'active' : ''}`}
-                        onClick={() => changeVisibility(v)}
-                      >
-                        {visibilityIcon(v)} {visibilityLabel(v)}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-          <div className="card-title" style={{ fontSize: '15px', fontWeight: '500', color: 'var(--text)', marginBottom: '5px', display: 'block' }}>
-              {link.title}
-            </div>
-          {showDescription && <div className="card-desc">{link.description}</div>}
-          {showTags && link.tags && link.tags.length > 0 && (
-            <div className="card-tags" onClick={(e) => e.stopPropagation()}>
-              {link.tags.map((tag: string) => (
-                <Link key={tag} href={`/tags/${tag}`} className="tag">
-                  #{tag}
-                </Link>
-              ))}
-            </div>
-          )}
-          {renderFooter()}
-        </div>
+        {cardBody}
         {showPreview && link.preview_image && (
           <div className="card-preview right">
             <img src={link.preview_image} alt={link.title} />
@@ -506,69 +329,15 @@ export default function LinkCard({
     return (
       <div className="dose-card">
         {doseNumber && <div className="dose-number">0{doseNumber}</div>}
-        <div className={`link-card${navigating ? ' navigating' : ''}`} style={{ flex: 1, marginBottom: 0, ...cardStyle }} onClick={() => navigateToLink()}>
+        <div className={`link-card${navigating ? ' navigating' : ''}`} style={{ flex: 1, marginBottom: 0, ...cardStyle }} onClick={() => navigateToLink()} onKeyDown={handleCardKeyDown} role="link" tabIndex={0}>
           {navigating && <CardSpinner />}
-          <div className="card-body">
-          <div className="card-meta">
-            <span className="card-domain">{domain}</span>
-            <span className={`vis-badge vis-${currentVisibility}`} title={visibilityLabel(currentVisibility)}>
-              {visibilityIcon(currentVisibility)}
-            </span>
-            {renderTopic()}
-            {showPoster && (
-              <span className="card-poster" onClick={(e) => e.stopPropagation()}>
-                {link.is_anonymous ? (
-                  <span className="anon-badge">anon</span>
-                ) : (
-                  <Link href={`/profile/${link.username}`}>@{link.username}</Link>
-                )}
-              </span>
-            )}
-            <span className="card-time">{date}</span>
-            {isOwner && (
-              <div className="card-menu-wrap" ref={menuRef} onClick={(e) => e.stopPropagation()}>
-                <button className="card-menu-btn" onClick={() => setMenuOpen(!menuOpen)}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
-                  </svg>
-                </button>
-                {menuOpen && (
-                  <div className="card-menu-dropdown">
-                    {['public', 'followers', 'private'].map(v => (
-                      <button
-                        key={v}
-                        className={`card-menu-item ${currentVisibility === v ? 'active' : ''}`}
-                        onClick={() => changeVisibility(v)}
-                      >
-                        {visibilityIcon(v)} {visibilityLabel(v)}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-            <Link href={`/link/${link.id}`} className="card-title" onClick={(e) => { e.stopPropagation(); setNavigating(true); }} style={{ fontSize: '15px', fontWeight: '500', color: 'var(--text)', marginBottom: '5px', display: 'block' }}>
-              {link.title}
-            </Link>
-            {showDescription && <div className="card-desc">{link.description}</div>}
-            {showTags && link.tags && link.tags.length > 0 && (
-            <div className="card-tags" onClick={(e) => e.stopPropagation()}>
-              {link.tags.map((tag: string) => (
-                <Link key={tag} href={`/tags/${tag}`} className="tag">
-                  #{tag}
-                </Link>
-              ))}
+          {cardBody}
+          {showPreview && link.preview_image && (
+            <div className="card-preview right">
+              <img src={link.preview_image} alt={link.title} />
             </div>
           )}
-            {renderFooter()}
-          </div>
         </div>
-        {showPreview && link.preview_image && (
-          <div className="card-preview right">
-            <img src={link.preview_image} alt={link.title} />
-          </div>
-        )}
       </div>
     );
   }

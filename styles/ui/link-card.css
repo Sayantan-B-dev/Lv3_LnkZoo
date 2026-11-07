@@ -4,19 +4,24 @@
    on hover. Cards without a topic fall back to a neutral grey. */
 .link-card {
   --topic-color: var(--text-3, #8a8a86);
-  background: color-mix(in srgb, var(--bg-1) 55%, transparent);
-  backdrop-filter: blur(8px);
-  border: 1px solid color-mix(in srgb, var(--topic-color) 28%, var(--border));
+  background: var(--bg-2);
+  border: 1px solid color-mix(in srgb, var(--topic-color) 35%, var(--border-md));
   border-radius: 10px;
-  padding: 16px;
-  margin-bottom: 8px;
+  padding: 18px;
+  margin-bottom: 14px;
   display: flex;
   gap: 14px;
+  flex-direction: column;
   transition: border-color 0.2s, background 0.2s, box-shadow 0.3s, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
-  max-width: full;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-  overflow: hidden;
+  box-shadow: var(--shadow-1);
+  overflow: visible;
+  min-width: 0;
+}
+
+.link-card:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--text) 70%, transparent);
+  outline-offset: 2px;
 }
 
 /* Navigation loading state - shows a spinner while the link detail page loads */
@@ -33,8 +38,8 @@
   align-items: center;
   justify-content: center;
   border-radius: inherit;
-  background: color-mix(in srgb, var(--bg-1) 55%, transparent);
-  backdrop-filter: blur(2px);
+  background: var(--bg-2);
+  backdrop-filter: none;
 }
 
 .card-spinner {
@@ -66,7 +71,7 @@
 
 .link-card:hover {
   border-color: color-mix(in srgb, var(--topic-color) 30%, var(--text));
-  background: color-mix(in srgb, var(--bg-2) 70%, transparent);
+  background: var(--bg-3);
   transform: translateY(-4px);
   box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.06),
@@ -132,122 +137,72 @@
 
 /* card body */
 .card-body {
-  flex: 1;
-  min-width: 0
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .card-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
-  flex-wrap: wrap
+  display: none;
 }
 
-.card-domain {
-  font-size: 10px;
-  color: var(--text-4);
-  border: 1px solid var(--border);
-  border-radius: 100px;
-  padding: 2px 10px;
-  letter-spacing: 0.3px;
-}
-
-.card-poster {
-  font-size: 10px;
-  color: var(--text-4)
-}
-
-.card-time {
-  font-size: 10px;
-  color: var(--text-4)
-}
-
+.card-domain,
+.card-poster,
+.card-time,
 .anon-badge {
-  font-size: 9px;
-  color: var(--text-4);
-  border: 1px solid var(--border);
-  border-radius: 3px;
-  padding: 1px 5px;
-  letter-spacing: .04em;
+  display: none;
 }
-.card-header{
-  display:flex;
-  flex-direction:column;
-  align-items: flex-start;
-}
+
 .card-title {
-  font-size: 15px;
-  font-weight: 600;
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
   color: var(--text);
-  margin-bottom: 6px;
+  margin: 0;
   line-height: 1.35;
-  letter-spacing: -.2px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  letter-spacing: -0.01em;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
 }
 
 .card-desc {
-  font-size: 12px;
+  font-size: 13.5px;
   color: var(--text-3);
-  margin-bottom: 10px;
-  line-height: 1.55;
-  white-space: normal;
-  word-wrap: break-word;
+  margin: 0;
+  line-height: 1.6;
   overflow-wrap: break-word;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  word-break: break-word;
+  white-space: normal;
+  max-height: none;
+  overflow: visible;
 }
 
 .card-tags {
-  display: flex;
-  gap: 5px;
-  flex-wrap: wrap;
-  margin-bottom: 8px
+  display: none;
 }
 
 .tag {
-  font-size: 10px;
-  color: var(--text-4);
-  border: 1px solid var(--border);
-  border-radius: 100px;
-  padding: 2px 10px;
-  transition: color var(--t), border-color var(--t), background var(--t);
-  cursor: pointer;
-}
-
-.tag:hover {
-  color: var(--text);
-  border-color: var(--border-md);
-  background: var(--bg-3)
+  display: none;
 }
 
 .card-footer {
-  display: flex;
-  align-items: center;
-  gap: 12px
+  display: none;
 }
 
 .card-stat {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 11px;
-  color: var(--text-4);
-  background: none;
-  border: 0;
-  padding: 3px 6px;
-  border-radius: 6px;
-  transition: color 0.2s, background 0.2s;
-  cursor: pointer;
+  display: none;
+}
+
+.card-open-original {
+  display: none;
 }
 
 .card-stat:hover {
   color: var(--text-2);
-  background: var(--bg-2);
+  background: var(--bg-3);
 }
 
 .like-stat.active {
@@ -282,34 +237,19 @@
 }
 
 .card-preview {
-  width: 100px;
-  height: 76px;
-  flex-shrink: 0;
-  border-radius: 8px;
-  background: var(--bg-3);
-  border: 1px solid var(--border);
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.25s ease;
+  display: none;
 }
 
 .link-card:hover .card-preview {
-  transform: scale(1.04);
+  transform: none;
 }
 
 .card-preview.right {
-  width: 100px;
-  height: 72px;
-  border-radius: 6px;
-  align-self: center;
+  display: none;
 }
 
 .card-preview img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover
+  display: none;
 }
 
 .no-preview {
@@ -376,7 +316,7 @@
   right: 0;
   top: 100%;
   z-index: 100;
-  background: var(--bg-2);
+  background: var(--bg-3);
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 4px;
@@ -453,7 +393,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  background: var(--bg-2);
+  background: var(--bg-3);
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 10px 14px;
@@ -507,7 +447,7 @@
 .short-copy-btn:hover {
   color: var(--text);
   border-color: var(--text-4);
-  background: var(--bg-1);
+  background: var(--bg-2);
 }
 
 .short-copy-btn.copied {
@@ -529,7 +469,7 @@
   display: flex;
   gap: 12px;
   padding: 12px;
-  background: var(--bg-1);
+  background: var(--bg-2);
   border: 1px solid var(--border);
   border-radius: 8px;
   overflow: hidden;
@@ -640,8 +580,8 @@
 .feed-link-card {
   display: flex;
   gap: 14px;
-  background: color-mix(in srgb, var(--bg-1) 55%, transparent);
-  backdrop-filter: blur(6px);
+  background: var(--bg-2);
+  backdrop-filter: none;
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 14px;
@@ -654,7 +594,7 @@
 .profile-link-card:hover,
 .feed-link-card:hover {
   border-color: var(--border-md);
-  background: color-mix(in srgb, var(--bg-2) 70%, transparent);
+  background: var(--bg-3);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);
 }
@@ -753,7 +693,7 @@
 
 .cat-link-like:hover,
 .feed-link-like:hover {
-  background: var(--bg-2);
+  background: var(--bg-3);
 }
 
 .cat-link-like.active,
@@ -783,8 +723,8 @@
   display: flex;
   gap: 14px;
   align-items: flex-start;
-  background: color-mix(in srgb, var(--bg-1) 55%, transparent);
-  backdrop-filter: blur(6px);
+  background: var(--bg-2);
+  backdrop-filter: none;
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 14px;
@@ -796,7 +736,7 @@
 
 .dose-link-card:hover {
   border-color: var(--border-md);
-  background: color-mix(in srgb, var(--bg-2) 70%, transparent);
+  background: var(--bg-3);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);
 }
