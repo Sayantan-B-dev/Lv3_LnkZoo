@@ -10,7 +10,7 @@ export function FAQSection({ faqOpen, setFaqOpen }: { faqOpen: number | null; se
       <section className="faq-section">
         <div className="faq-layout">
           <div className="faq-sticky">
-            <div className="about-ghost">03</div>
+            <div className="about-ghost">05</div>
             <h2 className="section-label">Got questions?</h2>
             <h3 className="faq-heading">Frequently asked <br />questions.</h3>
           </div>

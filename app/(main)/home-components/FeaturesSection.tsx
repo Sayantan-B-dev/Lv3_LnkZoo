@@ -8,7 +8,7 @@ export function FeaturesSection() {
   return (
     <Reveal>
       <section className="features-section">
-        <div className="about-ghost" style={{ right: '0', left: 'auto' }}>02</div>
+        <div className="about-ghost" style={{ right: '0', left: 'auto' }}>03</div>
         <h2 className="section-label" style={{ textAlign: 'center', marginBottom: '8px' }}>Why LnkZoo</h2>
         <h3 className="features-heading">Everything you need to <br />share and discover links.</h3>
         <div className="features-grid">

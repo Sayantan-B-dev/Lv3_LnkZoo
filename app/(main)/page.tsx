@@ -10,16 +10,12 @@ import { AboutSection } from './home-components/AboutSection';
 import { FeaturesSection } from './home-components/FeaturesSection';
 import { HowItWorksSection } from './home-components/HowItWorksSection';
 import { MetricsSection } from './home-components/MetricsSection';
-import { FeedSection } from './home-components/FeedSection';
 import { FAQSection } from './home-components/FAQSection';
 import { TutorialSection } from './home-components/TutorialSection';
 import { CTASection } from './home-components/CTASection';
 
 export default function Home() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState('explore');
-  const [sortBy, setSortBy] = useState('new');
-  const [searchQuery, setSearchQuery] = useState('');
   const [faqOpen, setFaqOpen] = useState<number | null>(null);
   const [stats, setStats] = useState<any>(null);
 
@@ -38,19 +34,11 @@ export default function Home() {
         <HeroSection stats={stats} onShareClick={function() { router.push('/submit'); }} />
         <MarqueeSection />
         <AboutSection stats={stats} />
-        <FeaturesSection />
         <HowItWorksSection />
+        <FeaturesSection />
         <MetricsSection stats={stats} />
-        <FeedSection
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-        />
-        <FAQSection faqOpen={faqOpen} setFaqOpen={setFaqOpen} />
         <TutorialSection />
+        <FAQSection faqOpen={faqOpen} setFaqOpen={setFaqOpen} />
         <CTASection onShareClick={function() { router.push('/submit'); }} />
       </div>
 

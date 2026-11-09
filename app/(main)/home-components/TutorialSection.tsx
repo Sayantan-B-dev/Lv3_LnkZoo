@@ -12,7 +12,7 @@ export function TutorialSection() {
   return (
     <Reveal>
       <section className="tutorial-section">
-        <div className="about-ghost">05</div>
+        <div className="about-ghost">04</div>
 
         <h2 className="section-label" style={{ textAlign: 'center', marginBottom: '8px' }}>
           Full Platform Guide

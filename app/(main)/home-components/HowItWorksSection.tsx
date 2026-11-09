@@ -1,24 +1,28 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { Reveal } from './Reveal';
 
 const CARD_DATA = [
   {
     num: '01',
     title: 'Categories',
+    href: '/categories',
     tagline: 'Domain-specific filtering',
     desc: 'Think of categories as broad neighbourhoods — tech, art, science, gaming, and more. They act as a first-pass filter so you can narrow the feed to a specific domain. Every link lives under exactly one category.',
   },
   {
     num: '02',
     title: 'Topics',
+    href: '/topics',
     tagline: '60 curated collections',
     desc: 'Inside each category, topics are pre-defined, editor-curated buckets (60 in total). When you post a link you assign it a topic — this keeps the feed organised without the chaos of free-form labels. Think "CSS" under Tech, or "Oil Painting" under Art.',
   },
   {
     num: '03',
     title: 'Tags',
+    href: '/tags',
     tagline: 'Free-form, user-defined — use sparingly',
     desc: 'Tags are ad-hoc keywords you invent on the fly. They\'re flexible but can get chaotic — "webdev", "web-dev", "web development" all coexist. Use tags for micro-categorisation that the curated topics don\'t cover, but prefer topics for discoverability.',
   },
@@ -38,13 +42,13 @@ export function HowItWorksSection() {
   return (
     <Reveal>
       <section className="hiw-section">
-        <div className="about-ghost">04</div>
+        <div className="about-ghost">02</div>
         <h2 className="section-label" style={{ textAlign: 'center', marginBottom: '8px' }}>How It Works</h2>
         <h3 className="features-heading">Categories, Topics &amp; Tags — <br />what each one does.</h3>
 
         <div className="hiw-rows">
           {CARD_DATA.map((item) => (
-            <div key={item.num} className="hiw-row">
+            <Link key={item.num} href={item.href} className="hiw-row">
               <div className="hiw-row-icon"><RowIcon num={item.num} /></div>
               <div className="hiw-row-body">
                 <div className="hiw-row-header">
@@ -53,7 +57,7 @@ export function HowItWorksSection() {
                 </div>
                 <p className="hiw-row-desc">{item.desc}</p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>

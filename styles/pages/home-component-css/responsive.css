@@ -26,6 +26,5 @@
   .hero-section { padding: 40px 12px 30px; }
   .about-ghost { font-size: 48px; }
   .metrics-section { grid-template-columns: 1fr; gap: 8px; }
-  .feed-container { padding: 20px 16px; }
   .cta-section { margin: 0 auto 40px; border-radius: 10px; padding: 24px 16px; }
 }
