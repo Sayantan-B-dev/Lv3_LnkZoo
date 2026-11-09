@@ -36,6 +36,39 @@ export interface NavSection {
 /** Shown to everyone, signed in or not. */
 export const PUBLIC_SECTIONS: NavSection[] = [
   {
+    label: 'Utilities',
+    items: [
+      {
+        id: 'tools',
+        label: 'Tools',
+        href: '/tools',
+        hint: 'Short links, file transfer, text share and QR codes.',
+        about:
+          'The developer tools, free and fully public: URL Shortener (24h), Low Weight File Transfer and Text Share (5 min / 1 hour / 24 hours), each with a QR code. Rate-limited per IP.',
+        audience: 'guest',
+      },
+      {
+        id: 'guest-pool',
+        label: 'Guest Pool',
+        href: '/guest-pool',
+        hint: 'Tool links guests created, until they expire.',
+        about:
+          'A public, read-only pool of tool output made without an account — short links, files and texts, each with its own countdown. No destroy button: guest rows can only expire, and signed-in output never lands here.',
+        audience: 'guest',
+        guestNote: 'Built for guests, open to everyone. No account needed either way.',
+      },
+      {
+        id: 'manual',
+        label: 'Manual',
+        href: '/manual',
+        hint: 'This page — what every route does and who can open it.',
+        about:
+          'The manual: every sidebar route explained side by side for logged-out visitors and signed-in members, so you know where things live before hunting for them.',
+        audience: 'guest',
+      },
+    ],
+  },
+  {
     label: 'Feed',
     items: [
       {
@@ -89,33 +122,6 @@ export const PUBLIC_SECTIONS: NavSection[] = [
     label: 'Discover',
     items: [
       {
-        id: 'users',
-        label: 'Users',
-        href: '/users',
-        hint: 'Directory of everyone on LnkZoo.',
-        about:
-          'A searchable grid of every member. Open a profile to follow them, see their stats and browse the links they shared.',
-        audience: 'guest',
-      },
-      {
-        id: 'leaderboard',
-        label: 'Leaderboard',
-        href: '/leaderboard',
-        hint: 'Top sharers by likes this week, month or all time.',
-        about:
-          'Ranks members by the likes their links collected over the last week, month or all time, and shows your own position.',
-        audience: 'guest',
-      },
-      {
-        id: 'tags',
-        label: 'Tags',
-        href: '/tags',
-        hint: 'Every tag in use — open one to see its links.',
-        about:
-          'Free-form tags across the whole platform, with usage counts. A tag page lists every link carrying it.',
-        audience: 'guest',
-      },
-      {
         id: 'topics',
         label: 'Topics',
         href: '/topics',
@@ -134,31 +140,30 @@ export const PUBLIC_SECTIONS: NavSection[] = [
         audience: 'guest',
       },
       {
-        id: 'tools',
-        label: 'Tools',
-        href: '/tools',
-        hint: 'Short links, file transfer, text share and QR codes.',
+        id: 'tags',
+        label: 'Tags',
+        href: '/tags',
+        hint: 'Every tag in use — open one to see its links.',
         about:
-          'The developer tools, free and fully public: URL Shortener (24h), Low Weight File Transfer and Text Share (5 min / 1 hour / 24 hours), each with a QR code. Rate-limited per IP.',
+          'Free-form tags across the whole platform, with usage counts. A tag page lists every link carrying it.',
         audience: 'guest',
       },
       {
-        id: 'guest-pool',
-        label: 'Guest Pool',
-        href: '/guest-pool',
-        hint: 'Tool links guests created, until they expire.',
+        id: 'leaderboard',
+        label: 'Leaderboard',
+        href: '/leaderboard',
+        hint: 'Top sharers by likes this week, month or all time.',
         about:
-          'A public, read-only pool of tool output made without an account — short links, files and texts, each with its own countdown. No destroy button: guest rows can only expire, and signed-in output never lands here.',
+          'Ranks members by the likes their links collected over the last week, month or all time, and shows your own position.',
         audience: 'guest',
-        guestNote: 'Built for guests, open to everyone. No account needed either way.',
       },
       {
-        id: 'manual',
-        label: 'Manual',
-        href: '/manual',
-        hint: 'This page — what every route does and who can open it.',
+        id: 'users',
+        label: 'Users',
+        href: '/users',
+        hint: 'Directory of everyone on LnkZoo.',
         about:
-          'The manual: every sidebar route explained side by side for logged-out visitors and signed-in members, so you know where things live before hunting for them.',
+          'A searchable grid of every member. Open a profile to follow them, see their stats and browse the links they shared.',
         audience: 'guest',
       },
     ],
