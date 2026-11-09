@@ -6,6 +6,7 @@ import Topbar from '@/components/common/Topbar';
 import NotificationPanel from '@/components/common/NotificationPanel';
 import LoadingGlobe from '@/components/common/LoadingGlobe';
 import SortDropdown from '@/components/common/SortDropdown';
+import FilterDropdown from '@/components/common/FilterDropdown';
 import ScatteredLinks from '@/components/react-bits/ScatteredLinks';
 import ToolItems from '@/components/profile/ToolItems';
 import { useAuth } from '@/context/AuthContext';
@@ -35,10 +36,8 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
   const [sortBy, setSortBy] = useState('new');
   const [categories, setCategories] = useState<{ domain: string; count: number }[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [showCatFilter, setShowCatFilter] = useState(false);
   const [topicTypes, setTopicTypes] = useState<{ slug: string; name: string; link_count: number }[]>([]);
   const [activeTopicType, setActiveTopicType] = useState<string | null>(null);
-  const [showTopicFilter, setShowTopicFilter] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showGlobe, setShowGlobe] = useState(true);
   const [fadeIn, setFadeIn] = useState(false);
@@ -384,77 +383,23 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
             <h2 className="section-title">Submissions</h2>
             <SortDropdown value={sortBy} onChange={setSortBy} />
           </div>
-          {categories.length > 0 && (
-            <div style={{ marginBottom: '12px' }}>
-              <button
-                onClick={() => setShowCatFilter(v => !v)}
-                style={{
-                  background: 'none', border: 'none', color: 'var(--text-4)', cursor: 'pointer',
-                  fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 0'
-                }}
-              >
-                <svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24"
-                  style={{ transform: showCatFilter ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}>
-                  <path d="M8 5l8 7-8 7z" />
-                </svg>
-                Filter by category {activeCategory && <span style={{ color: 'var(--accent)' }}>({activeCategory})</span>}
-              </button>
-              {showCatFilter && (
-                <div className="filter-bar-scroll" style={{ marginTop: '8px' }}>
-                  <button
-                    className={`cat-filter-chip ${!activeCategory ? 'active' : ''}`}
-                    onClick={() => setActiveCategory(null)}
-                  >
-                    All
-                  </button>
-                  {categories.map((cat) => (
-                    <button
-                      key={cat.domain}
-                      className={`cat-filter-chip ${activeCategory === cat.domain ? 'active' : ''}`}
-                      onClick={() => setActiveCategory(activeCategory === cat.domain ? null : cat.domain)}
-                    >
-                      {cat.domain}
-                      <span className="cat-filter-count">{cat.count}</span>
-                    </button>
-                  ))}
-                </div>
+          {(categories.length > 0 || topicTypes.length > 0) && (
+            <div className="filter-row">
+              {categories.length > 0 && (
+                <FilterDropdown
+                  label="Category"
+                  value={activeCategory}
+                  options={categories.map((cat) => ({ value: cat.domain, label: cat.domain, count: cat.count }))}
+                  onChange={setActiveCategory}
+                />
               )}
-            </div>
-          )}
-          {topicTypes.length > 0 && (
-            <div style={{ marginBottom: '12px' }}>
-              <button
-                onClick={() => setShowTopicFilter(v => !v)}
-                style={{
-                  background: 'none', border: 'none', color: 'var(--text-4)', cursor: 'pointer',
-                  fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 0'
-                }}
-              >
-                <svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24"
-                  style={{ transform: showTopicFilter ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}>
-                  <path d="M8 5l8 7-8 7z" />
-                </svg>
-                Filter by topic {activeTopicType && <span style={{ color: 'var(--accent)' }}>({topicTypes.find(t => t.slug === activeTopicType)?.name})</span>}
-              </button>
-              {showTopicFilter && (
-                <div className="filter-bar-scroll" style={{ marginTop: '8px' }}>
-                  <button
-                    className={`cat-filter-chip ${!activeTopicType ? 'active' : ''}`}
-                    onClick={() => setActiveTopicType(null)}
-                  >
-                    All
-                  </button>
-                  {topicTypes.map((t) => (
-                    <button
-                      key={t.slug}
-                      className={`cat-filter-chip ${activeTopicType === t.slug ? 'active' : ''}`}
-                      onClick={() => setActiveTopicType(activeTopicType === t.slug ? null : t.slug)}
-                    >
-                      {t.name}
-                      <span className="cat-filter-count">{t.link_count}</span>
-                    </button>
-                  ))}
-                </div>
+              {topicTypes.length > 0 && (
+                <FilterDropdown
+                  label="Topic"
+                  value={activeTopicType}
+                  options={topicTypes.map((t) => ({ value: t.slug, label: t.name, count: t.link_count }))}
+                  onChange={setActiveTopicType}
+                />
               )}
             </div>
           )}

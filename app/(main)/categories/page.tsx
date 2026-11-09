@@ -6,6 +6,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Topbar from '@/components/common/Topbar';
 import NotificationPanel from '@/components/common/NotificationPanel';
 import ScatteredLinks from '@/components/react-bits/ScatteredLinks';
+import FilterDropdown from '@/components/common/FilterDropdown';
 
 function CategoriesPageContent() {
   const router = useRouter();
@@ -53,22 +54,25 @@ function CategoriesPageContent() {
       <NotificationPanel />
 
       <div id="content" className="fade-in">
-        <div className="filter-bar-scroll">
+        <div className="filter-row">
           {loadingCats ? (
-            Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="skel cat-skel-chip" />
-            ))
+            <div className="skel cat-skel-chip" />
           ) : (
-            categories.map((cat) => (
-              <button
-                key={cat.name}
-                className={`cat-filter-chip ${activeCategory === cat.name ? 'active' : ''}`}
-                onClick={() => changeCategory(cat.name)}
-              >
-                {cat.name}
-                <span className="cat-filter-count">{cat.count}</span>
-              </button>
-            ))
+            <FilterDropdown
+              label="Category"
+              value={activeCategory}
+              options={categories.map((cat) => ({ value: cat.name, label: cat.name, count: cat.count }))}
+              onChange={(value) => {
+                if (!value) {
+                  const params = new URLSearchParams(searchParams.toString());
+                  params.delete('category');
+                  router.replace(`/categories${params.toString() ? `?${params.toString()}` : ''}`, { scroll: false });
+                  return;
+                }
+                if (value !== activeCategory) changeCategory(value);
+              }}
+              allLabel="All categories"
+            />
           )}
         </div>
 
