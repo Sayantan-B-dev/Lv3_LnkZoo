@@ -20,7 +20,79 @@
 .dose-list {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 8px;
+}
+
+.dose-link-card {
+    align-items: center;
+    padding: 10px 14px;
+    gap: 12px;
+    margin-bottom: 0;
+}
+
+.dose-number {
+    font-size: 13px;
+    font-weight: 700;
+    min-width: 22px;
+    padding: 0;
+    line-height: 1;
+    opacity: 0.35;
+}
+
+.dose-link-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.dose-link-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dose-link-desc {
+    font-size: 12px;
+    line-height: 1.5;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dose-link-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.dose-link-stat {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    color: var(--text-4);
+    background: none;
+    border: none;
+    border-radius: 6px;
+    padding: 0;
+    cursor: pointer;
+    transition: color var(--t), background var(--t);
+}
+
+.dose-link-stat:hover {
+    color: var(--text);
+    background: var(--bg-3);
+}
+
+.dose-link-stat.active {
+    color: var(--accent);
 }
 
 .dose-card {
@@ -42,6 +114,13 @@
   .dose-title { font-size: 22px; }
   .dose-card { flex-direction: column; gap: 8px; }
   .dose-number { font-size: 24px; padding-top: 0; }
+}
+
+@media (max-width: 600px) {
+  .dose-link-card { padding: 9px 12px; gap: 10px; }
+  .dose-link-title { font-size: 13.5px; }
+  .dose-link-desc { font-size: 11.5px; }
+  .dose-link-stat { width: 28px; height: 28px; }
 }
 
 @media (max-width: 480px) {
