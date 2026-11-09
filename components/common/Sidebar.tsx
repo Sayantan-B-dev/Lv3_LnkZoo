@@ -16,7 +16,10 @@ interface SidebarProps {
   onClose?: () => void;
 }
 
-type Tip = { text: string; left: number; top: number; below: boolean };
+type Tip = { text: string; left: number; top: number; below: boolean; right?: boolean };
+
+/** Routes that get the animated "moving border" highlight. */
+const GLOW_IDS = new Set(['explore', 'topics', 'manual', 'tools']);
 
 /** Icons are JSX, the route data lives in `lib/navRoutes.ts` — keyed by `id`. */
 const NAV_ICONS: Record<string, React.ReactNode> = {
@@ -75,6 +78,18 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     if (!nav) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const navRect = nav.getBoundingClientRect();
+
+    if (collapsed) {
+      setTip({
+        text,
+        left: rect.right - navRect.left + 8,
+        top: rect.top - navRect.top + rect.height / 2,
+        below: false,
+        right: true,
+      });
+      return;
+    }
+
     const top = rect.top - navRect.top;
     setTip({
       text,
@@ -116,16 +131,21 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       >
         {collapsed ? (
           <div className="collapsed-nav">
-            {navItems.flatMap(s => s.items.map(item => ({ ...item, section: s.label }))).map((item) => (
-              <Link
-                key={`${item.section}-${item.id}`}
-                href={item.href}
-                className={`collapsed-nav-item ${pathname === item.href ? 'active' : ''}`}
-                onClick={() => { closeTip(); onClose?.(); }}
-                onMouseEnter={(e) => showTip(e, item.hint)}
-              >
-                <span className="nav-icon">{item.icon}</span>
-              </Link>
+            {navItems.map((section, sectionIndex) => (
+              <React.Fragment key={section.label}>
+                {sectionIndex > 0 && <div className="collapsed-nav-divider" />}
+                {section.items.map((item) => (
+                  <Link
+                    key={`${section.label}-${item.id}`}
+                    href={item.href}
+                    className={`collapsed-nav-item ${pathname === item.href ? 'active' : ''}`}
+                    onClick={() => { closeTip(); onClose?.(); }}
+                    onMouseEnter={(e) => showTip(e, item.hint)}
+                  >
+                    <span className="nav-icon">{item.icon}</span>
+                  </Link>
+                ))}
+              </React.Fragment>
             ))}
           </div>
         ) : (
@@ -136,7 +156,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 <Link
                   key={item.id}
                   href={item.href}
-                  className={`nav-item ${pathname === item.href ? 'active' : ''}`}
+                  className={`nav-item ${pathname === item.href ? 'active' : ''}${GLOW_IDS.has(item.id) ? ' nav-glow' : ''}`}
                   onClick={() => { closeTip(); onClose?.(); }}
                   onMouseEnter={(e) => showTip(e, item.hint)}
                 >
@@ -249,7 +269,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
       {tip && (
         <div
-          className={`nav-tip${tip.below ? ' below' : ''}`}
+          className={`nav-tip${tip.below ? ' below' : ''}${tip.right ? ' right' : ''}`}
           style={{ left: tip.left, top: tip.top }}
           role="tooltip"
         >

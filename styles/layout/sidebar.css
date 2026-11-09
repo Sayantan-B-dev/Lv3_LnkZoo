@@ -98,6 +98,14 @@
   padding: 4px 0;
 }
 
+.collapsed-nav-divider {
+  width: 22px;
+  height: 1px;
+  margin: 5px 0;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
 .collapsed-nav-item {
   display: flex;
   align-items: center;
@@ -159,6 +167,21 @@
   transform: translate(-50%, 0) translateY(8px);
 }
 
+.nav-tip.right {
+  transform: translate(0, -50%);
+}
+
+.nav-tip.right::after {
+  left: -4px;
+  bottom: auto;
+  top: 50%;
+  margin-left: 0;
+  margin-top: -3.5px;
+  border: none;
+  border-left: 1px solid var(--border-md);
+  border-bottom: 1px solid var(--border-md);
+}
+
 .nav-tip::after {
   content: '';
   position: absolute;
@@ -215,7 +238,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 7px 16px;
+  padding: 7px 16px 7px 26px;
   color: var(--text-3);
   font-size: 12px;
   font-weight: 400;
@@ -355,3 +378,38 @@
   transform: rotate(180deg)
 }
 
+
+/* ── Animated underline highlight (Explore, Topics, Manual, Tools) ── */
+.nav-item.nav-glow .nav-text {
+  position: relative;
+}
+
+.nav-item.nav-glow .nav-text::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 10%,
+    color-mix(in srgb, var(--text-2) 80%, transparent) 50%,
+    transparent 90%
+  );
+  background-size: 200% 100%;
+  animation: nav-glow-underline 2.8s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes nav-glow-underline {
+  0% { background-position: 200% 0; }
+  100% { background-position: -100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-item.nav-glow .nav-text::after {
+    animation: none;
+    background-position: 50% 0;
+  }
+}
