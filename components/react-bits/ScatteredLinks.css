@@ -6,9 +6,9 @@
 }
 
 .scattered-stage {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   width: 100%;
   padding: 0;
 }
@@ -42,14 +42,25 @@
 
 .scattered-card-wrap .link-card {
   margin-bottom: 0;
-  border-radius: var(--radius-lg);
-  height: 100%;
+  border-radius: 10px;
+  width: 100%;
+  height: auto;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px 14px;
+  gap: 12px;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.3s;
 }
 
 .scattered-card-wrap .link-card:hover {
-  z-index: 3;
+  transform: none;
+  box-shadow: var(--shadow-1);
+  z-index: 1;
+}
+
+.scattered-card-wrap .link-card:active {
+  transform: none;
 }
 
 .scattered-card-wrap .card-body {
@@ -57,25 +68,60 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .scattered-card-wrap .card-title {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  hyphens: auto;
-  white-space: normal;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
   overflow: hidden;
-  white-space: normal;
+  text-overflow: ellipsis;
 }
 
 .scattered-card-wrap .card-desc {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.scattered-card-wrap .card-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.scattered-card-wrap .card-stat {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  color: var(--text-4);
+  background: none;
+  border: none;
+  border-radius: 6px;
+  padding: 0;
+  cursor: pointer;
+  transition: color var(--t), background var(--t);
+}
+
+.scattered-card-wrap .card-stat:hover {
+  color: var(--text);
+  background: var(--bg-3);
+}
+
+.scattered-card-wrap .card-stat.active {
+  color: var(--accent);
+}
+
+.scattered-card-wrap .card-stat svg {
+  width: 15px;
+  height: 15px;
 }
 
 /* Pagination */
@@ -149,23 +195,22 @@
   letter-spacing: 1px;
 }
 
-@media (max-width: 1400px) {
-  .scattered-stage { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
-}
-
-@media (max-width: 1000px) {
-  .scattered-stage { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
-}
-
 @media (max-width: 700px) {
-  .scattered-stage { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; padding: 0; }
+  .scattered-card-wrap .link-card { padding: 9px 12px; gap: 10px; }
   .scattered-pagination { gap: 8px; margin-top: 28px; padding: 16px 0; }
   .scattered-page-btn { width: 36px; height: 36px; }
   .scattered-page-num { min-width: 36px; height: 36px; font-size: 13px; }
 }
 
+@media (max-width: 600px) {
+  .scattered-stage { gap: 8px; }
+  .scattered-card-wrap .card-title { font-size: 13.5px; }
+  .scattered-card-wrap .card-desc { font-size: 11.5px; }
+  .scattered-card-wrap .card-stat { width: 28px; height: 28px; }
+}
+
 @media (max-width: 500px) {
-  .scattered-stage { grid-template-columns: 1fr; gap: 12px; }
+  .scattered-card-wrap .card-actions { gap: 2px; }
   .scattered-pagination { gap: 6px; margin-top: 24px; padding: 12px 0; }
   .scattered-page-btn { width: 36px; height: 36px; }
   .scattered-page-num { min-width: 34px; height: 34px; font-size: 13px; }
